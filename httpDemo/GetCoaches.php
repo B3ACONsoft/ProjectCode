@@ -38,11 +38,15 @@ try {
 $query = 'SELECT * FROM coaches';
 
 $allCoaches = $db->query($query);
-echo"<p>Using a SQL query, here are the last names of the 3 coaches.</p>";
-echo"<table>";
+echo"<p>Current state of the database!!!.</p>";
+echo'<table border="1">';
 foreach($allCoaches as $aCoach){ ?>
 	<tr>
-    	<td><?php echo $aCoach['lastname']; ?></td>
+		<td><?php echo $aCoach['id']; ?></td>
+    	<td><?php echo $aCoach['firstname']; ?></td>
+		<td><?php echo $aCoach['lastname']; ?></td>
+		<td><?php echo $aCoach['phone']; ?></td>
+		<td><?php echo $aCoach['email']; ?></td>
     </tr>
 <?php }; 
 echo"</table>";
