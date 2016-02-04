@@ -3,11 +3,14 @@
 	This just shows how you get data up to the server ussing a POST
 	request.
 	There is no data validation or security checking etc etc...
+    
+    Dave Johnson 2/3/2016
 	
 */
 
 $db;
 
+//scott's DB connection stuff
 function connectToDB() {
     echo "connecting to DB\r\n\r\n";
     global $db;
@@ -32,6 +35,12 @@ function closeDB() {
     $db->close();
 }
 
+/*
+    Create prepared statement,
+    bind the parameters to the statement,
+    execute query,
+    echo results
+*/
 function insertOperation($params) {
     echo "performing insert opperation\r\n\r\n";
     global $db;
@@ -67,6 +76,9 @@ function insertOperation($params) {
 
 }
 
+/*
+    Does a select all on Scott's db and echos the results
+*/
 function selectOperation($params) {
     echo "performing select operation\r\n\r\n";
     global $db;
@@ -80,7 +92,11 @@ function selectOperation($params) {
     }
 }
 
-
+/*
+    Checks for data in the POST array.
+    If it has data it switches on the two possible command types.
+    
+*/
 if($_POST != NULL) {
     
     connectToDB();
@@ -88,12 +104,13 @@ if($_POST != NULL) {
     switch($_POST['command'])
     {
         case 'INSERT':
-            insertOperation($_POST);
+            insertOperation($_POST);        //pass the $_POST array to the insertOperation
             break;
             
         case 'SELECT':
             $params = array($_POST['options']);
-            selectOperation($params);        
+            selectOperation($params);      //perform the select operation,
+                                           // I didn't really need to pass the $_POST array here...
         break;
     }
 	
