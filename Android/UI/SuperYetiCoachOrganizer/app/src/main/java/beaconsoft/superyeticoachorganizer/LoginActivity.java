@@ -39,6 +39,11 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
+
+    /*
+
+    I hear the call of the YETI!!!!!!!
+     */
     /**
      * Id to identity READ_CONTACTS permission request.
      */
