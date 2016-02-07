@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.BufferedOutputStream;
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void insertDemo(View v)
     {
+
         HashMap<String, String> insertValues = new HashMap<String, String>();
         ////these are the parameters for the insert command
         insertValues.put("command", "INSERT");
@@ -180,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
                 this.url = new URL(url);
                 conn = (HttpURLConnection) this.url.openConnection();   //init the connection objects
-                conn.setDoInput(true);
+                //conn.setDoInput(true);
                 conn.setDoInput(true);
                 conn.setInstanceFollowRedirects(false);
                 conn.setRequestMethod("POST");                          //set request method
