@@ -1,4 +1,4 @@
-package com.example.analembargo.posttocloud;
+package capstone.backend.examples.postToCloud.postToCloud;
 
 import org.junit.Test;
 
