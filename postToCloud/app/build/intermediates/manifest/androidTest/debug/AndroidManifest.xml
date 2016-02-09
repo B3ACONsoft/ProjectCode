@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.analembargo.posttocloud.test">
+    package="capstone.backend.examples.postToCloud.postToCloud.test">
 
     <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="23" />
 
@@ -9,8 +9,8 @@
     </application>
 
     <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="com.example.analembargo.posttocloud"
+                     android:targetPackage="capstone.backend.examples.postToCloud.postToCloud"
                      android:handleProfiling="false"
                      android:functionalTest="false"
-                     android:label="Tests for com.example.analembargo.posttocloud"/>
+                     android:label="Tests for capstone.backend.examples.postToCloud.postToCloud"/>
 </manifest>
