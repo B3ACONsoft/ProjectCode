@@ -10,7 +10,7 @@
         <item>Iron Hills</item>
         <item>Oxford Township</item>
         <item>Sesquatchuan City</item>
-        <item>Pipe Bender\'s Local 17</item>
+        <item>Pipe Bender\'s Local 1177</item>
         <item>San Francisco Republican\'s Cup</item>
         <item>North Raleigh Party Clowns Association</item>
         <item>Fibromyalgia Weekly</item>
@@ -57,4 +57,5 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="placeholder">placeholder</string>
 </resources>

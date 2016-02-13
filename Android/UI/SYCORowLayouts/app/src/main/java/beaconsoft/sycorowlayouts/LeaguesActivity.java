@@ -6,18 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
 
+    private static final String EMAIL_KEY = "beaconsoft.sycorowlayours.EMAIL_PASSED";
     private TextView textViewGreeting;
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +26,12 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setShowHideAnimationEnabled(true);
 
+        Intent intent = getIntent();
+        email = intent.getStringExtra(EMAIL_KEY);
+
         textViewGreeting = (TextView)findViewById(R.id.textViewLeaguesActivityPassedName);
-        String message = new String("Patrick, You're Awesome!!!");
         textViewGreeting.setTextSize(40);
-        textViewGreeting.setText(message);
+        textViewGreeting.setText(email);
 
         Spinner spinnerLeagues = (Spinner)findViewById(R.id.leagues_spinner);
         ArrayAdapter adapterSpinnerLeagues = ArrayAdapter.createFromResource(getBaseContext(),
@@ -76,7 +76,8 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     }
 
     public void goToAddPlayerFromLeagues(View view){
-        Intent intent = new Intent(getApplicationContext(), PlayerActivity.class);
+        Intent intent = new Intent(getApplicationContext(), AddPlayerActivity.class);
+        intent.putExtra(EMAIL_KEY, email);
         startActivity(intent);
     }
 }
