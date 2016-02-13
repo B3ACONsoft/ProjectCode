@@ -76,7 +76,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     }
 
     public void goToAddPlayerFromLeagues(View view){
-        Intent intent = new Intent(getApplicationContext(), AddPlayerActivity.class);
+        Intent intent = new Intent(getApplicationContext(), QuickAddActivity.class);
         intent.putExtra(EMAIL_KEY, email);
         startActivity(intent);
     }
