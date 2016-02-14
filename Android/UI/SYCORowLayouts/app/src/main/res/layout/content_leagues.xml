@@ -13,44 +13,45 @@
     tools:context="beaconsoft.sycorowlayouts.LeaguesActivity"
     tools:showIn="@layout/activity_leagues">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:id="@+id/textViewLeaguesActivityPassedName"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="false" />
-
-    </LinearLayout>
-
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        android:stretchColumns="*"
+        android:layout_gravity="center|top">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Administrator, please, choose a sport..."
+                android:id="@+id/textViewPromptChooseSport"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:layout_column="0" />
+        </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <Spinner
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/sports_spinner"
-                android:layout_below="@+id/teams_spinner"
+                android:layout_width="0dp"
+                android:layout_height="75dp"
+                android:id="@+id/spinnerMyLeaguesSports"
+                android:layout_below="@+id/spinnerMyLeaguesTeams"
                 android:layout_centerHorizontal="true"
-                android:layout_span="3"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:spinnerMode="dropdown"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textAlignment="center" />
 
         </TableRow>
 
@@ -58,28 +59,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <Button
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="ADD LEAGUE"
-                android:id="@+id/buttonMyLeaguesAddLeague"
-                android:layout_below="@+id/sports_spinner"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_weight="1"
-                 />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="EDIT LEAGUE"
-                android:id="@+id/buttonMyLeaguesEditLeague"
-                android:layout_alignTop="@+id/buttonMyLeaguesAddLeague"
-                android:layout_alignRight="@+id/sports_spinner"
-                android:layout_alignEnd="@+id/sports_spinner"
-                android:layout_weight="1"
-                 />
-
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="...and then, please, choose a League..."
+                android:id="@+id/textView6"
+                android:textAlignment="center"
+                android:layout_column="0"
+                android:layout_weight="1" />
         </TableRow>
 
         <TableRow
@@ -87,14 +75,63 @@
             android:layout_height="match_parent">
 
             <Spinner
-                android:id="@+id/teams_spinner"
+                android:id="@+id/spinnerMyLeaguesLeagues"
+                android:layout_width="0dp"
+                android:layout_height="75dp"
+                android:layout_below="@+id/textViewLeaguesActivityPassedName"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:gravity="center" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/string_start_a_league"
+                android:id="@+id/buttonMyLeaguesAddLeague"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="EDIT ABOVE LEAGUE"
+                android:id="@+id/buttonMyLeaguesEditLeague"
+                android:layout_weight="1" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/leagues_spinner"
+                android:layout_height="50dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="...you can choose a Team to edit or add Teams to your League here, below..."
+                android:id="@+id/textViewPromptChooseTeam"
+                android:textAlignment="center"
+                android:gravity="center" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:id="@+id/spinnerMyLeaguesTeams"
+                android:layout_width="wrap_content"
+                android:layout_height="75dp"
+                android:layout_below="@+id/spinnerMyLeaguesLeagues"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_span="3"
-                android:layout_weight="1" />
+                android:gravity="center"
+                android:layout_gravity="center" />
         </TableRow>
 
         <TableRow
@@ -102,7 +139,7 @@
             android:layout_height="match_parent">
 
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="QUICK ADD TEAM"
                 android:id="@+id/buttonMyLeaguesAddTeam"
@@ -112,21 +149,33 @@
                 android:layout_above="@+id/buttonMyLeaguesAddPlayer"
                 android:layout_toLeftOf="@+id/buttonMyLeaguesEditTeam"
                 android:layout_toStartOf="@+id/buttonMyLeaguesEditTeam"
-                android:layout_weight="1"
                 android:onClick="goToQuickAddTeams"
-                />
+                android:layout_weight="1" />
 
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="EDIT TEAM"
                 android:id="@+id/buttonMyLeaguesEditTeam"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@+id/buttonMyLeaguesEditLeague"
                 android:layout_alignBottom="@+id/buttonMyLeaguesRemoveTeam"
-                android:layout_weight="1"
-                />
+                android:layout_weight="1" />
 
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="...and add or alter  Player profiles down here..."
+                android:id="@+id/textViewPromptAddAlterPlayers"
+                android:textAlignment="center"
+                android:gravity="center" />
         </TableRow>
 
         <TableRow
@@ -134,14 +183,11 @@
             android:layout_height="match_parent">
 
             <Spinner
-                android:id="@+id/leagues_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textViewLeaguesActivityPassedName"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_span="3"
-                android:layout_weight="1" />
+                android:layout_width="wrap_content"
+                android:layout_height="75dp"
+                android:id="@+id/spinnerMyLeaguesPlayers"
+                android:gravity="center"
+                android:layout_gravity="center" />
         </TableRow>
 
         <TableRow
@@ -149,19 +195,18 @@
             android:layout_height="match_parent">
 
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="QUICK ADD PLAYER"
                 android:id="@+id/buttonMyLeaguesAddPlayer"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_weight="1"
                 android:onClick="goToAddPlayerFromLeagues"
-              />
+                android:layout_weight="1" />
 
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Edit Player"
                 android:layout_alignParentBottom="true"
@@ -170,8 +215,7 @@
                 android:layout_alignLeft="@+id/buttonMyLeaguesRemoveTeam"
                 android:layout_alignStart="@+id/buttonMyLeaguesRemoveTeam"
                 android:id="@+id/buttonMyLeaguesEditPlayer"
-                android:layout_weight="1"
-             />
+                android:layout_weight="1" />
 
         </TableRow>
 

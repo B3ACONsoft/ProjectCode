@@ -48,5 +48,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         hashMapNewTeam.put("keyCoach", coach);
 
         //insert into TEAM table
+        //test shot changes teamName box to coach name
+        editTeamName.setText(coach);
     }
 }

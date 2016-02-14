@@ -217,7 +217,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra(LOGIN_KEY, "ADMIN");
-            intent.putExtra(ADMIN_KEY, "Administrator Patrick the Great");
+            intent.putExtra(ADMIN_KEY, "Patrick Currin: " + email);
             startActivity(intent);
         }
     }

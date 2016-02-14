@@ -4,8 +4,21 @@
     <string name="button_send">Send</string>
     <string name="edit_message">Enter a Message</string>
     <string name="title_activity_leagues">My Leagues</string>
-
+    <string-array name="dummy_players">
+        <item>Patrick Currin</item>
+        <item>Bonita Bryant</item>
+        <item>Yardrun Kapowski</item>
+        <item>Knighton D. Down</item>
+        <item>Yokel Brisbain</item>
+        <item>Nigel J. Ripper</item>
+        <item>Wendy Eaves</item>
+        <item>Rustle Leafbottom</item>
+        <item>Gladice Nathaniel Rainy</item>
+        <item>Lucy Birdworth McGavin</item>
+        <item>John Peace Rivers</item>
+    </string-array>
     <string-array name="dummy_leagues">
+        <item>A League of Your Own</item>
         <item>Northern Neck</item>
         <item>Iron Hills</item>
         <item>Oxford Township</item>
@@ -25,7 +38,7 @@
         <item>Toe-Pickers Soon-Not-To-Be Anonyous</item>
     </string-array>
     <string-array name="dummy_teams">
-        <item>Killer Yetis</item>
+        <item>Super Nice Yetis</item>
         <item>Savage Messengers</item>
         <item>Red Hot Chili Peppers</item>
         <item>Lightning Bolts</item>
@@ -68,4 +81,7 @@
     </string>
     <string name="placeholder">placeholder</string>
     <string name="string_coaches" />
+    <string name="string_start_a_league">START A LEAGUE</string>
+    <string name="string_edit_a_league">EDIT A LEAGUE</string>
+    <string name="please_choose_sport">Please Choose Sport</string>
 </resources>

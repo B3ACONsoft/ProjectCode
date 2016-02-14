@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-
     private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN_NAME_PASSED";
 
     private TextView textViewAdminEmail;
@@ -30,11 +29,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         Intent intent = getIntent();
         adminName = intent.getStringExtra(ADMIN_KEY);
 
-        textViewAdminEmail = (TextView)findViewById(R.id.textViewLeaguesActivityPassedName);
-        textViewAdminEmail.setTextSize(16);
-        textViewAdminEmail.setText(adminName);
-
-        Spinner spinnerLeagues = (Spinner)findViewById(R.id.leagues_spinner);
+        Spinner spinnerLeagues = (Spinner)findViewById(R.id.spinnerMyLeaguesLeagues);
         ArrayAdapter adapterSpinnerLeagues = ArrayAdapter.createFromResource(getBaseContext(),
                 R.array.dummy_leagues, android.R.layout.simple_spinner_dropdown_item);
         adapterSpinnerLeagues.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -43,7 +38,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         spinnerLeagues.setEnabled(true);
         spinnerLeagues.setSelection(0);
 
-        Spinner spinnerTeams = (Spinner)findViewById(R.id.teams_spinner);
+        Spinner spinnerTeams = (Spinner)findViewById(R.id.spinnerMyLeaguesTeams);
         ArrayAdapter adapterSpinnerTeams = ArrayAdapter.createFromResource(getBaseContext(),
                 R.array.dummy_teams, android.R.layout.simple_spinner_dropdown_item);
         adapterSpinnerTeams.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -52,7 +47,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         spinnerTeams.setEnabled(true);
         spinnerTeams.setSelection(0);
 
-        Spinner spinnerSports = (Spinner)findViewById(R.id.sports_spinner);
+        Spinner spinnerSports = (Spinner)findViewById(R.id.spinnerMyLeaguesSports);
         ArrayAdapter adapterSpinnerSports = ArrayAdapter.createFromResource(getBaseContext(),
                 R.array.dummy_sports, android.R.layout.simple_spinner_dropdown_item);
         adapterSpinnerSports.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -61,6 +56,14 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         spinnerSports.setEnabled(true);
         spinnerSports.setSelection(0);
 
+        Spinner spinnerPlayers = (Spinner)findViewById(R.id.spinnerMyLeaguesPlayers);
+        ArrayAdapter adapterSpinnerPlayers = ArrayAdapter.createFromResource(getBaseContext(),
+                R.array.dummy_players, android.R.layout.simple_spinner_dropdown_item);
+        adapterSpinnerPlayers.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerPlayers.setAdapter(adapterSpinnerPlayers);
+        spinnerPlayers.setOnItemSelectedListener(this);
+        spinnerPlayers.setEnabled(true);
+        spinnerPlayers.setSelection(0);
     }
 
     @Override

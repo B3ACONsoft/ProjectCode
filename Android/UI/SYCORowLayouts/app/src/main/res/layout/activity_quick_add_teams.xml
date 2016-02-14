@@ -81,7 +81,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Create Team"
-                android:id="@+id/buttonAddCoachQuickAddTeams" />
+                android:id="@+id/buttonAddCoachQuickAddTeams"
+                android:onClick="createTeam"/>
         </TableRow>
 
     </TableLayout>
