@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
     private static final String LOGIN_KEY = "beaconsoft.sycorowlayouts.LoginActivity.DUMMY_CREDENTIALS";
-    private static final String EMAIL_KEY = "beaconsoft.sycorowlayours.EMAIL_PASSED";
+    private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN_NAME_PASSED";
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -204,9 +204,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            showProgress(true);
 //            mAuthTask = new UserLoginTask(email, password);
 //            mAuthTask.execute((Void) null);
+
+
+            /*HEY OVER HERE GUYS!!!!!!
+            *
+            * PATRICK THE YETI SAYS I PUT MY NAME HERE BECAUSE THIS IS WHEREABOUTS
+            * WE NEED AUTHENTICATION!!!!! I put my name in here to be returned around the program!
+            *
+            * */
+
+
+
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra(LOGIN_KEY, "ADMIN");
-            intent.putExtra(EMAIL_KEY, email);
+            intent.putExtra(ADMIN_KEY, "Administrator Patrick the Great");
             startActivity(intent);
         }
     }

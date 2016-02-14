@@ -104,7 +104,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ADD TEAM"
+                android:text="QUICK ADD TEAM"
                 android:id="@+id/buttonMyLeaguesAddTeam"
                 android:layout_below="@+id/buttonMyLeaguesAddLeague"
                 android:layout_alignParentLeft="true"
@@ -113,6 +113,7 @@
                 android:layout_toLeftOf="@+id/buttonMyLeaguesEditTeam"
                 android:layout_toStartOf="@+id/buttonMyLeaguesEditTeam"
                 android:layout_weight="1"
+                android:onClick="goToQuickAddTeams"
                 />
 
             <Button
@@ -150,7 +151,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ADD PLAYER"
+                android:text="QUICK ADD PLAYER"
                 android:id="@+id/buttonMyLeaguesAddPlayer"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"

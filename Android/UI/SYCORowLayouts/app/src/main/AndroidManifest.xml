@@ -37,7 +37,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="beaconsoft.sycorowlayouts.MainActivity" />
         </activity>
-        <activity android:name=".QuickAddActivity"></activity>
+        <activity
+            android:name=".QuickAddPlayersActivity"
+            android:label="Quick Add Player"
+            android:parentActivityName=".LeaguesActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
+        </activity>
+
+        <activity android:name=".QuickAddTeamsActivity"
+            android:label="Quick Add Teams"
+            android:parentActivityName=".LeaguesActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
+        </activity>
     </application>
 
 </manifest>

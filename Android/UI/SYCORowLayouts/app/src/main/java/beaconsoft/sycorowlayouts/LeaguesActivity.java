@@ -13,9 +13,10 @@ import android.widget.TextView;
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
 
-    private static final String EMAIL_KEY = "beaconsoft.sycorowlayours.EMAIL_PASSED";
-    private TextView textViewGreeting;
-    private String email;
+    private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN_NAME_PASSED";
+
+    private TextView textViewAdminEmail;
+    private String adminName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +28,11 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         getSupportActionBar().setShowHideAnimationEnabled(true);
 
         Intent intent = getIntent();
-        email = intent.getStringExtra(EMAIL_KEY);
+        adminName = intent.getStringExtra(ADMIN_KEY);
 
-        textViewGreeting = (TextView)findViewById(R.id.textViewLeaguesActivityPassedName);
-        textViewGreeting.setTextSize(40);
-        textViewGreeting.setText(email);
+        textViewAdminEmail = (TextView)findViewById(R.id.textViewLeaguesActivityPassedName);
+        textViewAdminEmail.setTextSize(16);
+        textViewAdminEmail.setText(adminName);
 
         Spinner spinnerLeagues = (Spinner)findViewById(R.id.leagues_spinner);
         ArrayAdapter adapterSpinnerLeagues = ArrayAdapter.createFromResource(getBaseContext(),
@@ -76,8 +77,14 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     }
 
     public void goToAddPlayerFromLeagues(View view){
-        Intent intent = new Intent(getApplicationContext(), QuickAddActivity.class);
-        intent.putExtra(EMAIL_KEY, email);
+        Intent intent = new Intent(getApplicationContext(), QuickAddPlayersActivity.class);
+        intent.putExtra(ADMIN_KEY, adminName);
+        startActivity(intent);
+    }
+
+    public void goToQuickAddTeams(View view){
+        Intent intent = new Intent(getApplicationContext(), QuickAddTeamsActivity.class);
+        intent.putExtra(ADMIN_KEY, adminName);
         startActivity(intent);
     }
 }

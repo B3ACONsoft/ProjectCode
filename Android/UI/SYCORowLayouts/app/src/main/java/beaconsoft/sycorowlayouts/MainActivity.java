@@ -12,9 +12,9 @@ import static beaconsoft.sycorowlayouts.LoginActivity.*;
 public class MainActivity extends AppCompatActivity {
 
     private String permission = "ADMIN";
-    private String email = "";
+    private String adminName = "";
     private String loginLevel;
-    private static final String EMAIL_KEY = "beaconsoft.sycorowlayours.EMAIL_PASSED";
+    private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN_NAME_PASSED";
     private static final String LOGIN_KEY = "beaconsoft.sycorowlayouts.LoginActivity.DUMMY_CREDENTIALS";
 
     @Override
@@ -29,11 +29,11 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intentLogin = getIntent();
         loginLevel = intentLogin.getStringExtra(LOGIN_KEY);
-        email = intentLogin.getStringExtra(EMAIL_KEY);
+        adminName = intentLogin.getStringExtra(ADMIN_KEY);
 
         if(permission.equals(loginLevel)){
 
-            sendToLeaguesActivity(email);
+            sendToLeaguesActivity(adminName);
         }
         else{
             TextView textView = new TextView(this);
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public void sendToLeaguesActivity(String email){
 
         Intent intent = new Intent(this, LeaguesActivity.class);
-        intent.putExtra(EMAIL_KEY, email);
+        intent.putExtra(ADMIN_KEY, email);
         startActivity(intent);
     }
 }

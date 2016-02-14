@@ -43,6 +43,15 @@
         <item>indexOutOfBoundsException: Query too long..</item>
         <item>Just Kidding!!!</item>
     </string-array>
+    <string-array name="dummy_coaches">
+        <item>Oprah</item>
+        <item>Grizzly Adams</item>
+        <item>Donna Summers</item>
+        <item>Alex Trebek</item>
+        <item>Please Not My Dad</item>
+        <item>Albert Capps</item>
+        <item>Che Gueverra</item>
+    </string-array>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
@@ -58,4 +67,5 @@
         completions."
     </string>
     <string name="placeholder">placeholder</string>
+    <string name="string_coaches" />
 </resources>
