@@ -22,6 +22,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leagues);
 
+        /*This makes it pretty*/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setShowHideAnimationEnabled(true);
@@ -47,6 +48,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         spinnerTeams.setEnabled(true);
         spinnerTeams.setSelection(0);
 
+        /*Let it be known, we could do without this...?*/
         Spinner spinnerSports = (Spinner)findViewById(R.id.spinnerMyLeaguesSports);
         ArrayAdapter adapterSpinnerSports = ArrayAdapter.createFromResource(getBaseContext(),
                 R.array.dummy_sports, android.R.layout.simple_spinner_dropdown_item);
