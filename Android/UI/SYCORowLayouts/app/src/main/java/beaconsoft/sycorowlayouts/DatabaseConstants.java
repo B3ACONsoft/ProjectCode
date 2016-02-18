@@ -3,7 +3,7 @@ package beaconsoft.sycorowlayouts;
 import android.provider.BaseColumns;
 
 /**
- * Created by AnalEmbargo on 2/17/2016.
+ * Created by AnalEmbargo on 2/17/2016. Someone's screwy. That's for sure. BACON!
  */
 public final class DatabaseConstants {
 
@@ -49,6 +49,7 @@ public final class DatabaseConstants {
     public static abstract class GAME_SCHEDULE implements BaseColumns {
         public static final String TABLE_NAME = "GAME_SCHEDULE";
         public static final String FIELD_ID = "ID";
+        //need datetime beginning and end
 
     }
 }
