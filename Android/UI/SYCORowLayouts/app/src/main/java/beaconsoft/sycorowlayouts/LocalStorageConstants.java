@@ -10,6 +10,7 @@ package beaconsoft.sycorowlayouts;
 public final class LocalStorageConstants {
 
     //we cant init this class if we define the constructor this way...
+    //great minds think alike
     public LocalStorageConstants() {}
 
     /*

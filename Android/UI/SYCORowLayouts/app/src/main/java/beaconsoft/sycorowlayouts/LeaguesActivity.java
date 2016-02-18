@@ -1,6 +1,8 @@
 package beaconsoft.sycorowlayouts;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -21,7 +23,8 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leagues);
-
+        SQLiteHelper db = new SQLiteHelper(getBaseContext());
+        db.getReadableDatabase();
         /*This makes it pretty*/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);

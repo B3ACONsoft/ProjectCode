@@ -7,9 +7,8 @@ import android.provider.BaseColumns;
  */
 public final class DatabaseConstants {
 
-    //Keep someone from accidentally instantiating the class?
-    public DatabaseConstants() {}
-
+    public static final String DATABASE_NAME = "baconDB";
+    public static final int DATABASE_VERSION = 1;
     //user table
     public static abstract class USER implements BaseColumns {
         public static final String TABLE_NAME = "USER";
