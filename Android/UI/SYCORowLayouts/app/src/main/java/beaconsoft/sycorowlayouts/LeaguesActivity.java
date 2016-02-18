@@ -15,7 +15,7 @@ import android.widget.TextView;
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN_NAME_PASSED";
-
+/*push*/
     private TextView textViewAdminEmail;
     private String adminName;
 
