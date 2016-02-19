@@ -13,7 +13,7 @@ public final class LocalStorageConstants {
     //great minds think alike
     public LocalStorageConstants() {}
 
-    /*
+    /*even more pushy stuff
     Inner class for each table in the db.
     So on, and so forth...
      */
