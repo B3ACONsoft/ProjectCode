@@ -23,8 +23,10 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leagues);
-        SQLiteHelper db = new SQLiteHelper(getBaseContext());
-        db.getReadableDatabase();
+
+        SQLiteHelper dbadapter = new SQLiteHelper(getBaseContext());
+        SQLiteDatabase db = dbadapter.getReadableDatabase();
+
         /*This makes it pretty*/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
