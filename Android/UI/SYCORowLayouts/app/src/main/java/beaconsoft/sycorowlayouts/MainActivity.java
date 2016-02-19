@@ -48,4 +48,6 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(ADMIN_KEY, email);
         startActivity(intent);
     }
+
+
 }

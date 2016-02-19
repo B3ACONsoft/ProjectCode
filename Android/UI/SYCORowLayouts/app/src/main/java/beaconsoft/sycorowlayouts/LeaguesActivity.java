@@ -24,13 +24,15 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leagues);
 
-        SQLiteHelper dbadapter = new SQLiteHelper(getBaseContext());
-        SQLiteDatabase db = dbadapter.getReadableDatabase();
+        try{
+            SQLiteHelper sqlitehelper = new SQLiteHelper(getBaseContext());
+            SQLiteDatabase db = sqlitehelper.getWritableDatabase();
+        }catch(Exception e){
+        }
 
-        /*This makes it pretty*/
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setShowHideAnimationEnabled(true);
+
+        /*This makes it pretty, really, really, pretty*/
+
 
         Intent intent = getIntent();
         adminName = intent.getStringExtra(ADMIN_KEY);

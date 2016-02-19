@@ -7,6 +7,9 @@ import android.provider.BaseColumns;
  */
 public final class DatabaseConstants {
 
+    //global globals
+    public static final String DATABASE_NAME = "baconbase";
+    public static final int DATABASE_VERSION = 1;
     //globals, kind of
     public enum USER_TYPES {ADMIN, COACH, PLAYER};
     public static final String TEXT_TYPE = "TEXT";
@@ -33,6 +36,43 @@ public final class DatabaseConstants {
         public static final String FIELD_TEAM_ID = "TEAM_ID";
         public static final String FIELD_POSITION = "POSITION";             //do players need positions?
     }
+
+    //differntiate on table name
+    /*
+        user)id, position, what else a plyer might have
+     */
+
+    /*
+        function populateTeam(){
+            create table <team name>
+            ...do things here...
+
+        }
+
+
+       SEASON
+            SEASON_ID START_DATE END_DATE
+
+       LEAGUE
+            LEAGUE_ID SEASON_ID LEAGUE_NAME
+
+       TEAM
+            TEAM_ID TEAM_NAME
+
+       ENROLLMENT
+            MEMBER_ID TEAM_ID LEAGUE_ID SEASON_ID USER_ID
+
+       USER
+            USER_ID USER_TYPE EMAIL PHONEID
+
+       ADDRESS
+            ADDRESS_ID STREETADDRESS CITY ZIPCODE
+
+       PHONE
+            PHONE_ID PHONENUMBER
+
+     */
+
 
     public static abstract class COACH  implements BaseColumns {
         public static final String TABLE_NAME = "COACH";
