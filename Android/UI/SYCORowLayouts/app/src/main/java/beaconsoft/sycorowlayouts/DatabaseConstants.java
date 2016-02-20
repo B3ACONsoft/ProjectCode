@@ -43,12 +43,6 @@ public final class DatabaseConstants {
      */
 
     /*
-        function populateTeam(){
-            create table <team name>
-            ...do things here...
-
-        }
-
 
        SEASON
             SEASON_ID START_DATE END_DATE

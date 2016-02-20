@@ -53,12 +53,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
         </activity>
-        <activity android:name=".RegistrationActivity"
+        <activity
+            android:name=".RegistrationActivity"
             android:label="Back to Sign in"
             android:parentActivityName=".LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="beaconsoft.sycorowlayouts.LoginActivity" />
+        </activity>
+        <activity android:name=".UserActivity"
+            android:label="UserActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="beaconsoft.sycorowlayouts.UserActivity" />
         </activity>
     </application>
 
