@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="beaconsoft.sycorowlayouts.UserActivity">
+    tools:context=".UserRosterActivity">
 
 
     <TableRow
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Parents"
+            android:text="Parent Contact Roster"
             android:id="@+id/textViewUserActivityHeader" />
     </TableRow>
 
