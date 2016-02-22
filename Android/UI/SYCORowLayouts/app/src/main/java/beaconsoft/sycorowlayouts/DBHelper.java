@@ -18,8 +18,11 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase database){
-        String query = "CREATE TABLE users   ( user_id TEXT, fname TEXT, lname TEXT, phone TEXT, emergency TEXT, email TEXT, user_type);" +
-                       "CREATE TABLE leagues ( league_id TEXT, league_name TEXT, sport_id TEXT, start_date TEXT, end_date TEXT)";
+
+        String query = "IF EXISTS DROP TABLE users";
+        database.execSQL(query);
+
+        query = "CREATE TABLE users ( user_id TEXT, fname TEXT, lname TEXT, phone TEXT, emergency TEXT, email TEXT, user_type TEXT);";
         database.execSQL(query);
 
     }
@@ -46,7 +49,11 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<HashMap<String, String>> getSQLiteUsers(){
-        String query = "SELECT * FROM users";
+        String query = "";
+
+            query = "SELECT * FROM users";
+
+
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         ArrayList<HashMap<String,String>> usersList = new ArrayList<HashMap<String, String>>();

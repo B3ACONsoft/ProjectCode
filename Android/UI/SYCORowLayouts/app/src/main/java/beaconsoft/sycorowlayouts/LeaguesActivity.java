@@ -14,10 +14,10 @@ import android.widget.TextView;
 
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN_NAME_PASSED";
+    private static final String NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
 /*push*/
     private TextView textViewAdminEmail;
-    private String adminName;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
 
         Intent intent = getIntent();
-        adminName = intent.getStringExtra(ADMIN_KEY);
+        name = intent.getStringExtra(NAME_KEY);
 
         Spinner spinnerLeagues = (Spinner)findViewById(R.id.spinnerMyLeaguesLeagues);
         ArrayAdapter adapterSpinnerLeagues = ArrayAdapter.createFromResource(getBaseContext(),
@@ -90,13 +90,13 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
     public void goToAddPlayerFromLeagues(View view){
         Intent intent = new Intent(getApplicationContext(), QuickAddPlayersActivity.class);
-        intent.putExtra(ADMIN_KEY, adminName);
+        intent.putExtra(NAME_KEY, name);
         startActivity(intent);
     }
 
     public void goToQuickAddTeams(View view){
         Intent intent = new Intent(getApplicationContext(), QuickAddTeamsActivity.class);
-        intent.putExtra(ADMIN_KEY, adminName);
+        intent.putExtra(NAME_KEY, name);
         startActivity(intent);
     }
 }

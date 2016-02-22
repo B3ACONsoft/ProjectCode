@@ -14,28 +14,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".LeaguesActivity"
-            android:label="Back to Sign in"
+            android:label="Administrative Dashboard"
             android:parentActivityName=".MainActivity"
             android:windowActionBar="false">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+
         </activity>
         <activity
             android:name=".LoginActivity"
             android:label="Sign in"
             android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="beaconsoft.sycorowlayouts.MainActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".QuickAddPlayersActivity"
@@ -54,20 +50,20 @@
                 android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
         </activity>
         <activity
-            android:name=".RegistrationActivity"
-            android:label="Back to Sign in"
-            android:parentActivityName=".LoginActivity">
+            android:name=".UserRosterActivity"
+            android:label="Back to Home Screen"
+            android:parentActivityName=".UserHomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="beaconsoft.sycorowlayouts.LoginActivity" />
+                android:value=".UserHomeActivity" />
         </activity>
-        <activity android:name=".UserRosterActivity"
-            android:label="Back to Sign In"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UserRosterActivity" />
+        <activity
+            android:name=".UserHomeActivity"
+            android:label="Back to Sign In">
         </activity>
+        <activity
+            android:name=".CoachHomeActivity"
+            android:label="Coach's Panel"></activity>
     </application>
 
 </manifest>

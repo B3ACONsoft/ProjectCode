@@ -44,8 +44,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    private static final String LOGIN_KEY = "beaconsoft.sycorowlayouts.LoginActivity.DUMMY_CREDENTIALS";
-    private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN_NAME_PASSED";
+    private static final String NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
+    private static final String LEVEL_KEY = "beaconsoft.sycorowlayouts.LEVEL";
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -78,7 +78,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mPasswordView = (EditText) findViewById(R.id.password);
 
-        mEmailView.setText("currin.patrick@yahoo.com");
+        mEmailView.setText("a.a@yahoo.com");
         mPasswordView.setText("password");
 
             mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -102,12 +102,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-    }
-
-    public void goToRegistration(View view){
-        Intent intent = new Intent(this, RegistrationActivity.class);
-        intent.putExtra("emailKey", mEmailView.getText());
-        startActivity(intent);
     }
 
     private void populateAutoComplete() {
@@ -221,13 +215,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             * WE NEED AUTHENTICATION!!!!! I put my name in here to be returned around the program!
             *
             * */
-
-
+            String permissionLevel = "";
+            if(email.equals("a.a@yahoo.com")){
+                permissionLevel = "ADMIN";
+            }else if(email.equals("c.c@yahoo.com")){
+                permissionLevel = "COACH";
+            }else
+                permissionLevel = "USER";
 
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(LOGIN_KEY, "ADMIN");
-            intent.putExtra(ADMIN_KEY, "Patrick Currin: " + email);
+            intent.putExtra(NAME_KEY, email);
+            intent.putExtra(LEVEL_KEY, permissionLevel);
             startActivity(intent);
+            this.finish();
         }
     }
 

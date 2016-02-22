@@ -3,51 +3,55 @@ package beaconsoft.sycorowlayouts;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import static beaconsoft.sycorowlayouts.LoginActivity.*;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String permission = "ADMIN";
-    private String adminName = "";
-    private String loginLevel;
-    private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN_NAME_PASSED";
-    private static final String LOGIN_KEY = "beaconsoft.sycorowlayouts.LoginActivity.DUMMY_CREDENTIALS";
+    private String permission;
+    private String name;
+    private static final String NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
+    private static final String LEVEL_KEY = "beaconsoft.sycorowlayouts.LEVEL";
+    private static final String ADMIN = "ADMIN";
+    private static final String COACH = "COACH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        if(savedInstanceState == null) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
 
         Intent intentLogin = getIntent();
-        loginLevel = intentLogin.getStringExtra(LOGIN_KEY);
-        adminName = intentLogin.getStringExtra(ADMIN_KEY);
-
-        if(permission.equals(loginLevel)){
-
-            sendToLeaguesActivity(adminName);
-        }
-        else{
-            TextView textView = new TextView(this);
-            textView.setTextSize(64);
-            textView.setText("NOT YETI!!!");
+        name = intentLogin.getStringExtra(NAME_KEY);
+        permission = intentLogin.getStringExtra(LEVEL_KEY);
+        switch (permission) {
+            case ADMIN:
+                sendToLeaguesActivity(name);
+                break;
+            case COACH:
+                sendToCoachHomeActivity(name);
+                break;
+            default:
+                sendToUserHomeActivity(name);
+                break;
         }
     }
 
-    public void sendToLeaguesActivity(String email){
-
-        Intent intent = new Intent(this, LeaguesActivity.class);
-        intent.putExtra(ADMIN_KEY, email);
+    public void sendToUserHomeActivity(String name) {
+        Intent intent = new Intent(this, UserHomeActivity.class);
+        intent.putExtra(NAME_KEY, name);
         startActivity(intent);
     }
 
+    public void sendToLeaguesActivity(String name){
 
+        Intent intent = new Intent(this, LeaguesActivity.class);
+        intent.putExtra(NAME_KEY, name);
+        startActivity(intent);
+    }
+
+    public void sendToCoachHomeActivity(String name){
+
+        Intent intent = new Intent(this, CoachHomeActivity.class);
+        intent.putExtra(NAME_KEY, name);
+        startActivity(intent);
+    }
 }
