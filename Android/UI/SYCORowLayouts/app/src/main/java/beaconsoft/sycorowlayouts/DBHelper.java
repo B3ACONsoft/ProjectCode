@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,24 +14,119 @@ import java.util.HashMap;
  */
 public class DBHelper extends SQLiteOpenHelper {
 
+    static final String DB_NAME = "bacon";
+
+    static final String ENROLLMENT_TABLE = "enrollment";
+    static final String      EVENT_TABLE = "event";
+    static final String      PLACE_TABLE = "place";
+    static final String ATTENDANCE_TABLE = "attendance";
+    static final String     PLAYER_TABLE = "player";
+    static final String       TEAM_TABLE = "team";
+    static final String      USERS_TABLE = "users";
+    static final String     LEAGUE_TABLE = "league";
+    static final String      SPORT_TABLE = "sport";
+
+    static final String TAG = "HERE";
+
     public DBHelper(Context applicationContext){
-        super(applicationContext, "user.db", null, 1);
+        super(applicationContext, DB_NAME + ".db", null, 1);
     }
 
-    public void onCreate(SQLiteDatabase database){
+    @Override
+    public void onCreate(SQLiteDatabase db){
 
-        String query = "IF EXISTS DROP TABLE users";
-        database.execSQL(query);
+        Log.v(TAG, "BLaaaaaam!!!");
 
-        query = "CREATE TABLE users ( user_id TEXT, fname TEXT, lname TEXT, phone TEXT, emergency TEXT, email TEXT, user_type TEXT);";
-        database.execSQL(query);
+        db.execSQL("DROP TABLE IF EXISTS " + ENROLLMENT_TABLE  + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + ATTENDANCE_TABLE  + ";");
+        db.execSQL("DROP TABLE IF EXISTS " +      EVENT_TABLE  + ";");
+        db.execSQL("DROP TABLE IF EXISTS " +      PLACE_TABLE  + ";");
+        db.execSQL("DROP TABLE IF EXISTS " +     PLAYER_TABLE  + ";");
+        db.execSQL("DROP TABLE IF EXISTS " +       TEAM_TABLE  + ";");
+        db.execSQL("DROP TABLE IF EXISTS " +      USERS_TABLE  + ";");
+        db.execSQL("DROP TABLE IF EXISTS " +     LEAGUE_TABLE  + ";");
+        db.execSQL("DROP TABLE IF EXISTS " +      SPORT_TABLE  + ";");
 
+        db.execSQL("CREATE TABLE " + SPORT_TABLE + " (" +
+                        "  sport_id    INTEGER PRIMARY KEY," +
+                        "  sport_name  TEXT)");
+
+        db.execSQL("CREATE TABLE " + LEAGUE_TABLE + " (" +
+                        "  league_id   INTEGER PRIMARY KEY," +
+                        "  league_name TEXT," +
+                        "  sport_id    INTEGER," +
+                        "  min_age     INTEGER," +
+                        "  max_age     INTEGER," +
+                        "  start_date  TEXT," +
+                        "  end_date    TEXT)");
+
+
+        db.execSQL("CREATE TABLE " + TEAM_TABLE + " (" +
+                        "  team_id     INTEGER PRIMARY KEY," +
+                        "  league_id   INTEGER," +
+                        "  team_name   TEXT," +
+                        "  user_id     INTEGER)");
+
+
+        db.execSQL("CREATE TABLE " + USERS_TABLE + " (" +
+                        "  user_id   INTEGER PRIMARY KEY," +
+                        "  fname     TEXT," +
+                        "  lname     TEXT," +
+                        "  phone     INTEGER," +
+                        "  emergency INTEGER," +
+                        "  email     TEXT," +
+                        "  user_type TEXT," +
+                        "  pass      TEXT)");
+
+
+        db.execSQL("CREATE TABLE " + PLAYER_TABLE + "(" +
+                        "  player_id INTEGER PRIMARY KEY," +
+                        "  fname     TEXT," +
+                        "  lname     TEXT," +
+                        "  user_id   INTEGER)");
+
+        db.execSQL("CREATE TABLE " + ENROLLMENT_TABLE + " (" +
+                        "  enrollment_id   INTEGER PRIMARY KEY," +
+                        "  user_id         INTEGER," +
+                        "  player_id       INTEGER," +
+                        "  team_id         INTEGER," +
+                        "  league_id       INTEGER," +
+                        "  enrollment_date TEXT," +
+                        "  fee             INTEGER)");
+
+        db.execSQL("CREATE TABLE " + PLACE_TABLE + "(" +
+                        "  place_id       INTEGER PRIMARY KEY," +
+                        "  place_name     TEXT," +
+                        "  street_address TEXT," +
+                        "  city           TEXT," +
+                        "  state          TEXT," +
+                        "  zip            INTEGER)");
+
+
+        db.execSQL("CREATE TABLE " + EVENT_TABLE + "(" +
+                        "  event_id        INTEGER PRIMARY KEY," +
+                        "  event_type      TEXT," +
+                        "  start_date_time TEXT," +
+                        "  place_id        INTEGER," +
+                        "  home_team_id    INTEGER," +
+                        "  away_team_id    INTEGER)");
+
+        db.execSQL("CREATE TABLE " + ATTENDANCE_TABLE + "(" +
+                        "  attendance_id INTEGER PRIMARY KEY," +
+                        "  event_id INTEGER," +
+                        "  user_id  INTEGER," +
+                        "  status   TEXT," +
+                        "  message  TEXT)");
+        db.execSQL("BEGIN TRANSACTION;" +
+                "INSERT INTO users VALUES(NULL, 'HENRY A.', 'JOHNSON', 5434327890, 2323548302, 'IMNOTRESPONSIBLEFORTHETEES@SORRY.COM', 'ADMIN', 'PASS');" +
+
+                 "COMMIT;" );
+        Log.v(TAG, "BLaaaaaam!!!");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String query = "DROP TABLE IF EXISTS users";
-        db.execSQL(query);
+
         onCreate(db);
     }
 
@@ -51,7 +147,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public ArrayList<HashMap<String, String>> getSQLiteUsers(){
         String query = "";
 
-            query = "SELECT * FROM users";
+        query = "SELECT * FROM users";
 
 
         SQLiteDatabase db = getWritableDatabase();

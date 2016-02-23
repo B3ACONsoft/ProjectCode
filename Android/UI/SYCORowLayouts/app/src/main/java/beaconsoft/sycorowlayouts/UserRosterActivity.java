@@ -1,6 +1,7 @@
 package beaconsoft.sycorowlayouts;
 
 import android.app.ProgressDialog;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,24 +23,15 @@ public class UserRosterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_roster);
 
-        DBHelper helper = new DBHelper(this);
-        String query;
-
-        query = "INSERT INTO users VALUES ('1', 'PATRICK', 'CURRIN', '(919)693-2121', '(919)693-8011', 'CURRIN.PATRICK@YAHOO.COM', 'ADMIN')";
-        helper.getWritableDatabase().execSQL(query);
-        query = "INSERT INTO users VALUES ('2', 'KATY', 'PERRY', '(919)345-6543', '(919)456-7894', 'KATY@PERRY.COM', 'USER')";
-        helper.getWritableDatabase().execSQL(query);
-
 
         rosterList = helper.getSQLiteUsers();
         ListView testView = (ListView)findViewById(R.id.listViewUserActivityTest);
         ListAdapter adapter = new SimpleAdapter(UserRosterActivity.this, rosterList, R.layout.list_view_users_row_layout,
-                new String[] {  "fname", "lname", "phone" },
+                new String[] {  "user_id", "lname", "phone" },
                 new int[]    {  R.id.testfname, R.id.testlname, R.id.testphone});
         testView.setVisibility(View.VISIBLE);
         testView.setAdapter(adapter);
 
-        helper.getWritableDatabase().delete("users", null, null);
 
 
     }
