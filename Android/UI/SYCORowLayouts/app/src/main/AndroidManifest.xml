@@ -25,7 +25,7 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="Sign in"
+            android:label="Super Yeti Coach"
             android:parentActivityName=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,7 +59,7 @@
         </activity>
         <activity
             android:name=".UserHomeActivity"
-            android:label="Back to Sign In">
+            android:label="Users Home Panel">
         </activity>
         <activity
             android:name=".CoachHomeActivity"
