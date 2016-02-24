@@ -1,6 +1,7 @@
 package beaconsoft.sycorowlayouts;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,12 +13,17 @@ import java.util.HashMap;
 
 public class QuickAddPlayersActivity extends AppCompatActivity {
 
+    DBHelper helper;
+
     private static final String ADMIN_KEY =  "beaconsoft.sycorowlayouts.ADMIN_NAME_PASSED";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_players);
+
+        SQLiteDatabase db = helper.getWritableDatabase();
+        db.execSQL(new String(" ")); /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<Start here and go nuts!!!! */
 
         TextView textViewAdminEmail = (TextView)findViewById(R.id.textViewQAAdminEmail);
         Intent intent = getIntent();
@@ -29,7 +35,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
     public void quickAddPlayer(View view){
         HashMap<String, String> hashMapQuickAddPlayer = new HashMap<>();
         EditText et1 = (EditText) findViewById(R.id.editTextChildFirst);
-        hashMapQuickAddPlayer.put("keyChildFirst", et1.toString());
+        hashMapQuickAddPlayer.put("keyChildFirst", et1.toString()); /*<<<<<<<<<<<<<< child should be player */
         EditText et2 = (EditText) findViewById(R.id.editTextChildLast);
         hashMapQuickAddPlayer.put("keyChildLast", et2.toString());
         EditText et3 = (EditText) findViewById(R.id.editTextContactFirst);
