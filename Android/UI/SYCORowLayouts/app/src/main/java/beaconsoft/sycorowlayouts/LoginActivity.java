@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    private static final String NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
+    private static final String EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String LEVEL_KEY = "beaconsoft.sycorowlayouts.LEVEL";
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -78,8 +78,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mPasswordView = (EditText) findViewById(R.id.password);
 
-        mEmailView.setText("a.a@yahoo.com");
-        mPasswordView.setText("password");
+        mEmailView.setText("a.a@yahoo.com");  /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+        mPasswordView.setText("password");   /* a.a@yahoo.com = ADMIN, JURASSIC@PARK.AAH = COACH anything else is user   */
 
             mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -216,15 +216,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             *
             * */
             String permissionLevel = "";
-            if(email.equals("a.a@yahoo.com")){
+            if(email.equalsIgnoreCase("a.a@yahoo.com")){
                 permissionLevel = "ADMIN";
-            }else if(email.equals("c.c@yahoo.com")){
+            }else if(email.equalsIgnoreCase("JURASSIC@PARK.AAH")){
                 permissionLevel = "COACH";
             }else
                 permissionLevel = "USER";
 
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(NAME_KEY, email);
+            intent.putExtra(EMAIL_KEY, email);
             intent.putExtra(LEVEL_KEY, permissionLevel);
             startActivity(intent);
             this.finish();
