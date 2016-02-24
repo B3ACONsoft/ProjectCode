@@ -57,7 +57,7 @@ public class ConnectToBacon
                 i = true;
                 break;
             default:
-                throw new Exception("ConnectToBacon: INVAID COMMAND");
+                throw new Exception("ConnectToBacon: INVALID COMMAND");
         }
         //is it a valid table?
         if(i) {
