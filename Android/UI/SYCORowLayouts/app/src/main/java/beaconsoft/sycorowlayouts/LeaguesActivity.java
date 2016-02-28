@@ -11,31 +11,38 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private static final String NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
+    private static final String  NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
+    private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
+    private static final String EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
+    private DBHelper helper = new DBHelper(this);
+
 /*push*/
     private TextView textViewAdminEmail;
     private String name;
+    private String adminId;
+    private String email;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leagues);
 
-        try{
-            SQLiteHelper sqlitehelper = new SQLiteHelper(getBaseContext());
-            SQLiteDatabase db = sqlitehelper.getWritableDatabase();
-        }catch(Exception e){
-        }
-
-
-        /*This makes it pretty, really, really, pretty*/
+        SQLiteDatabase db = helper.getReadableDatabase();
 
 
         Intent intent = getIntent();
         name = intent.getStringExtra(NAME_KEY);
+        adminId = intent.getStringExtra(ADMIN_KEY);
+        email = intent.getStringExtra(EMAIL_KEY);
+
+        TextView textViewLeaguesEmail = (TextView)findViewById(R.id.textViewLeagueEmail);
+        TextView textViewLeaguesAdmin = (TextView)findViewById(R.id.textViewPromptChooseSport);
+        textViewLeaguesEmail.setText(email);
+        textViewLeaguesAdmin.setText(name + ", please choose a sport...");
+
 
         Spinner spinnerLeagues = (Spinner)findViewById(R.id.spinnerMyLeaguesLeagues);
         ArrayAdapter adapterSpinnerLeagues = ArrayAdapter.createFromResource(getBaseContext(),
