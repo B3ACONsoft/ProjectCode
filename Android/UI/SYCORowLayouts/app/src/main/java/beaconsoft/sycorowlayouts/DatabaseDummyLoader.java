@@ -5,15 +5,18 @@ package beaconsoft.sycorowlayouts;
  */
 public class DatabaseDummyLoader {
 
-    public static String[] boom = {"INSERT INTO sport (sport_id, sport_name) VALUES (NULL, 'SOCCER');"
+    public static String[] boom = {
+
+             "INSERT INTO users VALUES(NULL, 'HENRY', 'JOHNSON', 5434327890, 2323548302, 'HENRYJ@LOVEMEAYETI.NET', 'ADMIN', 'PASS');"
+            ,"INSERT INTO sport (sport_id, sport_name) VALUES (NULL, 'SOCCER');"
             ,"INSERT INTO sport (sport_id, sport_name) VALUES (NULL, 'FOOTBALL');"
             ,"INSERT INTO sport (sport_id, sport_name) VALUES (NULL, 'BASKETBALL');"
             ,"INSERT INTO sport (sport_id, sport_name) VALUES (NULL, 'POLO');"
             ,"INSERT INTO sport (sport_id, sport_name) VALUES (NULL, 'TENNIS');"
-            ,"INSERT INTO league VALUES (NULL, 'OXFORD PARKS AND RECREATION', 1, 4, 6, '15-MAR-2016', '15-JUN-2016');"
-            ,"INSERT INTO league VALUES (NULL, 'DURHAM KICKERS', 1, 7, 9, '15-MAR-2016', '15-JUN-2016');"
-            ,"INSERT INTO league VALUES (NULL, 'GELA PARK SERVICE', 1, 10, 12, '15-MAR-2016', '15-JUN-2016');"
-            ,"INSERT INTO league VALUES (NULL, 'STOVALL-SHAW COMPETITIVE SPITTERS', 1, 13, 15, '15-MAR-2016', '15-JUN-2016'); "
+            ,"INSERT INTO league VALUES (NULL, 1, 'OXFORD PARKS AND RECREATION', 1, 4, 6, '15-MAR-2016', '15-JUN-2016');"
+            ,"INSERT INTO league VALUES (NULL, 1, 'DURHAM KICKERS', 2, 7, 9, '15-MAR-2016', '15-JUN-2016');"
+            ,"INSERT INTO league VALUES (NULL, 1, 'GELA PARK SERVICE', 3, 10, 12, '15-MAR-2016', '15-JUN-2016');"
+            ,"INSERT INTO league VALUES (NULL, 1, 'STOVALL-SHAW COMPETITIVE SPITTERS', 4, 13, 15, '15-MAR-2016', '15-JUN-2016'); "
             ,"INSERT INTO users VALUES(NULL, 'COUNT', 'BASSY', 2548752145, 5326547852, 'BANGSOUNDTHORUGHD@WINDA.NET', 'COACH', 'PASS');"
             ,"INSERT INTO users VALUES(NULL, 'SAM', 'NEIL', 9191594896, 1548693584, 'JURASSIC@PARK.AAH', 'COACH', 'PASS');"
             ,"INSERT INTO users VALUES(NULL, 'PAT', 'COX', 9196934563, 7645378909, 'PAT.COX@MINEFIELDBIRD.NET', 'COACH', 'PASS');"
@@ -31,8 +34,7 @@ public class DatabaseDummyLoader {
             ,"INSERT INTO team VALUES(NULL, 3, 'LAKERS', 3);"
             ,"INSERT INTO team VALUES(NULL, 3, 'KNICKS', 3);"
             ,"INSERT INTO team VALUES(NULL, 4, 'PICKEDLASTS', 4);"
-            ,"INSERT INTO users VALUES(NULL, 'HENRY A.', 'JOHNSON', 5434327890, 2323548302, 'IMNOTRESPONSIBLEFORTHETEES@SORRY.COM', 'ADMIN', 'PASS');"
-            ,"INSERT INTO users VALUES(NULL, 'PATRICK', 'CURRIN', 9196932121, 9196938011, 'CURRIN.PATRICK@YAHOO.COM', 'ADMIN','PASS');"
+
             ,"INSERT INTO users VALUES(NULL, 'PATRICIA', 'ARQUETTE', 9195772938, 8488372987, 'PATARQ@GODADDY.COM', 'USER','PASS');"
             ,"INSERT INTO users VALUES(NULL, 'TIMOTHY', 'SWEET', 5684596325, 5467913468, 'HOTDUDE@SMELLSLIKEBACON.NET', 'USER','PASS');"
             ,"INSERT INTO users VALUES(NULL, 'SNARKY', 'PARENT', 5847856983, 1485214852, 'IGAVEBIRTHTOSATAN@HITLERYOUTH.EDU', 'USER','PASS');"
