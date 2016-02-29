@@ -49,24 +49,24 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE " + SPORT_TABLE + " (" +
                         "  sport_id    INTEGER PRIMARY KEY," +
-                        "  sport_name  TEXT)");
+                        "  sport_name  TEXT);");
 
         db.execSQL("CREATE TABLE " + LEAGUE_TABLE + " (" +
                         "  league_id   INTEGER PRIMARY KEY," +
-                        "  user_id     TEXT," +
+                        "  user_id     INTEGER," +
                         "  league_name TEXT," +
                         "  sport_id    INTEGER," +
                         "  min_age     INTEGER," +
                         "  max_age     INTEGER," +
                         "  start_date  TEXT," +
-                        "  end_date    TEXT)");
+                        "  end_date    TEXT);");
 
 
         db.execSQL("CREATE TABLE " + TEAM_TABLE + " (" +
                         "  team_id     INTEGER PRIMARY KEY," +
                         "  league_id   INTEGER," +
                         "  team_name   TEXT," +
-                        "  user_id     INTEGER)");
+                        "  user_id     INTEGER);");
 
 
         db.execSQL("CREATE TABLE " + USERS_TABLE + " (" +
@@ -77,14 +77,14 @@ public class DBHelper extends SQLiteOpenHelper {
                         "  emergency INTEGER," +
                         "  email     TEXT," +
                         "  user_type TEXT," +
-                        "  pass      TEXT)");
+                        "  pass      TEXT);");
 
 
         db.execSQL("CREATE TABLE " + PLAYER_TABLE + "(" +
                         "  player_id INTEGER PRIMARY KEY," +
                         "  fname     TEXT," +
                         "  lname     TEXT," +
-                        "  user_id   INTEGER)");
+                        "  user_id   INTEGER);");
 
         db.execSQL("CREATE TABLE " + ENROLLMENT_TABLE + " (" +
                         "  enrollment_id   INTEGER PRIMARY KEY," +
@@ -93,7 +93,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         "  team_id         INTEGER," +
                         "  league_id       INTEGER," +
                         "  enrollment_date TEXT," +
-                        "  fee             INTEGER)");
+                        "  fee             INTEGER);");
 
         db.execSQL("CREATE TABLE " + PLACE_TABLE + "(" +
                         "  place_id       INTEGER PRIMARY KEY," +
@@ -101,7 +101,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         "  street_address TEXT," +
                         "  city           TEXT," +
                         "  state          TEXT," +
-                        "  zip            INTEGER)");
+                        "  zip            INTEGER);");
 
 
         db.execSQL("CREATE TABLE " + EVENT_TABLE + "(" +
@@ -110,19 +110,17 @@ public class DBHelper extends SQLiteOpenHelper {
                         "  start_date_time TEXT," +
                         "  place_id        INTEGER," +
                         "  home_team_id    INTEGER," +
-                        "  away_team_id    INTEGER)");
+                        "  away_team_id    INTEGER);");
 
         db.execSQL("CREATE TABLE " + ATTENDANCE_TABLE + "(" +
                         "  attendance_id INTEGER PRIMARY KEY," +
                         "  event_id INTEGER," +
                         "  user_id  INTEGER," +
                         "  status   TEXT," +
-                        "  message  TEXT)");
-        db.execSQL("BEGIN TRANSACTION;" +
-                "INSERT INTO users VALUES(NULL, 'HENRY A.', 'JOHNSON', 5434327890, 2323548302, 'IMNOTRESPONSIBLEFORTHETEES@SORRY.COM', 'ADMIN', 'PASS');" +
+                        "  message  TEXT);");
 
-                 "COMMIT;" );
-        Log.v(TAG, "BLaaaaaam!!!");
+
+
     }
 
     @Override

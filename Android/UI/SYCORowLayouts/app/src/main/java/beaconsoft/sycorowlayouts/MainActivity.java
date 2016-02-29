@@ -20,12 +20,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String NAME_KEY  = "beaconsoft.sycorowlayouts.NAME";
     private static final String ADMIN = "ADMIN";
     private static final String COACH = "COACH";
-    private DBHelper helper = new DBHelper(this);
+    DBHelper helper = new DBHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         SQLiteDatabase db = helper.getWritableDatabase();
         db.beginTransaction();
         for(String q: DatabaseDummyLoader.boom){
@@ -84,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(ADMIN_KEY, adminId);
         intent.putExtra(NAME_KEY, name);
         startActivity(intent);
+        cursor.close();
+        db.close();
     }
 
     public void sendToCoachHomeActivity(String email){
