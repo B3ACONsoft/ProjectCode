@@ -4,6 +4,9 @@
     <string name="button_send">Send</string>
     <string name="edit_message">Enter a Message</string>
     <string name="title_activity_leagues">My Leagues</string>
+    <string-array name="noLeague">
+        <item>"You should make a new League!"</item>
+    </string-array>
     <string-array name="dummy_players">
         <item>Patrick Currin</item>
         <item>Bonita Bryant</item>
