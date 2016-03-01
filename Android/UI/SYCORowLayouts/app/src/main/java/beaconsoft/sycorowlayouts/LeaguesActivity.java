@@ -18,9 +18,12 @@ import java.util.Map;
 
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private static final String  NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
-    private static final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
-    private static final String EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
+    private static final String   NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
+    private static final String  ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
+    private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
+    private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
+    private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
+
     private DBHelper helper = new DBHelper(this);
 
 /*push*/
@@ -73,6 +76,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         name = intent.getStringExtra(NAME_KEY);
         email = intent.getStringExtra(EMAIL_KEY);
         adminId = intent.getStringExtra(ADMIN_KEY);
+        currentAdmin = Integer.parseInt(adminId);
         db = helper.getReadableDatabase();
 
         /*Set text in the headers for the administrator */
@@ -379,7 +383,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
             spinnerUsers.setEnabled(false);
         }
         cursor.close();
-        
+
     }
 
     private void onSpinnerUsersChange(String choiceUser){
@@ -404,8 +408,13 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
     public void goToAddPlayerFromLeagues(View view){
         Intent intent = new Intent(getApplicationContext(), QuickAddPlayersActivity.class);
-        intent.putExtra(NAME_KEY, name);
+        intent.putExtra(  NAME_KEY, name);
+        intent.putExtra( ADMIN_KEY, currentAdmin  + "");
+        intent.putExtra(LEAGUE_KEY, currentLeague + "");
+        intent.putExtra(  TEAM_KEY, currentTeam   + "");
+        intent.putExtra( EMAIL_KEY, email);
         startActivity(intent);
+        db.close();
     }
 
     public void goToQuickAddTeams(View view){
