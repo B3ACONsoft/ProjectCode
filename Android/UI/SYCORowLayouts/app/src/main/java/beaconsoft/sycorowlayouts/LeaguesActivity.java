@@ -73,8 +73,6 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         name = intent.getStringExtra(NAME_KEY);
         email = intent.getStringExtra(EMAIL_KEY);
         adminId = intent.getStringExtra(ADMIN_KEY);
-        currentAdmin = Integer.parseInt(adminId);
-
         db = helper.getReadableDatabase();
 
         /*Set text in the headers for the administrator */
@@ -86,7 +84,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         /* Call the database and ask for the sports we have leagues for, insert into the first spinner
         * through a series of arraylists and a hashmap */
 
-
+        spinnerSports = (Spinner) findViewById(R.id.spinnerMyLeaguesSports);
         hashMapSports = new HashMap<>();
         sportNameArrayList = new ArrayList<String>();
         sportIdArrayList = new ArrayList<Integer>();
@@ -97,21 +95,9 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 sportNameArrayList.add(cursor.getString(cursor.getColumnIndexOrThrow("sport_name")));
                 hashMapSports.put(cursor.getString(cursor.getColumnIndexOrThrow("sport_name")), cursor.getInt(cursor.getColumnIndexOrThrow("sport_id")));
             } while (cursor.moveToNext());
-        }else{
-            for(View tchbls : spinnerLeagues.getTouchables() ) {
-                tchbls.setEnabled(false);
-            }
-            for(View tchbls : spinnerTeams.getTouchables() ) {
-                tchbls.setEnabled(false);
-            }
-            for(View tchbls : spinnerUsers.getTouchables() ) {
-                tchbls.setEnabled(false);
-            }
         }
         cursor.close();
 
-
-        spinnerSports = (Spinner) findViewById(R.id.spinnerMyLeaguesSports);
         adapterSpinnerSports = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, sportNameArrayList.toArray());
         adapterSpinnerSports.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSports.setAdapter(adapterSpinnerSports);
@@ -121,14 +107,14 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
         /* Find the initial current sport and use it to load the next spinner, leagues */
         currentSport = sportIdArrayList.get(0);
-        System.out.println("Sport:" + currentSport);
-        //textViewLeaguesEmail.setText(new Integer(currentSport).toString());
-        //
+
+        spinnerLeagues = (Spinner) findViewById(R.id.spinnerMyLeaguesLeagues);
+
         leagueIdArrayList = new ArrayList<>();
         leagueNameArrayList = new ArrayList<>();
         hashMapLeagues = new HashMap<>();
         cursor = db.rawQuery("SELECT league_id, league_name FROM league WHERE sport_id = " + currentSport + " AND user_id = " + adminId, null);
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToFirst() && ((cursor != null) && (cursor.getCount()>0))) {
             do {
                 leagueIdArrayList.clear();
                 leagueNameArrayList.clear();
@@ -138,13 +124,12 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 leagueIdArrayList.add(cursor.getInt(cursor.getColumnIndexOrThrow("league_id")));
                 leagueNameArrayList.add(cursor.getString(cursor.getColumnIndexOrThrow("league_name")));
             } while (cursor.moveToNext());
+
         }
 
         currentLeague = leagueIdArrayList.get(0);
-        System.out.println(currentLeague);
         cursor.close();
 
-        spinnerLeagues = (Spinner) findViewById(R.id.spinnerMyLeaguesLeagues);
         adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, leagueNameArrayList);
         adapterSpinnerLeagues.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLeagues.setAdapter(adapterSpinnerLeagues);
@@ -155,7 +140,10 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         teamIdArrayList = new ArrayList<>();
         teamNameArrayList = new ArrayList<>();
         hashMapTeams = new HashMap<>();
-        cursor = db.rawQuery("SELECT team_id, team_name FROM team WHERE league_id = " + currentLeague + ";", null);
+
+        cursor = db.rawQuery("SELECT team_id, team_name " +
+                              " FROM team " + " " +
+                             " WHERE league_id = " + currentLeague + ";", null);
         if (cursor.moveToFirst()) {
             do {
                 hashMapTeams.put(cursor.getString(cursor.getColumnIndexOrThrow("team_name")), cursor.getInt(cursor.getColumnIndexOrThrow("team_id")));
@@ -177,10 +165,12 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         cursor = db.rawQuery("SELECT e.user_id, u.fname, u.lname FROM enrollment e, users u " +
                              " WHERE e.team_id = " + currentTeam +
                              "   AND e.user_id = u.user_id;", null);
+        spinnerUsers = (Spinner) findViewById(R.id.spinnerMyLeaguesPlayers);
         userIdArrayList = new ArrayList<>();
         userNameArrayList = new ArrayList<>();
         hashMapUsers = new HashMap<>();
-        if (cursor.moveToFirst()){
+
+        if (cursor.moveToFirst() && ((cursor != null) && (cursor.getCount()>0)) ){
             do {
                 hashMapUsers.put(cursor.getString(cursor.getColumnIndexOrThrow("fname")) + " " + cursor.getString(cursor.getColumnIndexOrThrow("lname")),
                         cursor.getInt(cursor.getColumnIndexOrThrow("user_id")));
@@ -188,12 +178,12 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 userNameArrayList.add(cursor.getString(cursor.getColumnIndexOrThrow("fname")) + " " +
                         cursor.getString(cursor.getColumnIndexOrThrow("lname")));
             } while (cursor.moveToNext());
+            currentUser = userIdArrayList.get(0);
+            adapterSpinnerUsers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,
+                    userNameArrayList);
         }
         cursor.close();
 
-        spinnerUsers = (Spinner) findViewById(R.id.spinnerMyLeaguesPlayers);
-        adapterSpinnerUsers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,
-                userNameArrayList);
         adapterSpinnerUsers.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerUsers.setAdapter(adapterSpinnerUsers);
         spinnerUsers.setOnItemSelectedListener(this);
@@ -201,26 +191,73 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         spinnerUsers.setSelection(0);
     }
 
+    private void unlockViews(){
+        for(View foo: spinnerUsers.getTouchables()){
+            foo.setEnabled(true);
+            foo.setClickable(true);
+        }
+        for(View foo: spinnerTeams.getTouchables()) {
+            foo.setEnabled(true);
+            foo.setClickable(true);
+        }
+        for(View foo: spinnerLeagues.getTouchables()) {
+            foo.setEnabled(true);
+            foo.setClickable(true);
+        }
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String choice = parent.getItemAtPosition(position).toString();
 
 
-        if(parent == spinnerSports){
+        if(parent == spinnerSports ){
+            for(View foo: spinnerLeagues.getTouchables()) {
+                foo.setEnabled(true);
+                foo.setClickable(true);
+            }
             onSpinnerSportsChange(choice);
-        }else if(parent == spinnerLeagues){
+        }
+        if(parent == spinnerLeagues){
+
+            for(View foo: spinnerTeams.getTouchables()) {
+                foo.setEnabled(true);
+                foo.setClickable(true);
+            }
             onSpinnerLeaguesChange(choice);
-        }else if(parent == spinnerTeams){
+        }
+        if(parent == spinnerTeams){
+            for(View foo: spinnerUsers.getTouchables()) {
+                foo.setEnabled(true);
+                foo.setClickable(true);
+            }
             onSpinnerTeamsChange(choice);
-        }else if(parent == spinnerUsers){
+        }
+        if(parent == spinnerUsers){
             onSpinnerUsersChange(choice);
         }
+
+
+
     }
 
     private void onSpinnerSportsChange(String choiceSportName){
         currentSport = hashMapSports.get(choiceSportName);
-        cursor = db.rawQuery("SELECT league_id, league_name FROM league WHERE sport_id = " + currentSport + " AND user_id = " + adminId, null);
-        if ((cursor.getCount() > 0) && cursor.moveToFirst()) {
+        cursor = db.rawQuery("SELECT l.league_id, l.league_name FROM league l, sport s WHERE s.sport_id = " + currentSport + " AND l.user_id = " + adminId + " AND s.sport_id = l.sport_id;", null);
+        for(View foo: spinnerUsers.getTouchables()){
+            foo.setClickable(true);
+            foo.setEnabled(true);
+        }
+        for(View foo: spinnerTeams.getTouchables()){
+            foo.setClickable(true);
+            foo.setEnabled(true);
+        }
+        for(View foo: spinnerLeagues.getTouchables()){
+            foo.setClickable(true);
+            foo.setEnabled(true);
+        }
+        if (cursor.moveToFirst() && ((cursor != null) && (cursor.getCount()>0))) {
+
             leagueIdArrayList.clear();
             leagueNameArrayList.clear();
             hashMapLeagues.clear();
@@ -230,28 +267,50 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 hashMapLeagues.put(cursor.getString(cursor.getColumnIndexOrThrow("league_name")), cursor.getInt(cursor.getColumnIndexOrThrow("league_id")));
 
             } while (cursor.moveToNext());
-            spinnerLeagues.setEnabled(true);
             adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, leagueNameArrayList.toArray());
-            spinnerLeagues.setAdapter(adapterSpinnerLeagues);
-            spinnerLeagues.setSelection(0);
+
             currentLeague = hashMapLeagues.get(leagueNameArrayList.get(0));
+            spinnerLeagues.setAdapter(adapterSpinnerLeagues);
+            spinnerLeagues.setOnItemSelectedListener(this);
+            spinnerLeagues.setEnabled(true);
+            spinnerLeagues.setSelection(0);
+
         } else {
-            adapterSpinnerSports = ArrayAdapter.createFromResource(getBaseContext(), R.array.noLeague, android.R.layout.simple_spinner_dropdown_item);
-            spinnerLeagues.setClickable(false);
-            spinnerTeams.setClickable(false);
-            spinnerUsers.setClickable(false);
+            for(View foo: spinnerLeagues.getTouchables()){
+                foo.setEnabled(false);
+                foo.setClickable(false);
+            }
+            for(View foo: spinnerTeams.getTouchables()){
+                foo.setEnabled(false);
+                foo.setClickable(false);
+            }
+            for(View foo: spinnerUsers.getTouchables()){
+                foo.setEnabled(false);
+                foo.setClickable(false);
+            }
+            spinnerLeagues.setEnabled(false);
+            spinnerTeams.setEnabled(false);
+            spinnerUsers.setEnabled(false);
         }
+
         cursor.close();
     }
 
     private void onSpinnerLeaguesChange(String choiceLeagueName) {
+
         currentLeague = hashMapLeagues.get(choiceLeagueName);
+
         cursor = db.rawQuery("SELECT team_id, team_name FROM team WHERE league_id = " + currentLeague, null);
-        for(View lol: spinnerTeams.getTouchables()) {
-            lol.setEnabled(true);
-            lol.setClickable(true);
+        for(View foo: spinnerUsers.getTouchables()){
+            foo.setClickable(true);
+            foo.setEnabled(true);
+        }
+        for(View foo: spinnerTeams.getTouchables()){
+            foo.setClickable(true);
+            foo.setEnabled(true);
         }
         if (cursor.moveToFirst() && ((cursor != null) && (cursor.getCount()>0))) {
+
             teamIdArrayList.clear();
             teamNameArrayList.clear();
             hashMapTeams.clear();
@@ -262,28 +321,37 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
             } while (cursor.moveToNext());
 
             adapterSpinnerTeams = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, teamNameArrayList.toArray());
-            spinnerTeams.setAdapter(adapterSpinnerTeams);
-            spinnerTeams.setSelection(0);
+
             currentTeam = hashMapTeams.get(teamNameArrayList.get(0));
-        }else {
-            for(View lol: spinnerTeams.getTouchables()) {
-                lol.setEnabled(false);
-                lol.setClickable(false);
+            spinnerTeams.setAdapter(adapterSpinnerTeams);
+            spinnerTeams.setOnItemSelectedListener(this);
+            spinnerTeams.setEnabled(true);
+            spinnerTeams.setSelection(0);
+
+        }else{
+            for(View foo: spinnerTeams.getTouchables()){
+                foo.setEnabled(false);
+                foo.setClickable(false);
             }
+            for(View foo: spinnerUsers.getTouchables()){
+                foo.setEnabled(false);
+                foo.setClickable(false);
+            }
+            spinnerTeams.setEnabled(false);
+            spinnerUsers.setEnabled(false);
         }
         cursor.close();
+
     }
 
     private void onSpinnerTeamsChange(String choiceTeamName){
+
         currentTeam = hashMapTeams.get(choiceTeamName);
-        for(View lol: spinnerUsers.getTouchables()){
-            lol.setEnabled(true);
-            lol.setClickable(true);
-        }
+
         cursor = db.rawQuery("SELECT e.user_id, u.fname, u.lname FROM enrollment e, users u WHERE e.team_id= " + currentTeam + " AND e.user_id = u.user_id;", null);
-        for(View lol: spinnerUsers.getTouchables()) {
-            lol.setEnabled(true);
-            lol.setClickable(true);
+        for(View foo: spinnerUsers.getTouchables()){
+            foo.setClickable(true);
+            foo.setEnabled(true);
         }
         if(cursor.moveToFirst() && ((cursor != null) && (cursor.getCount()>0))){
             userIdArrayList.clear();
@@ -295,23 +363,29 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 hashMapUsers.put(cursor.getString(cursor.getColumnIndexOrThrow("fname")) + " " + cursor.getString(cursor.getColumnIndexOrThrow("lname")),
                        cursor.getInt(cursor.getColumnIndexOrThrow("user_id")));
             }while(cursor.moveToNext());
-
+            currentUser = userIdArrayList.get(0);
             adapterSpinnerUsers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, userNameArrayList.toArray());
             spinnerUsers.setAdapter(adapterSpinnerUsers);
+            spinnerUsers.setOnItemSelectedListener(this);
+            spinnerUsers.setEnabled(true);
             spinnerUsers.setSelection(0);
-            currentUser = userIdArrayList.get(0);
-        }else {
-            for(View lol: spinnerUsers.getTouchables()) {
-                lol.setEnabled(false);
-                lol.setClickable(false);
+
+
+        }else{
+            for(View foo: spinnerUsers.getTouchables()){
+                foo.setEnabled(false);
+                foo.setClickable(false);
             }
+            spinnerUsers.setEnabled(false);
         }
         cursor.close();
+        
     }
 
     private void onSpinnerUsersChange(String choiceUser){
         currentUser = hashMapUsers.get(choiceUser);
     }
+
 
     private ArrayList<String> insertEmptyArrayList(){
         ArrayList<String> empty = new ArrayList<>();
@@ -322,7 +396,10 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
+        for(View foo: parent.getTouchables()){
+            foo.setEnabled(false);
+            foo.setClickable(false);
+        }
     }
 
     public void goToAddPlayerFromLeagues(View view){
