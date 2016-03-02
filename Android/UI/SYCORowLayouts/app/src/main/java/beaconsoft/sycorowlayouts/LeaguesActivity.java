@@ -409,7 +409,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     public void goToAddPlayerFromLeagues(View view){
         Intent intent = new Intent(getApplicationContext(), QuickAddPlayersActivity.class);
         intent.putExtra(  NAME_KEY, name);
-        intent.putExtra( ADMIN_KEY, currentAdmin  + "");
+        intent.putExtra(ADMIN_KEY, currentAdmin + "");
         intent.putExtra(LEAGUE_KEY, currentLeague + "");
         intent.putExtra(  TEAM_KEY, currentTeam   + "");
         intent.putExtra( EMAIL_KEY, email);
@@ -419,7 +419,12 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
     public void goToQuickAddTeams(View view){
         Intent intent = new Intent(getApplicationContext(), QuickAddTeamsActivity.class);
-        intent.putExtra(NAME_KEY, name);
+        intent.putExtra(  NAME_KEY, name);
+        intent.putExtra( ADMIN_KEY, currentAdmin  + "");
+        intent.putExtra(LEAGUE_KEY, currentLeague + "");
+        intent.putExtra(  TEAM_KEY, currentTeam   + "");
+        intent.putExtra( EMAIL_KEY, email);
         startActivity(intent);
+        db.close();
     }
 }
