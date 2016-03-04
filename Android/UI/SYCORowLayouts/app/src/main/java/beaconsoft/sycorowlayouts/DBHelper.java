@@ -143,6 +143,21 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Update User table
+    public void updateIntoUsers(HashMap<String, String> usersList){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("user_id", usersList.get("user_id"));
+        values.put("fname", usersList.get("fname"));
+        values.put("lname", usersList.get("lname"));
+        values.put("phone", usersList.get("phone"));
+        values.put("emergency", usersList.get("emergency"));
+        values.put("email", usersList.get("email"));
+        values.put("user_type", usersList.get("user_type"));
+        db.update("users", values, DatabaseConstants.USER.FIELD_ID+"="+"user_id",null);
+        db.close();
+    }
+
     public ArrayList<HashMap<String, String>> getSQLiteUsers(){
         String query = "";
 

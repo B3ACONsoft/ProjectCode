@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".QuickAddPlayersActivity">
+    tools:context=".QuickEPlayersActivity">
 
 
     <TableLayout
@@ -30,6 +30,21 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1" />
         </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:id="@+id/editTextContactID"
+                android:hint="ID"
+                android:layout_weight="1"
+                android:inputType="textAutoCorrect|none" />
+        </TableRow>
+
 
         <TableRow
             android:layout_width="match_parent"
@@ -139,8 +154,7 @@
                 android:ems="10"
                 android:id="@+id/editTextPhone"
                 android:hint="(666)999-YETI"
-                android:layout_weight="1"
-                android:numeric="integer" />
+                android:layout_weight="1" />
 
             <EditText
                 android:layout_width="0dp"
@@ -149,8 +163,7 @@
                 android:ems="10"
                 android:id="@+id/editTextEmergencyPhone"
                 android:layout_weight="1"
-                android:hint="(919)555-0666"
-                android:numeric="integer" />
+                android:hint="(919)555-0666" />
         </TableRow>
 
         <TableRow
@@ -189,8 +202,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Adding Player to Team..."
-                android:id="@+id/textViewPromptAddingPlayer"
+                android:text="Edit Player to Team..."
+                android:id="@+id/textViewPromptEditPlayer"
                 android:gravity="center"
                 android:layout_weight="1" />
         </TableRow>
@@ -213,21 +226,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="ADD PLAYER"
-                android:id="@+id/buttonQuickAddPlayerAddPlayer"
-                android:layout_weight="1"
-                android:onClick="quickAddPlayer" />
+        </TableRow>
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="CLEAR"
-                android:id="@+id/buttonAddPlayerClear"
-                android:layout_weight="1"
-                android:onClick="clearForm"/>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
         </TableRow>
 
@@ -235,13 +238,35 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/textViewSuccessfulInsert"
+                android:text="EDIT  PLAYER"
+                android:id="@+id/buttonQuickEditPlayerEditPlayer"
                 android:layout_weight="1"
-                android:textAlignment="center" />
+                android:onClick="quickEditPlayer"
+                android:layout_column="0" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="CLEAR"
+                android:id="@+id/buttonEditPlayerClear"
+                android:layout_weight="1"
+                android:onClick="clearForm"
+                android:layout_column="11" />
         </TableRow>
 
     </TableLayout>

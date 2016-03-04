@@ -1,11 +1,14 @@
 package beaconsoft.sycorowlayouts;
 
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,13 +26,10 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
+    private static final String   USER_KEY = "beaconsoft.sycorowlayouts.USER";
 
     private DBHelper helper = new DBHelper(this);
-
-/*push*/
-    private TextView textViewAdminEmail;
     private String name;
-    private String adminId;
     private String email;
 
     private TextView textViewLeaguesEmail;
@@ -75,8 +75,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         Intent intent = getIntent();
         name = intent.getStringExtra(NAME_KEY);
         email = intent.getStringExtra(EMAIL_KEY);
-        adminId = intent.getStringExtra(ADMIN_KEY);
-        currentAdmin = Integer.parseInt(adminId);
+        currentAdmin = intent.getIntExtra(ADMIN_KEY, 0);
         db = helper.getReadableDatabase();
 
         /*Set text in the headers for the administrator */
@@ -117,7 +116,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         leagueIdArrayList = new ArrayList<>();
         leagueNameArrayList = new ArrayList<>();
         hashMapLeagues = new HashMap<>();
-        cursor = db.rawQuery("SELECT league_id, league_name FROM league WHERE sport_id = " + currentSport + " AND user_id = " + adminId, null);
+        cursor = db.rawQuery("SELECT league_id, league_name FROM league WHERE sport_id = " + currentSport + " AND user_id = " + currentAdmin, null);
         if (cursor.moveToFirst() && ((cursor != null) && (cursor.getCount()>0))) {
             do {
                 leagueIdArrayList.clear();
@@ -247,7 +246,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
     private void onSpinnerSportsChange(String choiceSportName){
         currentSport = hashMapSports.get(choiceSportName);
-        cursor = db.rawQuery("SELECT l.league_id, l.league_name FROM league l, sport s WHERE s.sport_id = " + currentSport + " AND l.user_id = " + adminId + " AND s.sport_id = l.sport_id;", null);
+        cursor = db.rawQuery("SELECT l.league_id, l.league_name FROM league l, sport s WHERE s.sport_id = " + currentSport + " AND l.user_id = " + currentAdmin + " AND s.sport_id = l.sport_id;", null);
         for(View foo: spinnerUsers.getTouchables()){
             foo.setClickable(true);
             foo.setEnabled(true);
@@ -406,13 +405,39 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         }
     }
 
+    public void goToEditPlayerFromLeagues(View view){
+        Intent intent = new Intent(getApplicationContext(), QuickAddPlayersActivity.class);
+        intent.putExtra(NAME_KEY, name);
+        intent.putExtra(ADMIN_KEY, currentAdmin);
+        intent.putExtra(LEAGUE_KEY, currentLeague);
+        intent.putExtra(TEAM_KEY, currentTeam + "");
+        intent.putExtra(EMAIL_KEY, email);
+        intent.putExtra(USER_KEY, currentUser);
+
+        PendingIntent pendingIntent = TaskStackBuilder.create(this).addNextIntentWithParentStack(getIntent())
+                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContentIntent(pendingIntent);
+
+        startActivity(intent);
+        db.close();
+    }
+
     public void goToAddPlayerFromLeagues(View view){
         Intent intent = new Intent(getApplicationContext(), QuickAddPlayersActivity.class);
-        intent.putExtra(  NAME_KEY, name);
-        intent.putExtra(ADMIN_KEY, currentAdmin + "");
-        intent.putExtra(LEAGUE_KEY, currentLeague + "");
-        intent.putExtra(  TEAM_KEY, currentTeam   + "");
-        intent.putExtra( EMAIL_KEY, email);
+        intent.putExtra(NAME_KEY, name);
+        intent.putExtra(ADMIN_KEY, currentAdmin);
+        intent.putExtra(LEAGUE_KEY, currentLeague);
+        intent.putExtra(TEAM_KEY, currentTeam);
+        intent.putExtra(EMAIL_KEY, email);
+
+        PendingIntent pendingIntent = TaskStackBuilder.create(this).addNextIntentWithParentStack(getIntent())
+                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContentIntent(pendingIntent);
+
         startActivity(intent);
         db.close();
     }
@@ -420,9 +445,9 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     public void goToQuickAddTeams(View view){
         Intent intent = new Intent(getApplicationContext(), QuickAddTeamsActivity.class);
         intent.putExtra(  NAME_KEY, name);
-        intent.putExtra( ADMIN_KEY, currentAdmin  + "");
-        intent.putExtra(LEAGUE_KEY, currentLeague + "");
-        intent.putExtra(  TEAM_KEY, currentTeam   + "");
+        intent.putExtra( ADMIN_KEY, currentAdmin);
+        intent.putExtra(LEAGUE_KEY, currentLeague);
+        intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra( EMAIL_KEY, email);
         startActivity(intent);
         db.close();
