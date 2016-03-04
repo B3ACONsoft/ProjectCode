@@ -60,14 +60,14 @@ public class MainActivity extends AppCompatActivity {
     public void sendToLeaguesActivity(String email){
 
         String name = "no name initialized";
-        String adminId = "did not initialize";
+        Integer adminId = 0;
 
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT user_id, fname, lname, email FROM users WHERE email = 'HENRYJ@LOVEMEAYETI.NET' AND user_type = 'ADMIN'", null);
 
         if(cursor.moveToFirst()){
             do{
-                adminId = cursor.getString(0);
+                adminId = cursor.getInt(0);
                 String fname = cursor.getString(1);
                 fname = ProperCase.toProperCase(fname);
                 String lname = cursor.getString(2);
