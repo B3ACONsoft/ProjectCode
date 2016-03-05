@@ -68,6 +68,16 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     private Spinner spinnerUsers;
 
     @Override
+    public void onResume(){
+        super.onResume();
+        loadSpinners();
+//        onSpinnerSportsChange (selectChoiceBuilder(currentSport , "sport" ,  "sport_name"));
+//        onSpinnerLeaguesChange(selectChoiceBuilder(currentLeague, "league", "league_name"));
+//        onSpinnerTeamsChange  (selectChoiceBuilder(currentTeam  , "team"  ,   "team_name"));
+//        onSpinnerUsersChange  (selectChoiceBuilder(currentUser  , "users" ,   "user_name"));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leagues);
@@ -84,8 +94,11 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         textViewLeaguesEmail.setText(email);
         textViewLeaguesAdmin.setText(name + ", please choose a sport...");
 
+        loadSpinners();
+    }
         /* Call the database and ask for the sports we have leagues for, insert into the first spinner
         * through a series of arraylists and a hashmap */
+    public void loadSpinners(){
 
         spinnerSports = (Spinner) findViewById(R.id.spinnerMyLeaguesSports);
         hashMapSports = new HashMap<>();
@@ -209,6 +222,26 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         }
     }
 
+//    public String selectChoiceBuilder(int i, String table, String column){
+//        if(table.equals("users"))
+//            cursor = db.rawQuery("SELECT " + column + " FROM users  WHERE   user_id = " + i + ";", null);
+//        else if(table.equals("team"))
+//            cursor = db.rawQuery("SELECT " + column + " FROM team   WHERE   team_id = " + i + ";", null);
+//        else if(table.equals("league"))
+//            cursor = db.rawQuery("SELECT " + column + " FROM league WHERE league_id = " + i + ";", null);
+//        else
+//            cursor = db.rawQuery("SELECT " + column + " FROM sport  WHERE  sport_id = " + i + ";", null);
+//
+//        if(cursor.moveToFirst()){
+//            do{
+//                return cursor.getString(cursor.getColumnIndexOrThrow(column));
+//            }while(cursor.moveToNext());
+//        }
+//
+//        cursor.close();
+//        return null;
+//    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String choice = parent.getItemAtPosition(position).toString();
@@ -239,9 +272,6 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         if(parent == spinnerUsers){
             onSpinnerUsersChange(choice);
         }
-
-
-
     }
 
     private void onSpinnerSportsChange(String choiceSportName){
@@ -421,7 +451,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         builder.setContentIntent(pendingIntent);
 
         startActivity(intent);
-        db.close();
+
     }
 
     public void goToAddPlayerFromLeagues(View view){
@@ -439,7 +469,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         builder.setContentIntent(pendingIntent);
 
         startActivity(intent);
-        db.close();
+
     }
 
     public void goToQuickAddTeams(View view){
@@ -448,8 +478,8 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra( ADMIN_KEY, currentAdmin);
         intent.putExtra(LEAGUE_KEY, currentLeague);
         intent.putExtra(  TEAM_KEY, currentTeam);
-        intent.putExtra( EMAIL_KEY, email);
+        intent.putExtra(EMAIL_KEY, email);
         startActivity(intent);
-        db.close();
+
     }
 }

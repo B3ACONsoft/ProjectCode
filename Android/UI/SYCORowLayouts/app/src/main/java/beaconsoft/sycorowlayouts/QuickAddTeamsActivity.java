@@ -44,14 +44,14 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         db = helper.getWritableDatabase();
 
         Intent intent = getIntent();
-        email = intent.getStringExtra(EMAIL_KEY);
-        adminId = Integer.parseInt(intent.getStringExtra(ADMIN_KEY));
-        currentLeague  = Integer.parseInt(intent.getStringExtra(LEAGUE_KEY));
-        team    = Integer.parseInt(intent.getStringExtra(TEAM_KEY));
-        name = intent.getStringExtra(NAME_KEY);
+        email         = intent.getStringExtra(EMAIL_KEY    );
+        adminId       = intent.getIntExtra   (ADMIN_KEY , 0);
+        currentLeague = intent.getIntExtra   (LEAGUE_KEY, 0);
+        team          = intent.getIntExtra   (TEAM_KEY  , 0);
+        name          = intent.getStringExtra(NAME_KEY     );
 
         Cursor cursor = db.rawQuery(
-                "SELECT e.user_id, u.fname, u.lname " +
+                        "SELECT e.user_id, u.fname, u.lname " +
                         "  FROM enrollment e, users u       " +
                         " WHERE e.user_id = u.user_id     " +
                         "   AND u.user_type =    'COACH'    " +
@@ -103,6 +103,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         cv.put("league_id", currentLeague);
         cv.put("null", "none");
         cv.put("user_id", currentCoach);
+
         db.insert("team", null, cv);
         //insert into TEAM table
 

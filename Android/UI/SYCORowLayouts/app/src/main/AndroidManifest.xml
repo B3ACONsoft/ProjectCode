@@ -18,7 +18,7 @@
         <activity
             android:name=".LeaguesActivity"
             android:label="Administrative Dashboard"
-            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop"
             android:windowActionBar="false"></activity>
         <activity
             android:name=".LoginActivity"
