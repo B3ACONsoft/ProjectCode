@@ -27,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         SQLiteDatabase db = helper.getWritableDatabase();
         db.beginTransaction();
-        for(String q: DatabaseDummyLoader.boom){
-            db.execSQL(q);
-        }
+//        for(String q: DatabaseDummyLoader.boom){
+//            db.execSQL(q);
+//        }
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(NAME_KEY, name);
         startActivity(intent);
         cursor.close();
-        db.close();
+
     }
 
     public void sendToCoachHomeActivity(String email){
