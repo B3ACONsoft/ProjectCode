@@ -11,22 +11,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-
+import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private String email;
-    private String name;
     private int currentLeague;
-    private int team;
-    private int adminId;
-    private static final String   NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
     private static final String  ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
-    private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
     private DBHelper helper = new DBHelper(this);
     private ArrayList<String> arrayListCoachNames = new ArrayList<>();
@@ -36,6 +29,21 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
     private Spinner spinnerCoaches;
     private ArrayAdapter adapterSpinnerCoaches;
     private Integer currentCoach;
+    private EditText editTextFirst;
+    private EditText editTextLast;
+    private EditText editTextPhone;
+    private EditText editTextEmergency;
+    private EditText editTextCoachEmail;
+    private ContentValues ccv;
+    private Toast toastCoach;
+    private Toast toastTeam;
+    private String fname;
+    private String lname;
+    private long phone;
+    private long emerg;
+    private String email;
+    private Cursor cursor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,18 +52,29 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         db = helper.getWritableDatabase();
 
         Intent intent = getIntent();
-        email         = intent.getStringExtra(EMAIL_KEY    );
-        adminId       = intent.getIntExtra   (ADMIN_KEY , 0);
-        currentLeague = intent.getIntExtra   (LEAGUE_KEY, 0);
-        team          = intent.getIntExtra   (TEAM_KEY  , 0);
-        name          = intent.getStringExtra(NAME_KEY     );
+        email = intent.getStringExtra(EMAIL_KEY);
+        currentLeague = intent.getIntExtra(LEAGUE_KEY, 0);
+        editTextFirst     = (EditText)findViewById(R.id.editTextCoachFirst);
+        editTextLast      = (EditText)findViewById(R.id.editTextCoachLast );
+        editTextPhone     = (EditText)findViewById(R.id.editTextCoachPhone);
+        editTextEmergency = (EditText)findViewById(R.id.editTextCoachEmergency);
+        editTextCoachEmail= (EditText)findViewById(R.id.editTextCoachEmail);
+        editTextFirst        .setText("El");
+        editTextLast         .setText("Guapo");
+        editTextCoachEmail   .setText("GoodLooking@ndAvailable.com");
+        editTextPhone        .setText("1594658789");
+        editTextEmergency    .setText("3626659856");
 
-        Cursor cursor = db.rawQuery(
-                        "SELECT e.user_id, u.fname, u.lname " +
-                        "  FROM enrollment e, users u       " +
-                        " WHERE e.user_id = u.user_id     " +
-                        "   AND u.user_type =    'COACH'    " +
-                        "   AND e.league_id != " + currentLeague     + ";", null);
+        loadSpinner();
+    }
+
+    public void loadSpinner(){
+
+        cursor = db.rawQuery(
+
+                        "SELECT user_id, fname, lname " +
+                        "  FROM users       " +
+                        " WHERE user_type =    'COACH';", null);
 
         if(cursor.moveToFirst() && (cursor != null && cursor.getCount()>0)){
             arrayListCoachIds.clear();
@@ -79,6 +98,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         spinnerCoaches.setOnItemSelectedListener(this);
         spinnerCoaches.setEnabled(true);
         spinnerCoaches.setSelection(0);
+        cursor.close();
     }
 
     @Override
@@ -95,17 +115,96 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
 
     public void createTeam(View view){
 
-        EditText editTeamName = (EditText)findViewById(R.id.editTextNewTeamName);
-        String teamName = editTeamName.getText().toString();
-        //currentCoach...
-        ContentValues cv = new ContentValues(4);
-        cv.put("team_name", teamName);
-        cv.put("league_id", currentLeague);
-        cv.put("null", "none");
-        cv.put("user_id", currentCoach);
+        try {
+            EditText editTeamName = (EditText) findViewById(R.id.editTextNewTeamName);
+            String teamName = editTeamName.getText().toString();
+            //currentCoach...
+            ContentValues cv = new ContentValues(4);
+            cv.put("team_name", teamName.toUpperCase());
+            cv.put("league_id", currentLeague);
+            cv.putNull("team_id");
+            cv.put("user_id", currentCoach);
+            Toast toastSuccess = Toast.makeText(this, null, Toast.LENGTH_LONG);
 
-        db.insert("team", null, cv);
-        //insert into TEAM table
+                //insert into TEAM table
+                db.insert("team", null, cv);
 
+                cursor = db.rawQuery("SELECT team_id, team_name FROM team WHERE team_name = '" + teamName.toUpperCase() +
+                        "' AND league_id = " + currentLeague + ";", null);
+
+                if (cursor.moveToFirst()) {
+                    toastSuccess.setText("TeamID: " +
+                            cursor.getInt(cursor.getColumnIndexOrThrow("team_id")) +
+                            "TeamName: " +
+                            cursor.getString(cursor.getColumnIndexOrThrow("team_name")));
+                } else {
+                    toastSuccess.setText("No records");
+                    toastSuccess.show();
+                }
+
+        }catch(Exception e){
+            toastTeam = Toast.makeText(this, null, Toast.LENGTH_LONG);
+            String msg = e.getMessage();
+            toastTeam.setText(msg);
+            toastTeam.show();
+
+        }
+        cursor.close();
+    }
+
+    public void quickAddCoach(View view){
+
+        try {
+            ccv = new ContentValues();
+            fname = editTextFirst.getText().toString();
+            lname = editTextLast.getText().toString();
+            phone = Long.parseLong(editTextPhone.getText().toString());
+            emerg = Long.parseLong(editTextEmergency.getText().toString());
+            email = editTextCoachEmail.getText().toString();
+
+            ccv.putNull("user_id");
+            ccv.put("fname", fname.toUpperCase());
+            ccv.put("lname", lname.toUpperCase());
+            ccv.put("phone", phone);
+            ccv.put("emergency", emerg);
+            ccv.put("email", email.toUpperCase());
+            ccv.put("user_type", "COACH");
+            ccv.put("pass", "PASS");
+            db.insert("users", null, ccv);
+
+            loadSpinner();
+
+        }catch(Exception e){
+
+            toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
+            String msg = e.getMessage();
+
+            if(fname.length() < 1)
+                msg = "Please fill in the first name...";
+            else if(lname.length() < 1)
+                msg = "Please fill in the last name...";
+            else if((phone+"").length()< 1)
+                msg = "Please provide a number where you can be reached...";
+            else if((emerg+"").length() < 1)
+                msg = "Please give the proper number to call in case of emergency...";
+            else if(email.length()< 1)
+                msg = "An email request is required...";
+
+            toastCoach.setText(msg);
+            toastCoach.show();
+        }
+
+    }
+    /**
+     * Removes all strings from edittexts
+     * @param view
+     */
+    public void clearFormCoach(View view){
+
+        editTextFirst.setText("");
+        editTextLast.setText("");
+        editTextPhone.setText("");
+        editTextEmergency.setText("");
+        editTextCoachEmail.setText("");
     }
 }

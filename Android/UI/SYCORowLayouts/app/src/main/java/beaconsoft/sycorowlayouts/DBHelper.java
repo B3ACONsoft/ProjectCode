@@ -52,21 +52,26 @@ public class DBHelper extends SQLiteOpenHelper {
                         "  sport_name  TEXT);");
 
         db.execSQL("CREATE TABLE " + LEAGUE_TABLE + " (" +
-                        "  league_id   INTEGER PRIMARY KEY," +
+                        "  league_id   INTEGER," +
                         "  user_id     INTEGER," +
                         "  league_name TEXT," +
                         "  sport_id    INTEGER," +
                         "  min_age     INTEGER," +
                         "  max_age     INTEGER," +
                         "  start_date  TEXT," +
-                        "  end_date    TEXT);");
+                        "  end_date    TEXT," +
+                        "  PRIMARY KEY(league_id)," +
+                        "  FOREIGN KEY(user_id) REFERENCES users(user_id));");
 
 
         db.execSQL("CREATE TABLE " + TEAM_TABLE + " (" +
                         "  team_id     INTEGER PRIMARY KEY," +
                         "  league_id   INTEGER," +
                         "  team_name   TEXT," +
-                        "  user_id     INTEGER);");
+                        "  user_id     INTEGER," +
+                        "  PRIMARY KEY (TEAM_ID)," +
+                        "  FOREIGN KEY (league_id) REFERENCES league(league_id)," +
+                        "  FOREIGN KEY (user_id) REFERENCES users(user_id));");
 
 
         db.execSQL("CREATE TABLE " + USERS_TABLE + " (" +
@@ -77,14 +82,16 @@ public class DBHelper extends SQLiteOpenHelper {
                         "  emergency INTEGER," +
                         "  email     TEXT," +
                         "  user_type TEXT," +
-                        "  pass      TEXT);");
+                        "  pass      TEXT," +
+                        "  FOREIGN KEY (user_id) REFERENCES users(user_id));");
 
 
         db.execSQL("CREATE TABLE " + PLAYER_TABLE + "(" +
                         "  player_id INTEGER PRIMARY KEY," +
                         "  fname     TEXT," +
                         "  lname     TEXT," +
-                        "  user_id   INTEGER);");
+                        "  user_id   INTEGER," +
+                        "  FOREIGN KEY(user_id) REFERENCES users(user_id));");
 
         db.execSQL("CREATE TABLE " + ENROLLMENT_TABLE + " (" +
                         "  enrollment_id   INTEGER PRIMARY KEY," +
@@ -93,7 +100,11 @@ public class DBHelper extends SQLiteOpenHelper {
                         "  team_id         INTEGER," +
                         "  league_id       INTEGER," +
                         "  enrollment_date TEXT," +
-                        "  fee             INTEGER);");
+                        "  fee             INTEGER," +
+                        "  FOREIGN KEY (user_id) REFERENCES users(user_id)," +
+                        "  FOREIGN KEY (player_id) REFERENCES player(player_id)," +
+                        "  FOREIGN KEY (team_id) REFERENCES team(team_id)," +
+                        "  FOREIGN KEY (league_id) REFERENCES league(league_id));");
 
         db.execSQL("CREATE TABLE " + PLACE_TABLE + "(" +
                         "  place_id       INTEGER PRIMARY KEY," +
@@ -110,14 +121,17 @@ public class DBHelper extends SQLiteOpenHelper {
                         "  start_date_time TEXT," +
                         "  place_id        INTEGER," +
                         "  home_team_id    INTEGER," +
-                        "  away_team_id    INTEGER);");
+                        "  away_team_id    INTEGER)," +
+                        "  FOREIGN KEY (place_id) REFERENCES place(place_id));");
 
         db.execSQL("CREATE TABLE " + ATTENDANCE_TABLE + "(" +
                         "  attendance_id INTEGER PRIMARY KEY," +
                         "  event_id INTEGER," +
                         "  user_id  INTEGER," +
                         "  status   TEXT," +
-                        "  message  TEXT);");
+                        "  message  TEXT," +
+                        "  FOREIGN KEY (event_id) REFERENCES event(event_id)," +
+                        "  FOREIGN KEY (user_id) REFERENCES users(user_id));");
 
 
 

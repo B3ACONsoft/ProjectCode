@@ -174,7 +174,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="phone"
                 android:ems="10"
-                android:id="@+id/editTextEmergency"
+                android:id="@+id/editTextCoachEmergency"
                 android:layout_weight="1"
                 android:hint="(919)555-0666"
                 android:numeric="integer" />
