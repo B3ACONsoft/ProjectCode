@@ -11,11 +11,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import string.utils.ProperCase;
 
 public class QuickAddPlayersActivity extends AppCompatActivity {
 
@@ -177,13 +174,13 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
          * taking in strings from edittexts
          */
         ContentValues insertValues = new ContentValues();
-        String  first      =                  ProperCase.toProperCase(et1.getText().toString());
-        String  last       =                  ProperCase.toProperCase(et2.getText().toString());
-        String  childFirst =                  ProperCase.toProperCase(et3.getText().toString());
-        String  childLast  =                  ProperCase.toProperCase(et4.getText().toString());
-        String  phone      =                  ProperCase.toProperCase(et5.getText().toString());
-        String  email      =                  ProperCase.toProperCase(et6.getText().toString());
-        String  emergency  =                  ProperCase.toProperCase(et7.getText().toString());
+        String  first      =                  et1.getText().toString().toUpperCase();
+        String  last       =                  et2.getText().toString().toUpperCase();
+        String  childFirst =                  et3.getText().toString().toUpperCase();
+        String  childLast  =                  et4.getText().toString().toUpperCase();
+        String  phone      =                  et5.getText().toString().toUpperCase();
+        String  email      =                  et6.getText().toString().toUpperCase();
+        String  emergency  =                  et7.getText().toString().toUpperCase();
 
         /**
          * loading the contentvalues for insert into user
@@ -192,9 +189,9 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
             insertValues.put("emergency", Long.parseLong(emergency));
             insertValues.put("phone", Long.parseLong(phone));
             insertValues.putNull("user_id");
-            insertValues.put("fname", ProperCase.toProperCase(first));
-            insertValues.put("lname", ProperCase.toProperCase(last));
-            insertValues.put("email", ProperCase.toProperCase(email));
+            insertValues.put("fname", first.toUpperCase());
+            insertValues.put("lname", last.toUpperCase());
+            insertValues.put("email", email.toUpperCase());
             insertValues.put("user_type", "USER");
             insertValues.put("pass", "PASS");
             dbw.insert("users", null, insertValues);
@@ -233,8 +230,8 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
              */
             ContentValues playerValues = new ContentValues();
             playerValues.putNull("player_id");
-            playerValues.put("fname", ProperCase.toProperCase(childFirst));
-            playerValues.put("lname", ProperCase.toProperCase(childLast));
+            playerValues.put("fname", childFirst.toUpperCase());
+            playerValues.put("lname", childLast.toUpperCase());
             playerValues.put("user_id", userId);
 
             dbw.insert("player", null, playerValues);
