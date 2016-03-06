@@ -472,6 +472,16 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
     }
 
+    public void goToCalendar(View view){
+        Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
+        intent.putExtra(NAME_KEY, name);
+        intent.putExtra(ADMIN_KEY, currentAdmin);
+        intent.putExtra(LEAGUE_KEY, currentLeague);
+        intent.putExtra(TEAM_KEY, currentTeam);
+        intent.putExtra(EMAIL_KEY, email);
+        startActivity(intent);
+    }
+
     public void goToQuickAddTeams(View view){
         Intent intent = new Intent(getApplicationContext(), QuickAddTeamsActivity.class);
         intent.putExtra(  NAME_KEY, name);
