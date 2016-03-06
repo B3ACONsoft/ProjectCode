@@ -14,12 +14,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity
             android:name=".LeaguesActivity"
             android:label="Administrative Dashboard"
             android:launchMode="singleTop"
-            android:windowActionBar="false"></activity>
+            android:windowActionBar="false" />
         <activity
             android:name=".LoginActivity"
             android:label="Super Yeti Coach"
@@ -64,10 +64,19 @@
         </activity>
         <activity
             android:name=".UserHomeActivity"
-            android:label="Users Home Panel"></activity>
+            android:label="Users Home Panel" />
         <activity
             android:name=".CoachHomeActivity"
             android:label="Coach&apos;s Panel" />
+        <activity
+            android:name=".CalendarActivity"
+            android:label="@string/title_activity_calendar"
+            android:parentActivityName=".LeaguesActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
+        </activity>
     </application>
 
 </manifest>

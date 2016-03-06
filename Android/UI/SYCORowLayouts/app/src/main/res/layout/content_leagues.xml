@@ -115,9 +115,11 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="EDIT ABOVE LEAGUE"
-                android:id="@+id/buttonMyLeaguesEditLeague"
-                android:layout_weight="1" />
+                android:text="CALENDAR"
+                android:id="@+id/buttonMyLeaguesCalendar"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:onClick="goToCalendar" />
 
         </TableRow>
 
@@ -175,7 +177,7 @@
                 android:text="EDIT TEAM"
                 android:id="@+id/buttonMyLeaguesEditTeam"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@+id/buttonMyLeaguesEditLeague"
+                android:layout_below="@+id/buttonMyLeaguesCalendar"
                 android:layout_alignBottom="@+id/buttonMyLeaguesRemoveTeam"
                 android:layout_weight="1" />
 
