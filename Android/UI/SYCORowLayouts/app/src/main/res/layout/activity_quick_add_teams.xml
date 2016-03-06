@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="New Team Name: [The...]"
-                android:id="@+id/textView4"
+                android:id="@+id/textViewQuickAddTeamsTop"
                 android:textAlignment="center"
                 android:layout_weight="1" />
         </TableRow>

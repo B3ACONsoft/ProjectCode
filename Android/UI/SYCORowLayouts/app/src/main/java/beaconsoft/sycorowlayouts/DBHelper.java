@@ -65,7 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
         db.execSQL("CREATE TABLE " + TEAM_TABLE + " (" +
-                        "  team_id     INTEGER PRIMARY KEY," +
+                        "  team_id     INTEGER," +
                         "  league_id   INTEGER," +
                         "  team_name   TEXT," +
                         "  user_id     INTEGER," +

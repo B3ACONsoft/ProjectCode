@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,10 +40,12 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
     private Toast toastTeam;
     private String fname;
     private String lname;
+    private String teamName;
     private long phone;
     private long emerg;
     private String email;
     private Cursor cursor;
+    private TextView textViewTop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +86,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
             do{
                 int tempId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
                 arrayListCoachIds.add(tempId);
-                String tempFirstAndLastName = cursor.getString(cursor.getColumnIndexOrThrow("fname")) +
+                String tempFirstAndLastName = cursor.getString(cursor.getColumnIndexOrThrow("fname")) + " " +
                         cursor.getString(cursor.getColumnIndexOrThrow("lname"));
                 arrayListCoachNames.add(tempFirstAndLastName);
                 hashMapCoaches.put(tempFirstAndLastName, tempId);
@@ -117,30 +120,31 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
 
         try {
             EditText editTeamName = (EditText) findViewById(R.id.editTextNewTeamName);
-            String teamName = editTeamName.getText().toString();
+            teamName = editTeamName.getText().toString().toUpperCase();
             //currentCoach...
             ContentValues cv = new ContentValues(4);
             cv.put("team_name", teamName.toUpperCase());
             cv.put("league_id", currentLeague);
             cv.putNull("team_id");
             cv.put("user_id", currentCoach);
-            Toast toastSuccess = Toast.makeText(this, null, Toast.LENGTH_LONG);
-
-                //insert into TEAM table
-                db.insert("team", null, cv);
-
-                cursor = db.rawQuery("SELECT team_id, team_name FROM team WHERE team_name = '" + teamName.toUpperCase() +
-                        "' AND league_id = " + currentLeague + ";", null);
-
-                if (cursor.moveToFirst()) {
-                    toastSuccess.setText("TeamID: " +
-                            cursor.getInt(cursor.getColumnIndexOrThrow("team_id")) +
-                            "TeamName: " +
-                            cursor.getString(cursor.getColumnIndexOrThrow("team_name")));
-                } else {
-                    toastSuccess.setText("No records");
-                    toastSuccess.show();
-                }
+            db.insert("team", null, cv);
+            textViewTop = (TextView)findViewById(R.id.textViewQuickAddTeamsTop);
+            cursor = db.rawQuery("SELECT t.team_name, u.lname FROM team t, users u " +
+                                 "WHERE u.user_id = t.user_id " +
+                                 "AND t.team_name = '" + teamName.toUpperCase() + "'"
+                    , null);
+            String displayString = "";
+            if(cursor.moveToFirst()){
+                do{
+                    displayString = "Created: " +
+                            cursor.getString(cursor.getColumnIndexOrThrow("team_name")) + ", " +
+                            cursor.getString(cursor.getColumnIndexOrThrow("lname"));
+                }while(cursor.moveToNext());
+                textViewTop.setText(displayString);
+            }else {
+                throw new Exception("insert unsuccessful...");
+            }
+            cursor.close();
 
         }catch(Exception e){
             toastTeam = Toast.makeText(this, null, Toast.LENGTH_LONG);
@@ -171,7 +175,21 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
             ccv.put("user_type", "COACH");
             ccv.put("pass", "PASS");
             db.insert("users", null, ccv);
-
+            textViewTop = (TextView)findViewById(R.id.textViewQuickAddTeamsTop);
+            cursor = db.rawQuery("SELECT user_type, fname, lname FROM users WHERE email = '" + email.toUpperCase() + "';", null);
+            String displayString = "";
+            if(cursor.moveToFirst()){
+                do{
+                    displayString = "Created: " +
+                                    cursor.getString(cursor.getColumnIndexOrThrow("user_type")) + " " +
+                                    cursor.getString(cursor.getColumnIndexOrThrow("fname"))    + " "  +
+                                    cursor.getString(cursor.getColumnIndexOrThrow("lname"));
+                }while(cursor.moveToNext());
+                textViewTop.setText(displayString);
+            }else {
+                throw new Exception("insert unsuccessful...");
+            }
+            cursor.close();
             loadSpinner();
 
         }catch(Exception e){
