@@ -110,7 +110,8 @@
                 android:layout_height="match_parent"
                 android:text="@string/string_start_a_league"
                 android:id="@+id/buttonMyLeaguesAddLeague"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:onClick="goToEditLeagues" />
 
             <Button
                 android:layout_width="0dp"

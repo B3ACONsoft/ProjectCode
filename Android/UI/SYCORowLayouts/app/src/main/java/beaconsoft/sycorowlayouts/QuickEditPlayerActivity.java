@@ -52,11 +52,11 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
         et8 = (EditText) findViewById(R.id.editTextContactID);
 
         Intent intent = getIntent();
-        email = intent.getStringExtra(EMAIL_KEY);
+        email   = intent.getStringExtra(EMAIL_KEY);
         adminId = Integer.parseInt(intent.getStringExtra(ADMIN_KEY));
         league  = Integer.parseInt(intent.getStringExtra(LEAGUE_KEY));
         team    = Integer.parseInt(intent.getStringExtra(TEAM_KEY));
-        name = intent.getStringExtra(NAME_KEY);
+        name    = intent.getStringExtra(NAME_KEY);
 
         textViewAdminEmail.setText(email);
         kidBox.setSelected(false);

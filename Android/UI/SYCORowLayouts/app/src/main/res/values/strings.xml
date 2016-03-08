@@ -88,4 +88,5 @@
     <string name="string_edit_a_league">EDIT A LEAGUE</string>
     <string name="please_choose_sport">Please Choose Sport</string>
     <string name="title_activity_calendar">CalendarActivity</string>
+    <string name="title_activity_edit_leagues">EditLeaguesActivity</string>
 </resources>

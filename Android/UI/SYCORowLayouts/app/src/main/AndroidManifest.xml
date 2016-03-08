@@ -77,6 +77,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
         </activity>
+        <activity
+            android:name=".EditLeaguesActivity"
+            android:label="@string/title_activity_edit_leagues"
+            android:parentActivityName=".LeaguesActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
+        </activity>
     </application>
 
 </manifest>
