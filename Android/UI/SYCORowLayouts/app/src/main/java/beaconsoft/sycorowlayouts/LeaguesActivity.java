@@ -5,7 +5,6 @@ import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
@@ -14,10 +13,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -490,6 +487,15 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra(EMAIL_KEY, email);
         startActivity(intent);
+    }
 
+    public void goToEditLeagues(View view){
+        Intent intent = new Intent(getApplicationContext(), EditLeaguesActivity.class);
+        intent.putExtra(  NAME_KEY, name);
+        intent.putExtra( ADMIN_KEY, currentAdmin);
+        intent.putExtra(LEAGUE_KEY, currentLeague);
+        intent.putExtra(  TEAM_KEY, currentTeam);
+        intent.putExtra(EMAIL_KEY, email);
+        startActivity(intent);
     }
 }
