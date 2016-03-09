@@ -8,10 +8,10 @@ import android.provider.BaseColumns;
 public final class DatabaseConstants {
 
     //global globals
-    public static final String DATABASE_NAME = "baconbase";
+    public static final String DATABASE_NAME = "bacon.db";
     public static final int DATABASE_VERSION = 1;
     //globals, kind of
-    public enum USER_TYPES {ADMIN, COACH, PLAYER};
+
     public static final String TEXT_TYPE = "TEXT";
     public static final String DELIM = ",";
 
