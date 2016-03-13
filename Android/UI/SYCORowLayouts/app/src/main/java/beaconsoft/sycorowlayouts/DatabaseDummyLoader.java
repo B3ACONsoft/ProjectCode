@@ -18,7 +18,7 @@ public class DatabaseDummyLoader {
 
 
             /* MAKE ADMIN AND 4 COACHES */
-            , "INSERT INTO users VALUES(NULL, 'HENRY', 'JOHNSON', 5434327890, 2323548302, 'HENRYJ@LOVEMEAYETI.NET', 'ADMIN', 'PASS');"
+            , "INSERT INTO users VALUES(NULL, 'HENRY', 'JOHNSON', 5434327890,  2323548302, 'A.A@YAHOO.COM', 'ADMIN', 'PASS');"
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,     'SOCCER');"
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,   'FOOTBALL');"
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL, 'BASKETBALL');"
@@ -28,10 +28,10 @@ public class DatabaseDummyLoader {
             /* LEAGUE_ID AUTOINCREMENTED, USER_ID(ADMIN), LEAGUE_NAME, SPORT_ID, MIN_AGE, MAX_AGE, START_DATE, END_DATE */
             , "INSERT INTO league VALUES (NULL, 1, 'OXFORD PARKS AND RECREATION'       , 1,  4,  6, '15-MAR-2016', '15-JUN-2016');"
             , "INSERT INTO league VALUES (NULL, 1, 'DURHAM KICKERS'                    , 1,  7,  9, '15-MAR-2016', '15-JUN-2016');"
-            , "INSERT INTO league VALUES (NULL, 2, 'GELA PARK SERVICE'                 , 2, 10, 12, '15-MAR-2016', '15-JUN-2016');"
+            , "INSERT INTO league VALUES (NULL, 1, 'GELA PARK SERVICE'                 , 2, 10, 12, '15-MAR-2016', '15-JUN-2016');"
             , "INSERT INTO league VALUES (NULL, 1, 'STOVALL-SHAW COMPETITIVE SPITTERS' , 3, 13, 15, '15-MAR-2016', '15-JUN-2016');"
-            , "INSERT INTO league VALUES (NULL, 2, 'SAINT MARY''S SCHOOL FOR THE BLIND', 4,  5, 65, '18-MAR-2016', '18-JUN-2016');"
-            , "INSERT INTO league VALUES (NULL, 2, 'MADISON CHEESE LEAGUE'             , 5, 18, 65, '20-APR-2016', '20-JUL-2016');"
+            , "INSERT INTO league VALUES (NULL, 1, 'SAINT MARY''S SCHOOL FOR THE BLIND', 4,  5, 65, '18-MAR-2016', '18-JUN-2016');"
+            , "INSERT INTO league VALUES (NULL, 1, 'MADISON CHEESE LEAGUE'             , 4, 18, 65, '20-APR-2016', '20-JUL-2016');"
             , "INSERT INTO users VALUES(NULL, 'COUNT', 'BASSY'   , 2548752145, 5326547852, 'BANGSOUNDTHORUGHD@WINDA.NET', 'COACH', 'PASS');"
             , "INSERT INTO users VALUES(NULL, 'SAM'  , 'NEIL'    , 9191594896, 1548693584, 'JURASSIC@PARK.AAH'          , 'COACH', 'PASS');"
             , "INSERT INTO users VALUES(NULL, 'PAT'  , 'COX'     , 9196934563, 7645378909, 'PAT.COX@MINEFIELDBIRD.NET'  , 'COACH', 'PASS');"

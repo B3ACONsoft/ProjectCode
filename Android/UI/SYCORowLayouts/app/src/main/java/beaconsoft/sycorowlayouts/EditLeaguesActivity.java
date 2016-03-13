@@ -39,7 +39,6 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
     private ArrayList<Integer> arrayListSportIDs;
     private HashMap<String, Integer> hashMapSports;
     private ArrayAdapter arrayAdapterSpinnerSports;
-    private DBHelper helper;
     private SQLiteDatabase db;
     private Cursor cursor;
     private Intent intentIncoming;
@@ -66,8 +65,8 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
         currentLeague = intentIncoming.getIntExtra(LEAGUE_KEY, 0);
         currentSport = 0;
 
-        helper = new DBHelper(this);
-        db = helper.getWritableDatabase();
+//        helper = new DBHelper(this);
+//        db = helper.getWritableDatabase();
 
         textViewEditLeaguesTopPrompt    = (TextView) findViewById(R.id.textViewEditLeaguesTop);
 

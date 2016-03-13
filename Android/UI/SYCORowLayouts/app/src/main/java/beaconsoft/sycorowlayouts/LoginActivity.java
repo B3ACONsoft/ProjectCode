@@ -224,7 +224,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 permissionLevel = "USER";
 
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(EMAIL_KEY, email);
+            intent.putExtra(EMAIL_KEY, email.toUpperCase());
             intent.putExtra(LEVEL_KEY, permissionLevel);
             startActivity(intent);
             this.finish();
@@ -341,7 +341,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mPassword;
 
         UserLoginTask(String email, String password) {
-            mEmail = email;
+            mEmail = email.toUpperCase();
             mPassword = password;
         }
 
