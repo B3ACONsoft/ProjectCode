@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 
 public class QuickEditPlayerActivity extends AppCompatActivity {
-    DBHelper helper = new DBHelper(this);
+
     private CheckBox kidBox;
     private HashMap<String, String> hashMapQuickEditPlayer;
     private EditText et8;
@@ -106,7 +106,7 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
         hashMapQuickEditPlayer.put("keyEmail"         , et6.toString());
         hashMapQuickEditPlayer.put("keyEmergencyPhone", et7.toString());
 
-        helper.updateIntoUsers(hashMapQuickEditPlayer);
+//        helper.updateIntoUsers(hashMapQuickEditPlayer);
     }
 
     public void clearForm(View view){

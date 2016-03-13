@@ -17,7 +17,7 @@ import java.util.Date;
 public class QuickAddPlayersActivity extends AppCompatActivity {
 
     /* Set up private fields so that each method can call them. Getters and setters for another day... */
-    private DBHelper helper = new DBHelper(this);
+
     private SQLiteDatabase dbw;
     private CheckBox kidBox;
     private EditText et1;
@@ -168,7 +168,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
      */
     public void quickAddPlayer(View view){
 
-        dbw = helper.getWritableDatabase();
+//        dbw = helper.getWritableDatabase();
 
         /**
          * taking in strings from edittexts

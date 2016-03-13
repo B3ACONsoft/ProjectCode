@@ -1,9 +1,6 @@
 package beaconsoft.sycorowlayouts;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,46 +10,68 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 
 public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private int currentLeague;
-    private static final String  ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
+    private int currentUser;
+    private DataSource dataSource;
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
-    private DBHelper helper = new DBHelper(this);
-    private ArrayList<String> arrayListCoachNames = new ArrayList<>();
-    private ArrayList<Integer>arrayListCoachIds   = new ArrayList<>();
-    private HashMap<String, Integer> hashMapCoaches = new HashMap<>();
-    private SQLiteDatabase db;
+    private ArrayList<Users> coachArrayList;
     private Spinner spinnerCoaches;
     private ArrayAdapter adapterSpinnerCoaches;
-    private Integer currentCoach;
     private EditText editTextFirst;
     private EditText editTextLast;
     private EditText editTextPhone;
     private EditText editTextEmergency;
     private EditText editTextCoachEmail;
-    private ContentValues ccv;
+    private EditText editTeamName;
     private Toast toastCoach;
-    private Toast toastTeam;
     private String fname;
     private String lname;
     private String teamName;
     private long phone;
     private long emerg;
     private String email;
-    private Cursor cursor;
     private TextView textViewTop;
+
+    @Override
+    public void onDestroy(){
+        dataSource.close();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onResume(){
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause(){
+        dataSource.close();
+        super.onPause();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_teams);
 
-        db = helper.getWritableDatabase();
+        dataSource = new DataSource(this);
+        try {
+            dataSource.open();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
 
         Intent intent = getIntent();
         email = intent.getStringExtra(EMAIL_KEY);
@@ -67,131 +86,80 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         editTextCoachEmail   .setText("GoodLooking@ndAvailable.com");
         editTextPhone        .setText("1594658789");
         editTextEmergency    .setText("3626659856");
-
+        coachArrayList = new ArrayList<>();
         loadSpinner();
     }
 
     public void loadSpinner(){
 
-        cursor = db.rawQuery(
-
-                        "SELECT user_id, fname, lname " +
-                        "  FROM users       " +
-                        " WHERE user_type =    'COACH';", null);
-
-        if(cursor.moveToFirst() && (cursor != null && cursor.getCount()>0)){
-            arrayListCoachIds.clear();
-            arrayListCoachNames.clear();
-            hashMapCoaches.clear();
-            do{
-                int tempId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
-                arrayListCoachIds.add(tempId);
-                String tempFirstAndLastName = cursor.getString(cursor.getColumnIndexOrThrow("fname")) + " " +
-                        cursor.getString(cursor.getColumnIndexOrThrow("lname"));
-                arrayListCoachNames.add(tempFirstAndLastName);
-                hashMapCoaches.put(tempFirstAndLastName, tempId);
-            }while(cursor.moveToNext());
-        }
-
+        coachArrayList.clear();
+        coachArrayList.addAll(dataSource.getListOfUsersAvailableToCoach(currentLeague));
         spinnerCoaches = (Spinner)findViewById(R.id.spinnerCoachesQuickAddTeams);
-        adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListCoachNames);
-
+        adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList.toArray());
         adapterSpinnerCoaches.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCoaches.setAdapter(adapterSpinnerCoaches);
         spinnerCoaches.setOnItemSelectedListener(this);
         spinnerCoaches.setEnabled(true);
-        spinnerCoaches.setSelection(0);
-        cursor.close();
+        Users tempUser = (Users)spinnerCoaches.getSelectedItem();
+        currentUser = tempUser.getUserID();
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String choice = parent.getItemAtPosition(position).toString();
-        currentCoach = hashMapCoaches.get(choice);
-
+        Users tempUser = (Users)parent.getItemAtPosition(position);
+        currentUser = tempUser.getUserID();
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
+        /* hmmm well */
     }
 
     public void createTeam(View view){
 
+        editTeamName = (EditText) findViewById(R.id.editTextNewTeamName);
+        teamName = editTeamName.getText().toString().toUpperCase();
+
         try {
-            EditText editTeamName = (EditText) findViewById(R.id.editTextNewTeamName);
-            teamName = editTeamName.getText().toString().toUpperCase();
-            //currentCoach...
-            ContentValues cv = new ContentValues(4);
-            cv.put("team_name", teamName.toUpperCase());
-            cv.put("league_id", currentLeague);
-            cv.putNull("team_id");
-            cv.put("user_id", currentCoach);
-            db.insert("team", null, cv);
-            textViewTop = (TextView)findViewById(R.id.textViewQuickAddTeamsTop);
-            cursor = db.rawQuery("SELECT t.team_name, u.lname FROM team t, users u " +
-                                 "WHERE u.user_id = t.user_id " +
-                                 "AND t.team_name = '" + teamName.toUpperCase() + "'"
-                    , null);
-            String displayString = "";
-            if(cursor.moveToFirst()){
-                do{
-                    displayString = "Created: " +
-                            cursor.getString(cursor.getColumnIndexOrThrow("team_name")) + ", " +
-                            cursor.getString(cursor.getColumnIndexOrThrow("lname"));
-                }while(cursor.moveToNext());
-                textViewTop.setText(displayString);
-            }else {
-                throw new Exception("insert unsuccessful...");
+
+            ArrayList<Team> tempList = new ArrayList<>();
+            tempList.addAll(dataSource.getListOfTeamsCoachedByUser(currentUser, currentLeague));
+            if(tempList.isEmpty()){
+                Team team = dataSource.createTeam(teamName, currentLeague, currentUser);
+                dataSource.createEnrollment(currentUser, 0, currentLeague, team.getTeamID(),
+                        new Date(), 1.99);
+                toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
+                String msg = "User Enrolled as Coach of the " + team.getTeamName();
+                toastCoach.setText(msg);
+                toastCoach.show();
+            }else{
+                Team tempTeam = tempList.get(0);
+                throw new Exception("This Coach already coaches the " + tempTeam.getTeamName());
             }
-            cursor.close();
-
         }catch(Exception e){
-            toastTeam = Toast.makeText(this, null, Toast.LENGTH_LONG);
+            toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
             String msg = e.getMessage();
-            toastTeam.setText(msg);
-            toastTeam.show();
-
+            toastCoach.setText(msg);
+            toastCoach.show();
         }
-        cursor.close();
     }
 
     public void quickAddCoach(View view){
 
         try {
-            ccv = new ContentValues();
-            fname = editTextFirst.getText().toString();
-            lname = editTextLast.getText().toString();
+            fname = editTextFirst.getText().toString().toUpperCase();
+            lname = editTextLast.getText().toString().toUpperCase();
             phone = Long.parseLong(editTextPhone.getText().toString());
             emerg = Long.parseLong(editTextEmergency.getText().toString());
-            email = editTextCoachEmail.getText().toString();
+            email = editTextCoachEmail.getText().toString().toUpperCase();
 
-            ccv.putNull("user_id");
-            ccv.put("fname", fname.toUpperCase());
-            ccv.put("lname", lname.toUpperCase());
-            ccv.put("phone", phone);
-            ccv.put("emergency", emerg);
-            ccv.put("email", email.toUpperCase());
-            ccv.put("user_type", "COACH");
-            ccv.put("pass", "PASS");
-            db.insert("users", null, ccv);
-            textViewTop = (TextView)findViewById(R.id.textViewQuickAddTeamsTop);
-            cursor = db.rawQuery("SELECT user_type, fname, lname FROM users WHERE email = '" + email.toUpperCase() + "';", null);
-            String displayString = "";
-            if(cursor.moveToFirst()){
-                do{
-                    displayString = "Created: " +
-                                    cursor.getString(cursor.getColumnIndexOrThrow("user_type")) + " " +
-                                    cursor.getString(cursor.getColumnIndexOrThrow("fname"))    + " "  +
-                                    cursor.getString(cursor.getColumnIndexOrThrow("lname"));
-                }while(cursor.moveToNext());
-                textViewTop.setText(displayString);
-            }else {
-                throw new Exception("insert unsuccessful...");
+            if(fname.length() > 1 && lname.length() > 1 && phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
+                Users user = dataSource.createUsers(fname.toUpperCase(), lname.toUpperCase(), phone, email.toUpperCase(), emerg,
+                        "COACH", "PASS");
+                textViewTop = (TextView) findViewById(R.id.textViewQuickAddTeamsTop);
+                textViewTop.setText(user.toString());
+                loadSpinner();
             }
-            cursor.close();
-            loadSpinner();
-
         }catch(Exception e){
 
             toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);

@@ -7,6 +7,4 @@ public class ConnectionConstants {
 
     public static final String SERVER_URL = "http://capstone1.netai.net/devDave/postDemo.php";
 
-
-
 }

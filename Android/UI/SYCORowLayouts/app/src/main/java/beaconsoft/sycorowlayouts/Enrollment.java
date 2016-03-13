@@ -14,7 +14,7 @@ public class Enrollment {
     private int leagueID;
     private int teamID;
     private Date enrollmentDate;
-    private BigDecimal fee;
+    private Double fee;
 
     public int getEnrollmentID() {
         return enrollmentID;
@@ -64,11 +64,11 @@ public class Enrollment {
         this.enrollmentDate = enrollmentDate;
     }
 
-    public BigDecimal getFee() {
+    public Double getFee() {
         return fee;
     }
 
-    public void setFee(BigDecimal fee) {
+    public void setFee(double fee) {
         this.fee = fee;
     }
 
