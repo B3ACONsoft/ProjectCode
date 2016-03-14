@@ -2,7 +2,7 @@ package beaconsoft.sycorowlayouts.activities;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.MySQLiteHelper;
-import beaconsoft.sycorowlayouts.dbobject.Users;
+import beaconsoft.sycorowlayouts.dbobjects.Users;
 import string.utils.ProperCase;
 import android.content.Intent;
 import android.os.Bundle;
@@ -61,9 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendToLeaguesActivity(String email){
 
-        ArrayList<Users> intentList = new ArrayList<>();
-        intentList.addAll(dataSource.getListOfUsersDistinct(email.toUpperCase()));
-        Users tempUser = intentList.get(0);
+        Users tempUser = dataSource.getUserByEmail(email.toUpperCase());
                 int adminId  = tempUser.getUserID();
                 String fname = tempUser.getFname();
                 fname = ProperCase.toProperCase(fname);
@@ -82,14 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendToCoachHomeActivity(String email){
 
-        int coachId = 0;
-        String name    = "no name initialized";
-
-        ArrayList<Users> intentList = new ArrayList<>();
-        intentList.addAll(dataSource.getListOfUsersDistinct(email));
-        Users tempUser = intentList.get(0);
-        coachId = tempUser.getUserID();
-        email = tempUser.getEmail();
+        Users tempUser = dataSource.getUserByEmail(email.toUpperCase());
+        int coachId  = tempUser.getUserID();
         email = email.toUpperCase();
 
         Intent intent = new Intent(this, CoachHomeActivity.class);

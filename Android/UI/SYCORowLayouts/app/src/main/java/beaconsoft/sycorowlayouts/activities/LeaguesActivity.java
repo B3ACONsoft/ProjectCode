@@ -16,11 +16,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import beaconsoft.sycorowlayouts.DataSource;
+import beaconsoft.sycorowlayouts.dbobjects.League;
 import beaconsoft.sycorowlayouts.R;
-import beaconsoft.sycorowlayouts.dbobject.League;
-import beaconsoft.sycorowlayouts.dbobject.Sport;
-import beaconsoft.sycorowlayouts.dbobject.Team;
-import beaconsoft.sycorowlayouts.dbobject.Users;
+import beaconsoft.sycorowlayouts.dbobjects.Sport;
+import beaconsoft.sycorowlayouts.dbobjects.Team;
+import beaconsoft.sycorowlayouts.dbobjects.Users;
 
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 

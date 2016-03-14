@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts.dbobject;
+package beaconsoft.sycorowlayouts.dbobjects;
 
 import java.util.Date;
 
