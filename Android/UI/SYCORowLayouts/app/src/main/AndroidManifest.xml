@@ -17,16 +17,15 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" />
+        <activity android:name="activities.MainActivity" />
         <activity
-            android:name=".LeaguesActivity"
+            android:name="activities.LeaguesActivity"
             android:label="Administrative Dashboard"
             android:launchMode="singleTop"
             android:windowActionBar="false" />
         <activity
-            android:name=".LoginActivity"
-            android:label="Super Yeti Coach"
-            android:parentActivityName=".MainActivity">
+            android:name="activities.LoginActivity"
+            android:label="Super Yeti Coach">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,60 +33,60 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".QuickAddPlayersActivity"
+            android:name="activities.QuickAddPlayersActivity"
             android:label="Quick Add Player"
-            android:parentActivityName=".LeaguesActivity">
+            android:parentActivityName="activities.LeaguesActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
+                android:value="beaconsoft.sycorowlayouts.activities.LeaguesActivity" />
         </activity>
         <activity
-            android:name=".QuickEditPlayerActivity"
+            android:name="activities.QuickEditPlayerActivity"
             android:label="Edit Player"
-            android:parentActivityName=".LeaguesActivity">
+            android:parentActivityName="activities.LeaguesActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
+                android:value="beaconsoft.sycorowlayouts.activities.LeaguesActivity" />
         </activity>
         <activity
-            android:name=".QuickAddTeamsActivity"
+            android:name="activities.QuickAddTeamsActivity"
             android:label="Quick Add Teams"
-            android:parentActivityName=".LeaguesActivity">
+            android:parentActivityName="activities.LeaguesActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
+                android:value="beaconsoft.sycorowlayouts.activities.LeaguesActivity" />
         </activity>
         <activity
-            android:name=".UserRosterActivity"
+            android:name="activities.UserRosterActivity"
             android:label="Back to Home Screen"
-            android:parentActivityName=".UserHomeActivity">
+            android:parentActivityName="activities.UserHomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UserHomeActivity" />
+                android:value="activities.UserHomeActivity" />
         </activity>
         <activity
-            android:name=".UserHomeActivity"
+            android:name="activities.UserHomeActivity"
             android:label="Users Home Panel" />
         <activity
-            android:name=".CoachHomeActivity"
+            android:name="activities.CoachHomeActivity"
             android:label="Coach&apos;s Panel" />
         <activity
-            android:name=".CalendarActivity"
+            android:name="activities.CalendarActivity"
             android:label="@string/title_activity_calendar"
-            android:parentActivityName=".LeaguesActivity"
+            android:parentActivityName="activities.LeaguesActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
+                android:value="beaconsoft.sycorowlayouts.activities.LeaguesActivity" />
         </activity>
         <activity
-            android:name=".EditLeaguesActivity"
+            android:name="activities.EditLeaguesActivity"
             android:label="@string/title_activity_edit_leagues"
-            android:parentActivityName=".LeaguesActivity"
+            android:parentActivityName="activities.LeaguesActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="beaconsoft.sycorowlayouts.LeaguesActivity" />
+                android:value="beaconsoft.sycorowlayouts.activities.LeaguesActivity" />
         </activity>
     </application>
 
