@@ -12,10 +12,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
+
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
-import beaconsoft.sycorowlayouts.dbobject.Team;
-import beaconsoft.sycorowlayouts.dbobject.Users;
+import beaconsoft.sycorowlayouts.dbobjects.Team;
+import beaconsoft.sycorowlayouts.dbobjects.Users;
 
 public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -75,8 +77,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
-        coachArrayList = new ArrayList<>();
-        spinnerCoaches = (Spinner)findViewById(R.id.spinnerCoachesQuickAddTeams);
+
         Intent intent = getIntent();
         email = intent.getStringExtra(EMAIL_KEY);
         currentLeague = intent.getIntExtra(LEAGUE_KEY, 0);
@@ -85,39 +86,27 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         editTextPhone     = (EditText)findViewById(R.id.editTextCoachPhone);
         editTextEmergency = (EditText)findViewById(R.id.editTextCoachEmergency);
         editTextCoachEmail= (EditText)findViewById(R.id.editTextCoachEmail);
-        editTextFirst.setText("El");
+        editTextFirst        .setText("El");
         editTextLast         .setText("Guapo");
         editTextCoachEmail   .setText("GoodLooking@ndAvailable.com");
         editTextPhone        .setText("1594658789");
         editTextEmergency    .setText("3626659856");
-
-
+        coachArrayList = new ArrayList<>();
         loadSpinner();
     }
 
     public void loadSpinner(){
 
-        spinnerCoaches.setEnabled(true);
-        for (View lol: spinnerCoaches.getTouchables()){
-            lol.setEnabled(true);
-        }
         coachArrayList.clear();
         coachArrayList.addAll(dataSource.getListOfUsersAvailableToCoach(currentLeague));
-
+        spinnerCoaches = (Spinner)findViewById(R.id.spinnerCoachesQuickAddTeams);
         adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList.toArray());
         adapterSpinnerCoaches.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCoaches.setAdapter(adapterSpinnerCoaches);
         spinnerCoaches.setOnItemSelectedListener(this);
         spinnerCoaches.setEnabled(true);
         Users tempUser = (Users)spinnerCoaches.getSelectedItem();
-        if(tempUser != null) {
-            currentUser = tempUser.getUserID();
-        }else {
-            spinnerCoaches.setEnabled(false);
-            for(View lol: spinnerCoaches.getTouchables()){
-                lol.setEnabled(false);
-            }
-        }
+        currentUser = tempUser.getUserID();
     }
 
     @Override
@@ -142,11 +131,13 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
             tempList.addAll(dataSource.getListOfTeamsCoachedByUser(currentUser, currentLeague));
             if(tempList.isEmpty()){
                 Team team = dataSource.createTeam(teamName, currentLeague, currentUser);
-
+                dataSource.createEnrollment(currentUser, 0, currentLeague, team.getTeamID(),
+                        new Date(), 1.99);
                 toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
-                String msg = "The " + team.getTeamName() + " are coached by " + dataSource.getUserByUserId(team.getUserID());
+                String msg = "User Enrolled as Coach of the " + team.getTeamName();
                 toastCoach.setText(msg);
                 toastCoach.show();
+                loadSpinner();
             }else{
                 Team tempTeam = tempList.get(0);
                 throw new Exception("This Coach already coaches the " + tempTeam.getTeamName());
@@ -162,7 +153,6 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
     public void quickAddCoach(View view){
 
         try {
-
             fname = editTextFirst.getText().toString().toUpperCase();
             lname = editTextLast.getText().toString().toUpperCase();
             phone = Long.parseLong(editTextPhone.getText().toString());

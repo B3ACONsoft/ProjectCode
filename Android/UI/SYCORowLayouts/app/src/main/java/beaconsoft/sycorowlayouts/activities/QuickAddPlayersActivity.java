@@ -11,21 +11,20 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
-import beaconsoft.sycorowlayouts.dbobject.Enrollment;
-import beaconsoft.sycorowlayouts.dbobject.Player;
-import beaconsoft.sycorowlayouts.dbobject.Users;
+import beaconsoft.sycorowlayouts.dbobjects.Enrollment;
+import beaconsoft.sycorowlayouts.dbobjects.Player;
+import beaconsoft.sycorowlayouts.dbobjects.Users;
 
 public class QuickAddPlayersActivity extends AppCompatActivity {
 
     /* Set up private fields so that each method can call them. Getters and setters for another day... */
 
+    private SQLiteDatabase dbw;
     private CheckBox kidBox;
     private EditText et1;
     private EditText et2;
@@ -39,64 +38,32 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
-
+    private DataSource dataSource;
     private String email;
+    private String name;
     private int currentLeague;
     private int currentTeam;
-
-    private DataSource dataSource;
-    private Toast toastErrors;
+    private int currentAdmin;
 
     /* This cursor will be used for every transaction */
     private Cursor cursor;
 
     @Override
-    public void onDestroy(){
-        dataSource.close();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onResume(){
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        super.onResume();
-    }
-
-    @Override
-    public void onPause(){
-        dataSource.close();
-        super.onPause();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_players);
-
-        toastErrors = Toast.makeText(this, null, Toast.LENGTH_LONG);
-        String msg = "";
-
-
-
         dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            msg = e.getMessage();
-            toastErrors.setText(msg);
-        }
+
         /**
          * After setting the XML file in it's place as UI, get the intent and empty its contents into
          * the "current" variables.
          */
         Intent intent = getIntent();
+        name = intent.getStringExtra(NAME_KEY);
         email = intent.getStringExtra(EMAIL_KEY);
         currentLeague = intent.getIntExtra(LEAGUE_KEY, 0);
         currentTeam   = intent.getIntExtra(TEAM_KEY, 0);
+        currentAdmin  = intent.getIntExtra(ADMIN_KEY, 0);
 
         /**
          * get the email and check box into a variable for alterations
@@ -137,8 +104,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
          * administrator will be adding things
          */
         textViewAdminEmail.setText(email);
-        toastErrors.setText(msg);
-        toastErrors.show();
+
     }
 
     /**
@@ -182,17 +148,18 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
      * Opens a database and adds information into the USERS and PLAYERS tables before creating a record
      * in the ENROLLMENT table. The order is important and as stated above.
      *
-     * First we insert into USERS using the new DOA model: create a DataSource and "create" users and players.
+     * First we insert into USERS:
+     *   dbw.insert("users", null, insertValues); [user_id=null, fname, lname, phone, email, emergency, user_type, pass]
      *
      * Then we query USERS for the user_id, which was assigned automatically on insert, using the email, which is unique
-     *   dataSource.getUserById(int id)
+     *   cursor = dbw.rawQuery("SELECT user_id FROM users WHERE email = '" + email + "';", null);
      *
      * Then we insert into the PLAYERS table, either the first and last name of the USER's kid
      * or the first and last name of the USER(s).
-     *   dataSource.createPlayer(...parameters here)
+     *   dbw.insert("player", null, playerValues); [player_id=null, fname, lname, user_id]
      *
      * Then we query PLAYER for the player_id assigned on insert.
-     *   dataSource.getPlayerById(int id)
+     *   cursor = dbw.rawQuery("SELECT player_id FROM player WHERE fname = '" + childFirst + "' AND lname = '" + childLast + "' AND user_id = " + userId, null);
      *
      * This allows us to insert into the ENROLLMENT table and charge the client while making a record.
      * [enrollment_id=null, user_id, player_id, team_id, league_id, enrollment_date, fee]
@@ -208,17 +175,23 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
      */
     public void quickAddPlayer(View view){
 
+//        dbw = helper.getWritableDatabase();
+
         /**
          * taking in strings from edittexts
          */
+        ContentValues insertValues = new ContentValues();
         String  first      =                  et1.getText().toString().toUpperCase();
         String  last       =                  et2.getText().toString().toUpperCase();
         String  childFirst =                  et3.getText().toString().toUpperCase();
         String  childLast  =                  et4.getText().toString().toUpperCase();
-        long  phone        =                Long.parseLong(et5.getText().toString());
+        Long phone         =                Long.parseLong(et5.getText().toString());
         String  email      =                  et6.getText().toString().toUpperCase();
-        long  emergency    =                Long.parseLong(et7.getText().toString());
+        Long emergency     =                Long.parseLong(et7.getText().toString());
 
+        /**
+         * loading the contentvalues for insert into user
+         */
         try {
 
             boolean haveKid = kidBox.isChecked();
@@ -235,79 +208,72 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
             /**
              * if there is no surrogate relationship, the the names of the user are added to the PLAYER table
              */
-            if (haveKid) {
+            if (!haveKid) {
                 childFirst = first;
                 childLast = last;
             }
 
-            if(dataSource.getUserByEmail(email) == null) {
-
-                /**
-                 * Add the user and player, if necessary
-                 */
-                // TODO: Add the email module with the password sent to email in it....
-                dataSource.createUsers(first, last, phone, email, emergency, "USER", "PASS");
-            }
             /**
              * query for a user_id necessary to adding any PLAYER
              */
-            Users user = dataSource.getUserByEmail(email);
-
-            /**
-             * If the user is already a player on another team, then we just load them in as their
-             * information in for enrollment
-             */
+        Users user;
             Player player;
-            if(dataSource.getPlayerByNameAndUserID(childFirst, childLast, user.getUserID()) == null) {
-                player = dataSource.createPlayer(childFirst.toUpperCase(), childLast.toUpperCase(), user.getUserID());
-            }else {
-                /**
-                 * clear content values and close the cursor
-                 */
+            if(dataSource.checkForUserByEmail(email)){
+                user = dataSource.getUserByEmail(email.toUpperCase());
+                if(dataSource.checkForPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID())){
+                    player = dataSource.getPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID());
+                }else{
+                    player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
+                }
+            }else{
+                user = dataSource.createUsers(first, last, phone, email, emergency, "USER", "PASS");
+                if(dataSource.checkForPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID())){
+                    player = dataSource.getPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID());
+                }else{
+                    player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
+                }
+            }
 
-                /**
-                 * new cursor from the database finds the player_id from a recently inserted PLAYER record
-                 */
-                player = dataSource.getPlayerByNameAndUserID(childFirst, childLast, user.getUserID());
-            }
             /**
-             * load the enrollment contentvalues
+             * clear content values and close the cursor
              */
-            Enrollment enrollment;
-            if(dataSource.getEnrollmentByLeagueTeamAndPlayerID(currentLeague, currentTeam, player.getPlayerID()) == null) {
-                enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(), 1.99);
-            }
-            else{
-                throw new Exception("This player is already assigned to this team...");
-            }
+            Enrollment enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(), 1.99);
+
             //clearForm(findViewById(R.id.buttonQuickAddPlayerAddPlayer));
 
             /**
-             * A successful ENROLLMENT will requre successful inserts into the USER and PLAYER
-             * table. A toast will show the last record inserted.
+             * A successful ENROLLMENT will requre successful inserts into the USER and PLAYER table. There is a hidden textview
+             * beneathe the last buttons that will show the last record inserted.
              */
+            enrollment = dataSource.getEnrollmentByPlayerUserLeagueAndTeam(player.getPlayerID(), player.getUserID(), currentLeague, currentTeam);
+
+
+            int successfulEID = 0;
+            int successfulUID = 0;
+            int successfulPID = 0;
+            int successfulLID = 0;
+            int successfulTID = 0;
+
+            if (enrollment != null) {
+
+                    successfulEID = enrollment.getEnrollmentID();
+                    successfulUID = enrollment.getUserID();
+                    successfulPID = enrollment.getPlayerID();
+                    successfulLID = enrollment.getLeagueID();
+
+                    successfulTID = enrollment.getTeamID();
+            }else{
+                throw new Exception("Bad Player Creation...please debug");
+            }
 
             TextView textViewSuccess = (TextView) findViewById(R.id.textViewSuccessfulInsert);
+            textViewSuccess.setText("EID: " + successfulEID + " UID: " + successfulUID + " PID: "
+                    + successfulPID + " LID:" + successfulLID + " TID: " + successfulTID);
 
-        if(enrollment != null) {
-            String successfulUID = "" + enrollment.getUserID();
-            String successfulPID = "" + enrollment.getPlayerID();
-            String successfulEID = "" + enrollment.getEnrollmentID();
-
-            /**
-             * close the cursor and display the recent record entry. PLAYER keeps an accurate account
-             * of individual participants in individual team sports while enrollment keeps track of
-             * the number of transactions and profit accrued.
-             */
-
-            textViewSuccess.setText("New Enrollment/User/Player\nEID:" + successfulEID + " UID:" + successfulUID + " PID:" + successfulPID);
-        }else{
-            textViewSuccess.setText("WTF");
-        }
             /**
              * All Exceptions are caught and displayed here, with a toast, and inside of the catch
              * block, every entry point is tested for minumum input first.
-             */
+              */
         }catch(Exception e){
 
             Toast toast = Toast.makeText(this, null, Toast.LENGTH_LONG);

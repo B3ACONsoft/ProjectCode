@@ -25,8 +25,7 @@
             android:windowActionBar="false" />
         <activity
             android:name=".activities.LoginActivity"
-            android:label="Super Yeti Coach"
-            android:parentActivityName=".activities.MainActivity">
+            android:label="Super Yeti Coach">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -60,7 +59,7 @@
         <activity
             android:name=".activities.UserRosterActivity"
             android:label="Back to Home Screen"
-            android:parentActivityName=".activities.UserHomeActivity">
+            android:parentActivityName="activities.UserHomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.UserHomeActivity" />
