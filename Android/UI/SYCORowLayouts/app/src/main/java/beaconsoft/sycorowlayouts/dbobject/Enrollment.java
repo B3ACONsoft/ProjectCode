@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.dbobject;
 
 import java.math.BigDecimal;
 import java.util.Date;

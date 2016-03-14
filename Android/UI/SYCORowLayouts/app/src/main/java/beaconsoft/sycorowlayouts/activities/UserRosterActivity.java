@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.activities;
 
 import android.app.ProgressDialog;
 import android.database.sqlite.SQLiteDatabase;

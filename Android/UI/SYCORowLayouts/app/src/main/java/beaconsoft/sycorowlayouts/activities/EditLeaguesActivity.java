@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.activities;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+
+import beaconsoft.sycorowlayouts.R;
 
 public class EditLeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 

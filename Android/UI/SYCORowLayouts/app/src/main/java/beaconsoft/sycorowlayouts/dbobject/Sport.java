@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.dbobject;
 
 /**
  * Created by Patrick on 3/8/2016.

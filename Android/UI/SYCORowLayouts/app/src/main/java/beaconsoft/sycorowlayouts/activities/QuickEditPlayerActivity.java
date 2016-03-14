@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.HashMap;
+
+import beaconsoft.sycorowlayouts.R;
 
 public class QuickEditPlayerActivity extends AppCompatActivity {
 
