@@ -1,5 +1,8 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.activities;
 
+import beaconsoft.sycorowlayouts.DataSource;
+import beaconsoft.sycorowlayouts.MySQLiteHelper;
+import beaconsoft.sycorowlayouts.dbobject.Users;
 import string.utils.ProperCase;
 import android.content.Intent;
 import android.os.Bundle;

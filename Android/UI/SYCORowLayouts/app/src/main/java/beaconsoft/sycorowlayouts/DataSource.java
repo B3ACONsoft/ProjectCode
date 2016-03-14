@@ -5,12 +5,20 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import beaconsoft.sycorowlayouts.dbobject.Attendance;
+import beaconsoft.sycorowlayouts.dbobject.Enrollment;
+import beaconsoft.sycorowlayouts.dbobject.Event;
+import beaconsoft.sycorowlayouts.dbobject.League;
+import beaconsoft.sycorowlayouts.dbobject.Place;
+import beaconsoft.sycorowlayouts.dbobject.Player;
+import beaconsoft.sycorowlayouts.dbobject.Sport;
+import beaconsoft.sycorowlayouts.dbobject.Team;
+import beaconsoft.sycorowlayouts.dbobject.Users;
 
 /**
  * Created by Patrick on 3/8/2016.
@@ -189,18 +197,18 @@ public class DataSource {
         return newUser;
     }
 
-    public List<Users> getListOfUsers(){
-        List<Users> usersList = new ArrayList<>();
+    public Users getUserByEmail(String email) {
         Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
-                null, null, null, null, null);
+                MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase() + "'", null, null, null, null);
         cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Users tempUser = cursorToUser(cursor);
-            usersList.add(tempUser);
-            cursor.moveToNext();
-        }
-        cursor.close();
-        return usersList;
+        return cursorToUser(cursor);
+    }
+
+    public Users getUserByUserId(int userID){
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
+                MySQLiteHelper.COLUMN_USER_ID + " = " + userID, null, null, null, null);
+        cursor.moveToFirst();
+        return cursorToUser(cursor);
     }
 
     public List<Users> getListOfUsersDistinct(String email){
@@ -450,6 +458,14 @@ public class DataSource {
         return newPlayer;
     }
 
+    public Player getPlayerByNameAndUserID(String childFirst, String childLast, int userID) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
+                MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " = " + userID + " AND " + MySQLiteHelper.COLUMN_PLAYER_FIRST + " = '" + childFirst +
+                        "' AND " + MySQLiteHelper.COLUMN_PLAYER_LAST + " = '" + childLast + "';", null, null, null, null);
+        cursor.moveToFirst();
+        return cursorToPlayer(cursor);
+    }
+
     private Player cursorToPlayer(Cursor cursor) {
         Player newPlayer = new Player();
         newPlayer.setPlayerID(cursor.getInt(0));
@@ -514,6 +530,16 @@ public class DataSource {
         newEnrollment.setEnrollmentDate(new Date(cursor.getString(5)));
         newEnrollment.setFee(cursor.getDouble(6));
         return newEnrollment;
+    }
+
+    public Enrollment getEnrollmentByLeagueTeamAndPlayerID(int currentLeague, int currentTeam, int playerID) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
+                MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " = " + playerID + " AND " +
+                MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " + currentLeague + " AND " +
+                MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeam + ";",
+                null, null, null, null);
+        cursor.moveToFirst();
+        return cursorToEnrollment(cursor);
     }
 
     public List<Enrollment> getListOfEnrollments(){
@@ -688,4 +714,7 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
+
+
+
 }

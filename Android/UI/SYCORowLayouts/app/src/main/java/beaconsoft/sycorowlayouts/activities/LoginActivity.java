@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -32,6 +32,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import beaconsoft.sycorowlayouts.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

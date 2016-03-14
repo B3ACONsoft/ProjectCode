@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.activities;
 
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -14,6 +14,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import beaconsoft.sycorowlayouts.DataSource;
+import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.dbobject.League;
+import beaconsoft.sycorowlayouts.dbobject.Sport;
+import beaconsoft.sycorowlayouts.dbobject.Team;
+import beaconsoft.sycorowlayouts.dbobject.Users;
 
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 

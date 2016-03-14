@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.dbobject;
 
 import java.util.EnumSet;
 

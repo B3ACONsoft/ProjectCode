@@ -1,9 +1,11 @@
-package beaconsoft.sycorowlayouts;
+package beaconsoft.sycorowlayouts.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+
+import beaconsoft.sycorowlayouts.R;
 
 public class UserHomeActivity extends AppCompatActivity {
 
