@@ -81,6 +81,13 @@ public class Users {
     }
 
     public String toString(){
-        return userID + " " + fname + " " + lname;
+        String str = "";
+        if(getUser_type().equals("COACH")){
+            str += "Coach ";
+        } else if (getUser_type().equals("ADMIN")){
+            str += "Admin";
+        }
+        str += userID + " " + fname + " " + lname;
+        return str;
     }
 }

@@ -137,6 +137,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
                 String msg = "User Enrolled as Coach of the " + team.getTeamName();
                 toastCoach.setText(msg);
                 toastCoach.show();
+                loadSpinner();
             }else{
                 Team tempTeam = tempList.get(0);
                 throw new Exception("This Coach already coaches the " + tempTeam.getTeamName());

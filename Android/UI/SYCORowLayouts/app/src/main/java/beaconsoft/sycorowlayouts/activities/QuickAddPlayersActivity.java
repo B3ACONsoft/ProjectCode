@@ -14,7 +14,11 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.dbobjects.Enrollment;
+import beaconsoft.sycorowlayouts.dbobjects.Player;
+import beaconsoft.sycorowlayouts.dbobjects.Users;
 
 public class QuickAddPlayersActivity extends AppCompatActivity {
 
@@ -34,7 +38,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
-
+    private DataSource dataSource;
     private String email;
     private String name;
     private int currentLeague;
@@ -48,6 +52,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_players);
+        dataSource = new DataSource(this);
 
         /**
          * After setting the XML file in it's place as UI, get the intent and empty its contents into
@@ -180,24 +185,16 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
         String  last       =                  et2.getText().toString().toUpperCase();
         String  childFirst =                  et3.getText().toString().toUpperCase();
         String  childLast  =                  et4.getText().toString().toUpperCase();
-        String  phone      =                  et5.getText().toString().toUpperCase();
+        Long phone         =                Long.parseLong(et5.getText().toString());
         String  email      =                  et6.getText().toString().toUpperCase();
-        String  emergency  =                  et7.getText().toString().toUpperCase();
+        Long emergency     =                Long.parseLong(et7.getText().toString());
 
         /**
          * loading the contentvalues for insert into user
          */
         try {
-            insertValues.put("emergency", Long.parseLong(emergency));
-            insertValues.put("phone", Long.parseLong(phone));
-            insertValues.putNull("user_id");
-            insertValues.put("fname", first.toUpperCase());
-            insertValues.put("lname", last.toUpperCase());
-            insertValues.put("email", email.toUpperCase());
-            insertValues.put("user_type", "USER");
-            insertValues.put("pass", "PASS");
-            dbw.insert("users", null, insertValues);
-            boolean haveKid = (childFirst != null && childLast != null) || (childFirst.equals("") && childLast.equals("")) || kidBox.isChecked();
+
+            boolean haveKid = kidBox.isChecked();
 
             /**
              * Exception handling takes care of improper information entry, first, with a checkbox for entering the child's name.
@@ -211,7 +208,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
             /**
              * if there is no surrogate relationship, the the names of the user are added to the PLAYER table
              */
-            if (haveKid) {
+            if (!haveKid) {
                 childFirst = first;
                 childLast = last;
             }
@@ -219,64 +216,28 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
             /**
              * query for a user_id necessary to adding any PLAYER
              */
-            cursor = dbw.rawQuery("SELECT user_id FROM users WHERE email = '" + email + "';", null);
-            int userId = 0;
-            if (cursor.moveToFirst() && (cursor != null && cursor.getCount() > 0)) {
-                do {
-                    userId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
-                } while (cursor.moveToNext());
+        Users user;
+            Player player;
+            if(dataSource.checkForUserByEmail(email)){
+                user = dataSource.getUserByEmail(email.toUpperCase());
+                if(dataSource.checkForPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID())){
+                    player = dataSource.getPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID());
+                }else{
+                    player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
+                }
+            }else{
+                user = dataSource.createUsers(first, last, phone, email, emergency, "USER", "PASS");
+                if(dataSource.checkForPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID())){
+                    player = dataSource.getPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID());
+                }else{
+                    player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
+                }
             }
-
-            /**
-             * load new contentvalues for PLAYER table insert
-             */
-            ContentValues playerValues = new ContentValues();
-            playerValues.putNull("player_id");
-            playerValues.put("fname", childFirst.toUpperCase());
-            playerValues.put("lname", childLast.toUpperCase());
-            playerValues.put("user_id", userId);
-
-            dbw.insert("player", null, playerValues);
 
             /**
              * clear content values and close the cursor
              */
-            ContentValues enrollmentValues = new ContentValues();
-            cursor.close();
-
-            /**
-             * new cursor from the database finds the player_id from a recently inserted PLAYER record
-             */
-            cursor = dbw.rawQuery("SELECT player_id FROM player WHERE fname = '" + childFirst + "' AND lname = '" + childLast + "' AND user_id = " + userId, null);
-            int playerId = 0;
-            if (cursor.moveToFirst() && (cursor != null && cursor.getCount() > 0)) {
-                do {
-                    playerId = cursor.getInt(cursor.getColumnIndexOrThrow("player_id"));
-                } while (cursor.moveToNext());
-            }
-
-            /**
-             * Get today's date in dd-MM-yyyy format
-             */
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-            String date = sdf.format(new Date());
-
-            /**
-             * load the enrollment contentvalues
-             */
-            enrollmentValues.putNull("enrollment_id");
-            enrollmentValues.put("user_id"        , userId);
-            enrollmentValues.put("player_id"      , playerId);
-            enrollmentValues.put("team_id"        , currentTeam);
-            enrollmentValues.put("league_id"      , currentLeague);
-            enrollmentValues.put("enrollment_date", date);
-            enrollmentValues.put("fee"            , 1.99);
-
-            /**
-             * insert enrollment values into ENROLLMENT an close the cursor, clear the form for the next entry
-             */
-            dbw.insert("enrollment", null, enrollmentValues);
-            cursor.close();
+            Enrollment enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(), 1.99);
 
             //clearForm(findViewById(R.id.buttonQuickAddPlayerAddPlayer));
 
@@ -284,29 +245,30 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
              * A successful ENROLLMENT will requre successful inserts into the USER and PLAYER table. There is a hidden textview
              * beneathe the last buttons that will show the last record inserted.
              */
-            cursor = dbw.rawQuery("SELECT enrollment_id, user_id, player_id FROM enrollment WHERE player_id = " + playerId, null);
-            int successfulEID = 0;
-            String successfulUID = "fail";
-            String successfulPID = "fail";
+            enrollment = dataSource.getEnrollmentByPlayerUserLeagueAndTeam(player.getPlayerID(), player.getUserID(), currentLeague, currentTeam);
 
-            if (cursor.moveToFirst() && (cursor != null && cursor.getCount() > 0)) {
-                do {
-                    successfulEID = cursor.getInt(cursor.getColumnIndexOrThrow("enrollment_id"));
-                    successfulUID = cursor.getString(cursor.getColumnIndexOrThrow("user_id"));
-                    successfulPID = cursor.getString(cursor.getColumnIndexOrThrow("player_id"));
-                } while (cursor.moveToNext());
+
+            int successfulEID = 0;
+            int successfulUID = 0;
+            int successfulPID = 0;
+            int successfulLID = 0;
+            int successfulTID = 0;
+
+            if (enrollment != null) {
+
+                    successfulEID = enrollment.getEnrollmentID();
+                    successfulUID = enrollment.getUserID();
+                    successfulPID = enrollment.getPlayerID();
+                    successfulLID = enrollment.getLeagueID();
+
+                    successfulTID = enrollment.getTeamID();
+            }else{
+                throw new Exception("Bad Player Creation...please debug");
             }
 
-            /**
-             * close the cursor and display the recent record entry. PLAYER keeps an accurate account
-             * of individual participants in individual team sports while enrollment keeps track of
-             * the number of transactions and profit accrued.
-             */
-            cursor.close();
             TextView textViewSuccess = (TextView) findViewById(R.id.textViewSuccessfulInsert);
-            textViewSuccess.setText(successfulEID + " " + successfulUID + " " + successfulPID);
-
-
+            textViewSuccess.setText("EID: " + successfulEID + " UID: " + successfulUID + " PID: "
+                    + successfulPID + " LID:" + successfulLID + " TID: " + successfulTID);
 
             /**
              * All Exceptions are caught and displayed here, with a toast, and inside of the catch

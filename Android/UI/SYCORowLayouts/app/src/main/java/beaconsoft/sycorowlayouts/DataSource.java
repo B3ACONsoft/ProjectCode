@@ -199,6 +199,18 @@ public class DataSource {
         return newUser;
     }
 
+    public boolean checkForUserByEmail(String email){
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
+                MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase(),
+                null,null,null,null);
+        cursor.moveToNext();
+        if(cursor.getCount() == 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public List<Users> getListOfUsers(){
         List<Users> usersList = new ArrayList<>();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
@@ -216,9 +228,19 @@ public class DataSource {
     public Users getUserByEmail(String email){
         Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
                 MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase() + "'", null, null, null, null);
-        cursor.moveToFirst();
         cursor.moveToNext();
-        return cursorToUser(cursor);
+        if(cursor.getCount() == 1) {
+            return cursorToUser(cursor);
+        }else if(cursor.getCount() == 0){
+            return null;
+        }else{
+            try {
+                throw new Exception("There is more than one user with that email. The database is not atomic...");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new Users();
     }
 
     public List<Users> getListOfUsersAvailableToCoach(int currentLeague){
@@ -454,7 +476,7 @@ public class DataSource {
         return newPlayer;
     }
 
-    public boolean checkPlayerByFirstLastAndUserId(String first, String last, int userID){
+    public boolean checkForPlayerByFirstLastAndUserId(String first, String last, int userID){
         Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
                 MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " = " + userID + " AND " +
                         MySQLiteHelper.COLUMN_FIRST + " = '" + first + "' AND " +
@@ -554,6 +576,28 @@ public class DataSource {
         newEnrollment.setEnrollmentDate(new Date(cursor.getString(5)));
         newEnrollment.setFee(cursor.getDouble(6));
         return newEnrollment;
+    }
+
+    public Enrollment getEnrollmentByPlayerUserLeagueAndTeam(int playerID, int userID, int currentLeague, int currentTeam) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
+                MySQLiteHelper.COLUMN_PLAYER_ID + " = " + playerID + " AND " +
+                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID + " = " + userID + " AND " +
+                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " + currentLeague + " AND " +
+                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + "';",
+                null, null, null, null);
+        if(cursor.getCount() == 0){
+            return null;
+        }else if(cursor.getCount() == 1){
+            return cursorToEnrollment(cursor);
+        }else
+        {
+            try {
+                throw new Exception("There is more than one record with these parameters. The database is not atomic...");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new Enrollment();
     }
 
     public List<Enrollment> getListOfEnrollments(){
@@ -728,4 +772,7 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
+
+
+
 }
