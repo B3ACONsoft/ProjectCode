@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,12 +15,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
+import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.dbobjects.League;
+import beaconsoft.sycorowlayouts.dbobjects.Sport;
 
 public class EditLeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
@@ -33,16 +40,10 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
     private Button buttonCreateSport;
     private Button buttonDeleteLeague;
     private Button buttonDeleteSport;
-    private ArrayList<String> arrayListLeagueNames;
-    private ArrayList<Integer> arrayListLeagueIDs;
-    private HashMap<String, Integer> hashMapLeagues;
+    private ArrayList<League> arrayListLeagues;
     private ArrayAdapter arrayAdapterSpinnerLeagues;
-    private ArrayList<String> arrayListSportNames;
-    private ArrayList<Integer> arrayListSportIDs;
-    private HashMap<String, Integer> hashMapSports;
+    private ArrayList<Sport> arrayListSports;
     private ArrayAdapter arrayAdapterSpinnerSports;
-    private SQLiteDatabase db;
-    private Cursor cursor;
     private Intent intentIncoming;
     private int currentAdminId;
     private int currentLeague;
@@ -51,6 +52,50 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
     private final String EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
     private final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
+    Toast toast;
+    private DataSource dataSource;
+
+    @Override
+    public void onResume()  {
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        super.onResume();
+        loadSportSpinner();
+    }
+    @Override
+    public void onPause() {
+        dataSource.close();
+        super.onPause();
+    }
+    @Override
+    public void onDestroy(){
+        dataSource.close();
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        //Changes 'back' button action
+        if(keyCode==KeyEvent.KEYCODE_BACK)
+        {
+            onBackPressed();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent();
+        intent.putExtra("sport_id", currentSport);
+        intent.putExtra("league_id", currentLeague);
+        setResult(RESULT_OK, intent);
+        this.finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +105,19 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toast = Toast.makeText(this, null, Toast.LENGTH_LONG);
 
+        dataSource = new DataSource(this);
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         intentIncoming = getIntent();
         currentAdminEmail = intentIncoming.getStringExtra(EMAIL_KEY);
         currentAdminId = intentIncoming.getIntExtra(ADMIN_KEY, 0);
         currentLeague = intentIncoming.getIntExtra(LEAGUE_KEY, 0);
         currentSport = 0;
-
-//        helper = new DBHelper(this);
-//        db = helper.getWritableDatabase();
 
         textViewEditLeaguesTopPrompt    = (TextView) findViewById(R.id.textViewEditLeaguesTop);
 
@@ -83,86 +132,73 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
         buttonDeleteLeague              = (Button)   findViewById(R.id.buttonEditLeaguesDeleteLeague);
         buttonDeleteSport               = (Button)   findViewById(R.id.buttonEditLeaguesDeleteSport);
 
-        arrayListLeagueIDs              = new ArrayList<>();
-        arrayListLeagueNames            = new ArrayList<>();
-        hashMapLeagues                  = new   HashMap<>();
-
-        arrayListSportIDs               = new ArrayList<>();
-        arrayListSportNames             = new ArrayList<>();
-        hashMapSports                   = new   HashMap<>();
-
-        textViewEditLeaguesTopPrompt.setText(currentAdminEmail);
-
+        textViewEditLeaguesTopPrompt.setText(currentAdminEmail + " AID:" + currentAdminId + " LID:" + currentLeague);
+        arrayListSports = new ArrayList<>();
+        arrayListLeagues = new ArrayList<>();
         loadSportSpinner();
-        loadLeagueSpinner();
 
     }
 
     private void loadSportSpinner() {
 
         try {
-            cursor = db.rawQuery("SELECT sport_id, sport_name FROM sport", null);
-            if (cursor.moveToFirst()) {
-                arrayListSportIDs.clear();
-                arrayListSportNames.clear();
-                hashMapSports.clear();
-            /* iterate through and get the ids and names into two arraylists and a hashmap */
-                do {
-                    int tempID = cursor.getInt(cursor.getColumnIndexOrThrow("sport_id"));
-                    arrayListSportIDs.add(tempID);
-                    String tempName = cursor.getString(cursor.getColumnIndexOrThrow("sport_name"));
-                    arrayListSportNames.add(tempName);
-                    hashMapSports.put(tempName, tempID);
-                } while (cursor.moveToNext());
+            activateView(spinnerEditLeaguesChooseSport);
+            activateView(spinnerEditLeaguesChooseLeague);
+            activateView(buttonCreateLeague);
+            activateView(buttonDeleteLeague);
+            activateView(buttonDeleteSport);
+            activateView(buttonCreateSport);
+            arrayListSports.clear();
+            arrayListSports.addAll(dataSource.getListOfSports());
+            if (arrayListSports.size() > 0) {
+                arrayAdapterSpinnerSports = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, arrayListSports);
+                spinnerEditLeaguesChooseSport.setAdapter(arrayAdapterSpinnerSports);
+                spinnerEditLeaguesChooseSport.setOnItemSelectedListener(this);
+                currentSport = ((Sport) spinnerEditLeaguesChooseSport.getSelectedItem()).getSportID();
+                loadLeagueSpinner();
+            } else {
+                currentSport = 0;
+                deactivateView(spinnerEditLeaguesChooseSport);
+                deactivateView(spinnerEditLeaguesChooseLeague);
+                deactivateView(buttonCreateLeague);
+                deactivateView(buttonDeleteLeague);
+                deactivateView(buttonDeleteSport);
             }
-
-            arrayAdapterSpinnerSports = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, arrayListSportNames);
-            spinnerEditLeaguesChooseSport.setAdapter(arrayAdapterSpinnerSports);
-            spinnerEditLeaguesChooseSport.setOnItemSelectedListener(this);
-            cursor.close();
-
         }catch(Exception e){
             textViewEditLeaguesTopPrompt.setText("No Sports to Display...");
         }
     }
 
-//    private void turnOnTouchables(View parent){
-//        parent.setEnabled(true);
-//        for(View lol : parent.getTouchables()){
-//            lol.setEnabled(true);
-//        }
-//    }
-//
-//    private void turnOffTouchbles(View parent){
-//        for(View lol : parent.getTouchables()){
-//            lol.setEnabled(false);
-//        }
-//    }
+    private void activateView(View parent){
+        parent.setEnabled(true);
+        for(View lol : parent.getTouchables()){
+            lol.setEnabled(true);
+        }
+    }
+
+    private void deactivateView(View parent){
+        for(View lol : parent.getTouchables()){
+            lol.setEnabled(false);
+        }
+    }
 
     private void loadLeagueSpinner(){
         try {
-            cursor = db.rawQuery("SELECT league_name, league_id FROM league WHERE user_id = " + currentAdminId, null);
-
-            if (cursor.moveToFirst()) {
-
-                arrayListLeagueNames.clear();
-                arrayListLeagueIDs.clear();
-                hashMapLeagues.clear();
-
-                do {
-                    int tempID = cursor.getInt(cursor.getColumnIndexOrThrow("league_id"));
-                    arrayListLeagueIDs.add(tempID);
-                    String tempName = cursor.getString(cursor.getColumnIndexOrThrow("league_name"));
-                    arrayListLeagueNames.add(tempName);
-                    hashMapLeagues.put(tempName, tempID);
-                } while (cursor.moveToNext());
-
-                arrayAdapterSpinnerLeagues = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, arrayListLeagueNames);
+            arrayListLeagues.clear();
+            arrayListLeagues.addAll(dataSource.getListOfLeaguesByAdminIdAndSport(currentAdminId, currentSport));
+            activateView(spinnerEditLeaguesChooseLeague);
+            activateView(buttonDeleteLeague);
+            activateView(buttonCreateLeague);
+            if(arrayListLeagues.size() > 0){
+                arrayAdapterSpinnerLeagues =
+                        new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, arrayListLeagues);
                 spinnerEditLeaguesChooseLeague.setAdapter(arrayAdapterSpinnerLeagues);
                 spinnerEditLeaguesChooseLeague.setOnItemSelectedListener(this);
-                cursor.close();
+                currentLeague = ((League)spinnerEditLeaguesChooseLeague.getSelectedItem()).getLeagueID();
             } else {
-                throw new Exception("No Leagues to Display");
+                currentLeague = 0;
+                deactivateView(spinnerEditLeaguesChooseLeague);
+                deactivateView(buttonDeleteLeague);
             }
         }catch(Exception e){
             textViewEditLeaguesTopPrompt.setText(e.getMessage().toString());
@@ -182,51 +218,30 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
     }
 
     private void onSpinnerLeaguesChange(String choice) {
-        currentLeague = hashMapLeagues.get(choice);
+        currentLeague = ((League)spinnerEditLeaguesChooseLeague.getSelectedItem()).getLeagueID();
         textViewEditLeaguesTopPrompt.setText(choice);
     }
 
     private void onSpinnerSportsChange(String choice) {
-        currentSport = hashMapSports.get(choice);
+        currentSport = ((Sport)spinnerEditLeaguesChooseSport.getSelectedItem()).getSportID();
         textViewEditLeaguesTopPrompt.setText(choice);
-
+        loadLeagueSpinner();
     }
 
     public void addLeague(View view){
         try {
             Date startDate = new Date();
             Date endDate   = new Date();
-            ContentValues cv = new ContentValues();
-            String tempName = editTextEditLeaguesLeagueName.getText().toString().toUpperCase();
-            if(tempName.length() > 3) {
-                cv.putNull("league_id");
-                cv.put("league_name", tempName);
-                cv.put("user_id", currentAdminId);
-                cv.put("sport_id", currentSport);
-                cv.put("min_age", 0);
-                cv.put("max_age", 100);
-                cv.put("start_date", startDate.toString().toUpperCase());
-                cv.put("end_date", endDate.toString().toUpperCase());
-                db.insert("league", null, cv);
-            }else{
-                throw new Exception("League Name too short");
+            String name = editTextEditLeaguesLeagueName.getText().toString().toUpperCase();
+            if(name.length() < 2){
+                throw new Exception("Please Enter the Full Sport Name");
             }
+            League league = dataSource.createLeague(currentAdminId, currentSport, name, 0, 0,
+                    startDate, endDate);
 
-            String leagueName = "";
-            int leagueID = 0;
-            String startDateString = "";
-            cursor = db.rawQuery("SELECT league_name, league_id, start_date FROM league WHERE user_id = " + currentAdminId + " AND league_name = '" + tempName + "'", null);
-            if (cursor.moveToFirst()) {
-                do {
-                    startDateString = cursor.getString(cursor.getColumnIndexOrThrow("start_date" ));
-                    leagueID   = cursor.getInt   (cursor.getColumnIndexOrThrow("league_id"  ));
-                    leagueName = cursor.getString(cursor.getColumnIndexOrThrow("league_name"));
-                } while (cursor.moveToNext());
-            }else{
-                throw new Exception("Improper League Insert");
-            }
-            textViewEditLeaguesTopPrompt.setText("New League: " + leagueName + ", " + startDateString);
-            currentLeague = leagueID;
+            textViewEditLeaguesTopPrompt.setText("New League: " + name + ", "
+                    + league.getStartDate());
+            currentLeague = league.getLeagueID();
             loadLeagueSpinner();
         }catch(Exception e){
             textViewEditLeaguesTopPrompt.setText(e.getMessage().toString());
@@ -235,48 +250,25 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
 
     public void addSport(View view) {
         try {
-            ContentValues cv = new ContentValues();
+            Sport sport;
             String tempName = editTextEditLeaguesSportName.getText().toString().toUpperCase();
             if(tempName.length() < 2){
                 throw new Exception("Please Enter the Full Sport Name");
             }
 
-            if(checkForDuplicateSports(tempName)) {
+            if(!dataSource.checkForDuplicateSports(tempName)) {
 
-                cv.putNull("sport_id");
-                cv.put("sport_name", tempName);
-                db.insert("sport", null, cv);
+                sport = dataSource.createSport(tempName);
 
             }else{
                 throw new Exception("There is already a sport named " + tempName);
             }
 
-            String sportName = "";
-            int sport_id = 0;
-            cursor = db.rawQuery("SELECT sport_name, sport_id FROM sport WHERE sport_name = '" + tempName + "'", null);
-            if (cursor.moveToFirst() && cursor.getCount() > 0) {
-                do {
-                    sportName = cursor.getString(cursor.getColumnIndexOrThrow("sport_name"));
-                    sport_id  = cursor.getInt(cursor.getColumnIndexOrThrow("sport_id"));
-                } while (cursor.moveToNext());
-                textViewEditLeaguesTopPrompt.setText("New Sport: " + sportName);
-            } else {
-                throw new Exception("Insert failed on sport table");
-            }
-            currentSport = sport_id;
+            currentSport = sport.getSportID();
             loadSportSpinner();
 
         }catch(Exception e){
             textViewEditLeaguesTopPrompt.setText(e.getMessage().toString());
-        }
-    }
-
-    private boolean checkForDuplicateSports(String tempName) {
-        cursor = db.rawQuery("SELECT sport_name FROM sport WHERE sport_name = '" + tempName + "';", null);
-        if (cursor.getCount() == 0) {
-            return true;
-        } else {
-            return false;
         }
     }
 

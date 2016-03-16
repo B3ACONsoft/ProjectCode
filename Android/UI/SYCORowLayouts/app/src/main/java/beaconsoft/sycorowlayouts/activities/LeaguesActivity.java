@@ -30,41 +30,32 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
     private static final String   USER_KEY = "beaconsoft.sycorowlayouts.USER";
-
     private String name;
     private String email;
-
     private TextView textViewLeaguesEmail;
-
     private int currentAdmin;
     private int currentSport;
     private int currentLeague;
     private int currentTeam;
     private int currentUser;
-
     private ArrayAdapter adapterSpinnerSports;
     private Spinner spinnerSports;
     private ArrayList<Sport> sportsArrayList;
-
     private ArrayAdapter adapterSpinnerLeagues;
     private Spinner spinnerLeagues;
     private ArrayList<League> leaguesArrayList;
-
     private ArrayAdapter adapterSpinnerTeams;
     private Spinner spinnerTeams;
     private ArrayList<Team> teamsArrayList;
-
     private ArrayAdapter adapterSpinnerUsers;
     private Spinner spinnerUsers;
     private ArrayList<Users> usersArrayList;
-
     private Button buttonStartLeague;
     private Button buttonCalendar;
     private Button buttonAddTeams;
     private Button buttonAddPlayers;
     private Button buttonEditTeam;
     private Button buttonEditPlayer;
-
     private DataSource dataSource;
 
     @Override
@@ -124,6 +115,34 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         textViewLeaguesAdmin.setText(name + ", please choose a sport...");
 
         loadSpinners();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+
+        int resultInt1 = 2;
+        int resultInt2 = 2;
+        if(requestCode == 1){
+            if(resultCode == RESULT_OK){
+                currentSport = resultInt1 = data.getIntExtra("sport_id", 0);
+                currentLeague = resultInt2 = data.getIntExtra("league_id", 0);
+//                int sportsPointer = -1;
+//                for(int i = 0; i < sportsArrayList.size(); i++){
+//                    if(sportsArrayList.get(i).getSportID() == currentSport){
+//                        sportsPointer = i;
+//                    }
+//                }
+//                spinnerSports.setSelection(sportsPointer);
+//                int leaguesPointer = -1;
+//                for(int i = 0; i < leaguesArrayList.size(); i++){
+//                    if(leaguesArrayList.get(i).getLeagueID() == currentLeague){
+//                        leaguesPointer = i;
+//                    }
+//                }
+//                spinnerLeagues.setSelection(leaguesPointer);
+                textViewLeaguesEmail.setText(resultInt1 + " " + resultInt2);
+            }
+        }
     }
 
     private void deactivateView(View parent){
@@ -455,7 +474,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(LEAGUE_KEY, currentLeague);
         intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra(EMAIL_KEY, email);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     public void goToEditLeagues(View view){
@@ -465,6 +484,6 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(LEAGUE_KEY, currentLeague);
         intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra(EMAIL_KEY, email);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 }
