@@ -9,7 +9,9 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import beaconsoft.sycorowlayouts.dbobjects.Attendance;
@@ -139,6 +141,32 @@ public class DataSource {
         newSport.setSportID(cursor.getInt(0));
         newSport.setSportName(cursor.getString(1));
         return newSport;
+    }
+
+    public Collection<? extends Sport> getListOfSportsByAdmin(int currentAdminId) {
+        List<Sport> sportsList = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT DISTINCT s.sport_id, s.sport_name FROM sport s, league l " +
+                " WHERE s.sport_id = l.sport_id AND l.user_id = " + currentAdminId, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            Sport tempSport = cursorToSport(cursor);
+            sportsList.add(tempSport);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return sportsList;
+    }
+
+    public boolean checkForDuplicateSports(String tempName) {
+        List<Sport> sportsList = new ArrayList<>();
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_SPORT, columnsSport,
+                MySQLiteHelper.COLUMN_SPORT_NAME + " = '" + tempName + "';", null, null, null, null);
+        cursor.moveToFirst();
+        if(cursor.getCount() > 0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public List<Sport> getListOfSports(){
@@ -338,6 +366,22 @@ public class DataSource {
         newLeague.setStartDate(new Date(cursor.getString(6)));
         newLeague.setEndDate(new Date(cursor.getString(7)));
         return newLeague;
+    }
+
+    public Collection<? extends League> getListOfLeaguesByAdminIdAndSport(int currentAdminId, int currentSport) {
+        List<League> leaguesList = new ArrayList<>();
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
+                MySQLiteHelper.COLUMN_FK_LEAGUE_USER_ID + " = " + currentAdminId + " AND " +
+                MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + currentSport + ";",
+                null, null, null, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            League tempLeague = cursorToLeague(cursor);
+            leaguesList.add(tempLeague);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return leaguesList;
     }
 
     public List<League> getListOfLeagues(){
@@ -772,7 +816,4 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
-
-
-
 }

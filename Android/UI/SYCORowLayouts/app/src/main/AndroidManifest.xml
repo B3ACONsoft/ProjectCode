@@ -74,7 +74,8 @@
             android:name=".activities.CalendarActivity"
             android:label="@string/title_activity_calendar"
             android:parentActivityName=".activities.LeaguesActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.LeaguesActivity" />
@@ -83,7 +84,8 @@
             android:name=".activities.EditLeaguesActivity"
             android:label="@string/title_activity_edit_leagues"
             android:parentActivityName=".activities.LeaguesActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.LeaguesActivity" />

@@ -260,7 +260,6 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
                     successfulUID = enrollment.getUserID();
                     successfulPID = enrollment.getPlayerID();
                     successfulLID = enrollment.getLeagueID();
-
                     successfulTID = enrollment.getTeamID();
             }else{
                 throw new Exception("Bad Player Creation...please debug");
