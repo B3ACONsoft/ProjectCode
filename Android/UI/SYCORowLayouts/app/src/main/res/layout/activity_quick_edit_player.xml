@@ -256,8 +256,7 @@
                 android:text="EDIT  PLAYER"
                 android:id="@+id/buttonQuickEditPlayerEditPlayer"
                 android:layout_weight="1"
-                android:onClick="quickEditPlayer"
-                android:layout_column="0" />
+                android:onClick="quickEditPlayer" />
 
             <Button
                 android:layout_width="0dp"
@@ -265,8 +264,7 @@
                 android:text="CLEAR"
                 android:id="@+id/buttonEditPlayerClear"
                 android:layout_weight="1"
-                android:onClick="clearForm"
-                android:layout_column="11" />
+                android:onClick="clearForm" />
         </TableRow>
 
     </TableLayout>

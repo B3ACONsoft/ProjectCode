@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -118,29 +119,45 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
 
         int resultInt1 = 2;
         int resultInt2 = 2;
         if(requestCode == 1){
             if(resultCode == RESULT_OK){
-                currentSport = resultInt1 = data.getIntExtra("sport_id", 0);
+
+                currentSport = data.getIntExtra("sport_id", 0);
+                int sportsPointer = -1;
+                for(int i = 0; i < sportsArrayList.size(); i++){
+                    if(sportsArrayList.get(i).getSportID() == currentSport){
+                        sportsPointer = i;
+                        break;
+                    }
+                }
+                spinnerSports.setSelection(sportsPointer);
+
                 currentLeague = resultInt2 = data.getIntExtra("league_id", 0);
-//                int sportsPointer = -1;
-//                for(int i = 0; i < sportsArrayList.size(); i++){
-//                    if(sportsArrayList.get(i).getSportID() == currentSport){
-//                        sportsPointer = i;
-//                    }
-//                }
-//                spinnerSports.setSelection(sportsPointer);
-//                int leaguesPointer = -1;
-//                for(int i = 0; i < leaguesArrayList.size(); i++){
-//                    if(leaguesArrayList.get(i).getLeagueID() == currentLeague){
-//                        leaguesPointer = i;
-//                    }
-//                }
-//                spinnerLeagues.setSelection(leaguesPointer);
-                textViewLeaguesEmail.setText(resultInt1 + " " + resultInt2);
+                int leaguesPointer = -1;
+                for(int i = 0; i < leaguesArrayList.size(); i++){
+                    if(leaguesArrayList.get(i).getLeagueID() == currentLeague){
+                        leaguesPointer = i;
+                        break;
+                    }
+                }
+                spinnerLeagues.setSelection(leaguesPointer);
+
+                currentTeam = data.getIntExtra("team_id", 0);
+                int teamsPointer = -1;
+                for(int i = 0; i < teamsArrayList.size(); i++) {
+                    if (teamsArrayList.get(i).getTeamID() == currentTeam) {
+                        teamsPointer = i;
+                        break;
+                    }
+                }
+
+                spinnerTeams.setSelection(teamsPointer);
+
+               Log.d("COMINGBACK", "....................................." + resultInt1 + " and " + resultInt2);
             }
         }
     }
@@ -484,6 +501,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(LEAGUE_KEY, currentLeague);
         intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra(EMAIL_KEY, email);
+        intent.putExtra( USER_KEY, currentUser);
         startActivityForResult(intent, 1);
     }
 }

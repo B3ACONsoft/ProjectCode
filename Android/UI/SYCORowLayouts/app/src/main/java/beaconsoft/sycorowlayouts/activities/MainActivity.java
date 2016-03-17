@@ -36,6 +36,17 @@ public class MainActivity extends AppCompatActivity {
             Log.w(MySQLiteHelper.class.getName(), e.getMessage());
         }
 
+//        CustomFlag outFlag = new CustomFlag();
+//        TestConnectionThread connInstance = new TestConnectionThread(outFlag);
+//        Thread t = new Thread(connInstance);
+//        t.start();
+//
+//        while(!outFlag.hasResult())
+//            ;
+//
+//        int i = 0;
+
+
         Intent intentLogin = getIntent();
         email = intentLogin.getStringExtra(EMAIL_KEY);
         permission = intentLogin.getStringExtra(LEVEL_KEY);

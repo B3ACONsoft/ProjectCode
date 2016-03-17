@@ -169,6 +169,8 @@ public class DataSource {
         }
     }
 
+
+
     public List<Sport> getListOfSports(){
         List<Sport> sportsList = new ArrayList<>();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_SPORT, columnsSport,
@@ -366,6 +368,18 @@ public class DataSource {
         newLeague.setStartDate(new Date(cursor.getString(6)));
         newLeague.setEndDate(new Date(cursor.getString(7)));
         return newLeague;
+    }
+
+    public League getLeagueById(int currentLeague) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
+                MySQLiteHelper.COLUMN_LEAGUE_ID + " = " + currentLeague,
+                null, null, null, null);
+        cursor.moveToFirst();
+        if(cursor.getCount() > 0){
+            return cursorToLeague(cursor);
+        }else{
+            return null;
+        }
     }
 
     public Collection<? extends League> getListOfLeaguesByAdminIdAndSport(int currentAdminId, int currentSport) {
@@ -816,4 +830,7 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
+
+
+
 }

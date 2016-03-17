@@ -175,8 +175,6 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
      */
     public void quickAddPlayer(View view){
 
-//        dbw = helper.getWritableDatabase();
-
         /**
          * taking in strings from edittexts
          */
