@@ -236,7 +236,8 @@
                 android:layout_alignLeft="@+id/buttonMyLeaguesRemoveTeam"
                 android:layout_alignStart="@+id/buttonMyLeaguesRemoveTeam"
                 android:id="@+id/buttonMyLeaguesEditPlayer"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:onClick="goToEditPlayerFromLeagues"/>
 
         </TableRow>
 

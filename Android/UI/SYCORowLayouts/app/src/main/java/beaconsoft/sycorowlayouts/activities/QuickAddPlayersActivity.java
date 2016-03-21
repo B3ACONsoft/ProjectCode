@@ -11,6 +11,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,7 +26,6 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
 
     /* Set up private fields so that each method can call them. Getters and setters for another day... */
 
-    private SQLiteDatabase dbw;
     private CheckBox kidBox;
     private EditText et1;
     private EditText et2;
@@ -45,14 +46,16 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
     private int currentTeam;
     private int currentAdmin;
 
-    /* This cursor will be used for every transaction */
-    private Cursor cursor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_players);
         dataSource = new DataSource(this);
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         /**
          * After setting the XML file in it's place as UI, get the intent and empty its contents into
@@ -175,12 +178,11 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
      */
     public void quickAddPlayer(View view){
 
-//        dbw = helper.getWritableDatabase();
-
+//        try {
         /**
          * taking in strings from edittexts
          */
-        ContentValues insertValues = new ContentValues();
+
         String  first      =                  et1.getText().toString().toUpperCase();
         String  last       =                  et2.getText().toString().toUpperCase();
         String  childFirst =                  et3.getText().toString().toUpperCase();
@@ -192,7 +194,6 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
         /**
          * loading the contentvalues for insert into user
          */
-        try {
 
             boolean haveKid = kidBox.isChecked();
 
@@ -200,10 +201,10 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
              * Exception handling takes care of improper information entry, first, with a checkbox for entering the child's name.
              * If there is no child, the user will need to be entered into the PLAYER table in their stead.
              */
-            if(first.length() < 1 || last.length() < 1 || (haveKid && childFirst.length() < 1) || (haveKid && childLast.length() < 1))
-            {
-                throw new Exception("There are appropriate name fields left to fill...");
-            }
+//            if(first.length() < 1 || last.length() < 1 || (haveKid && childFirst.length() < 1) || (haveKid && childLast.length() < 1))
+//            {
+//                throw new Exception("There are appropriate name fields left to fill...");
+//            }
 
             /**
              * if there is no surrogate relationship, the the names of the user are added to the PLAYER table
@@ -237,7 +238,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
             /**
              * clear content values and close the cursor
              */
-            Enrollment enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(), 1.99);
+            dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(), 1.99);
 
             //clearForm(findViewById(R.id.buttonQuickAddPlayerAddPlayer));
 
@@ -245,7 +246,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
              * A successful ENROLLMENT will requre successful inserts into the USER and PLAYER table. There is a hidden textview
              * beneathe the last buttons that will show the last record inserted.
              */
-            enrollment = dataSource.getEnrollmentByPlayerUserLeagueAndTeam(player.getPlayerID(), player.getUserID(), currentLeague, currentTeam);
+            Enrollment enrollment = dataSource.getEnrollmentByPlayerUserLeagueAndTeam(player.getPlayerID(), player.getUserID(), currentLeague, currentTeam);
 
 
             int successfulEID = 0;
@@ -254,16 +255,16 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
             int successfulLID = 0;
             int successfulTID = 0;
 
-            if (enrollment != null) {
+//            if (enrollment != null) {
 
                     successfulEID = enrollment.getEnrollmentID();
                     successfulUID = enrollment.getUserID();
                     successfulPID = enrollment.getPlayerID();
                     successfulLID = enrollment.getLeagueID();
                     successfulTID = enrollment.getTeamID();
-            }else{
-                throw new Exception("Bad Player Creation...please debug");
-            }
+//            }else{
+//                throw new Exception("Bad Player Creation...please debug");
+//            }
 
             TextView textViewSuccess = (TextView) findViewById(R.id.textViewSuccessfulInsert);
             textViewSuccess.setText("EID: " + successfulEID + " UID: " + successfulUID + " PID: "
@@ -273,34 +274,34 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
              * All Exceptions are caught and displayed here, with a toast, and inside of the catch
              * block, every entry point is tested for minumum input first.
               */
-        }catch(Exception e){
-
-            Toast toast = Toast.makeText(this, null, Toast.LENGTH_LONG);
-            String msg = e.getMessage();
-            if(et1.getText().toString().length() < 1){
-                msg = "Please fill in your first name";
-            }
-            if(et2.getText().toString().length() < 1){
-                msg = "Please fill in your last name";
-            }
-            if(et3.getText().toString().length() < 1 && kidBox.isChecked()){
-                msg = "Is your child the player? Please fill in their first name";
-            }
-            if(et4.getText().toString().length() < 1 && kidBox.isChecked()){
-                msg = "Is your child the player? Please fill in their last name";
-            }
-            if(et5.getText().toString().length() < 1){
-                msg = "Please fill in your phone number";
-            }
-            if(et6.getText().toString().length() < 1){
-                msg = "You must enter a valid email address";
-            }
-            if(et7.getText().toString().length() < 1){
-                msg = "Please give an emergency number";
-            }
-            toast.setText(msg);
-            toast.show();
-        }
+//        }catch(Exception e){
+//
+//            Toast toast = Toast.makeText(this, null, Toast.LENGTH_LONG);
+//            String msg = e.getMessage();
+//            if(et1.getText().toString().length() < 1){
+//                msg = "Please fill in your first name";
+//            }
+//            if(et2.getText().toString().length() < 1){
+//                msg = "Please fill in your last name";
+//            }
+//            if(et3.getText().toString().length() < 1 && kidBox.isChecked()){
+//                msg = "Is your child the player? Please fill in their first name";
+//            }
+//            if(et4.getText().toString().length() < 1 && kidBox.isChecked()){
+//                msg = "Is your child the player? Please fill in their last name";
+//            }
+//            if(et5.getText().toString().length() < 1){
+//                msg = "Please fill in your phone number";
+//            }
+//            if(et6.getText().toString().length() < 1){
+//                msg = "You must enter a valid email address";
+//            }
+//            if(et7.getText().toString().length() < 1){
+//                msg = "Please give an emergency number";
+//            }
+//            toast.setText(msg);
+//            toast.show();
+//        }
     }
 
     /**

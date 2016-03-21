@@ -16,6 +16,8 @@ import java.util.Date;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.dbobjects.League;
+import beaconsoft.sycorowlayouts.dbobjects.Sport;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
 import beaconsoft.sycorowlayouts.dbobjects.Users;
 
@@ -95,20 +97,23 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         loadSpinner();
     }
 
-    public void loadSpinner(){
+    public void loadSpinner() {
 
         coachArrayList.clear();
         coachArrayList.addAll(dataSource.getListOfUsersAvailableToCoach(currentLeague));
-        spinnerCoaches = (Spinner)findViewById(R.id.spinnerCoachesQuickAddTeams);
+        spinnerCoaches = (Spinner) findViewById(R.id.spinnerCoachesQuickAddTeams);
         adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList.toArray());
         adapterSpinnerCoaches.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCoaches.setAdapter(adapterSpinnerCoaches);
         spinnerCoaches.setOnItemSelectedListener(this);
         spinnerCoaches.setEnabled(true);
-        Users tempUser = (Users)spinnerCoaches.getSelectedItem();
-        currentUser = tempUser.getUserID();
+        Users tempUser = (Users) spinnerCoaches.getSelectedItem();
+        if (tempUser != null) {
+            currentUser = tempUser.getUserID();
+        }else{
+            currentUser = 0;
+        }
     }
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Users tempUser = (Users)parent.getItemAtPosition(position);
@@ -127,9 +132,15 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
 
         try {
 
+            ArrayList<Team> allLeagueTeams = new ArrayList<>();
+            allLeagueTeams.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
+            ArrayList<String> teamNames = new ArrayList<>();
+            for(int i =0; i < allLeagueTeams.size(); i++){
+                teamNames.add(allLeagueTeams.get(i).getTeamName());
+            }
             ArrayList<Team> tempList = new ArrayList<>();
             tempList.addAll(dataSource.getListOfTeamsCoachedByUser(currentUser, currentLeague));
-            if(tempList.isEmpty()){
+            if(tempList.isEmpty() && !teamNames.contains(teamName)){
                 Team team = dataSource.createTeam(teamName, currentLeague, currentUser);
                 dataSource.createEnrollment(currentUser, 0, currentLeague, team.getTeamID(),
                         new Date(), 1.99);
@@ -137,10 +148,22 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
                 String msg = "User Enrolled as Coach of the " + team.getTeamName();
                 toastCoach.setText(msg);
                 toastCoach.show();
-                loadSpinner();
-            }else{
+                Intent resultIntent = new Intent();
+                League league = dataSource.getLeagueById(currentLeague);
+                resultIntent.putExtra("team_id", team.getTeamID());
+                resultIntent.putExtra("league_id", team.getLeagueID());
+                resultIntent.putExtra("sport_id", league.getSportID());
+                setResult(RESULT_OK, resultIntent);
+                finish();
+            }else if(teamNames.contains(teamName)){
+                throw new Exception(teamName + " taken...");
+            }
+            else
+            {
                 Team tempTeam = tempList.get(0);
+                setResult(RESULT_CANCELED);
                 throw new Exception("This Coach already coaches the " + tempTeam.getTeamName());
+
             }
         }catch(Exception e){
             toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
@@ -158,14 +181,19 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
             phone = Long.parseLong(editTextPhone.getText().toString());
             emerg = Long.parseLong(editTextEmergency.getText().toString());
             email = editTextCoachEmail.getText().toString().toUpperCase();
-
-            if(fname.length() > 1 && lname.length() > 1 && phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
-                Users user = dataSource.createUsers(fname.toUpperCase(), lname.toUpperCase(), phone, email.toUpperCase(), emerg,
-                        "COACH", "PASS");
+            Users testUser = dataSource.getUserByEmail(email);
+            if(testUser == null && fname.length() > 1 && lname.length() > 1 &&
+                    phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
+                Users user = dataSource.createUsers(fname.toUpperCase(), lname.toUpperCase(),
+                        phone, email.toUpperCase(), emerg, "COACH", "PASS");
                 textViewTop = (TextView) findViewById(R.id.textViewQuickAddTeamsTop);
                 textViewTop.setText(user.toString());
                 loadSpinner();
             }
+            else if(testUser != null) {
+                throw new Exception("Email address taken...");
+            }
+
         }catch(Exception e){
 
             toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);

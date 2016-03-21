@@ -22,7 +22,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/textViewQAAdminEmail"
+                android:id="@+id/textViewQEAdminEmail"
                 android:text="@string/placeholder"
                 android:textAlignment="center"
                 android:gravity="center"
@@ -35,14 +35,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <EditText
+            <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Admin No. "
+                android:id="@+id/textViewLabelEditPlayerID" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:ems="10"
-                android:id="@+id/editTextContactID"
+                android:id="@+id/textViewPlayerEditContactID"
                 android:hint="ID"
                 android:layout_weight="1"
-                android:inputType="textAutoCorrect|none" />
+                android:textAlignment="viewStart" />
         </TableRow>
 
 
@@ -67,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/editTextContactFirst"
+                android:id="@+id/editTextPlayerEditContactFirst"
                 android:hint="First"
                 android:layout_weight="1" />
 
@@ -76,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/editTextContactLast"
+                android:id="@+id/editTextPlayerEditContactLast"
                 android:hint="Last"
                 android:layout_weight="1" />
         </TableRow>
@@ -90,13 +97,15 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Child&apos;s Name"
-                android:id="@+id/textView2" />
+                android:id="@+id/textView2"
+                android:layout_weight="0" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/checkBoxPlayerIsKid"
-                android:onClick="onClickCheckBox" />
+                android:onClick="onClickCheckBox"
+                android:layout_weight="1" />
         </TableRow>
 
         <TableRow
@@ -108,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/editTextChildFirst"
+                android:id="@+id/editTextPlayerEditChildFirst"
                 android:hint="first"
                 android:layout_weight="1" />
 
@@ -117,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/editTextChildLast"
+                android:id="@+id/editTextPlayerEditChildLast"
                 android:hint="last"
                 android:layout_weight="1" />
         </TableRow>
@@ -152,7 +161,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="phone"
                 android:ems="10"
-                android:id="@+id/editTextPhone"
+                android:id="@+id/editTextPlayerEditPhone"
                 android:hint="(666)999-YETI"
                 android:layout_weight="1" />
 
@@ -161,7 +170,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="phone"
                 android:ems="10"
-                android:id="@+id/editTextEmergencyPhone"
+                android:id="@+id/editTextPlayerEditEmergencyPhone"
                 android:layout_weight="1"
                 android:hint="(919)555-0666" />
         </TableRow>
@@ -188,7 +197,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:ems="10"
-                android:id="@+id/editTextEmail"
+                android:id="@+id/editTextPlayerEditEmail"
                 android:hint="bark@theyeti.edu"
                 android:layout_weight="1" />
 
@@ -202,8 +211,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Edit Player to Team..."
-                android:id="@+id/textViewPromptEditPlayer"
+                android:text="Edit Player "
+                android:id="@+id/textViewEditPlayersLeagueName"
                 android:gravity="center"
                 android:layout_weight="1" />
         </TableRow>
@@ -216,8 +225,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Team Name Here"
-                android:id="@+id/textViewPromptTeamNamePlaceHolder"
+                android:text="Team Name"
+                android:id="@+id/textViewEditPlayersPromptTeamName"
                 android:layout_weight="1"
                 android:gravity="center" />
         </TableRow>
@@ -256,17 +265,15 @@
                 android:text="EDIT  PLAYER"
                 android:id="@+id/buttonQuickEditPlayerEditPlayer"
                 android:layout_weight="1"
-                android:onClick="quickEditPlayer"
-                android:layout_column="0" />
+                android:onClick="quickEditPlayer" />
 
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="CLEAR"
-                android:id="@+id/buttonEditPlayerClear"
+                android:id="@+id/buttonQuickEditPlayerEditPlayerClear"
                 android:layout_weight="1"
-                android:onClick="clearForm"
-                android:layout_column="11" />
+                android:onClick="clearForm" />
         </TableRow>
 
     </TableLayout>

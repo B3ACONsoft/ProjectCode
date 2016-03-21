@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
+
 
 /**
  * Created by Patrick on 3/8/2016.
@@ -174,13 +174,26 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                     TABLE_USERS + " ( " + COLUMN_USER_ID + " ) ) ; "};
 
     private static final String DATABASE_NAME = "baconator.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 1;
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     public void onCreate(SQLiteDatabase db) {
+
+
+        /*
+        try {
+            Thread.sleep(8000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if(json != null){
+            Log.e(MySQLiteHelper.class.getName(), json);
+        }
+        */
         db.beginTransaction();
         for(String q : CREATE_DATABASE){
             db.execSQL(q);
