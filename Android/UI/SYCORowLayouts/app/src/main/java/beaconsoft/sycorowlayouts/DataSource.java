@@ -229,11 +229,45 @@ public class DataSource {
         return newUser;
     }
 
+    public Users updateUser(int currentUser, String first, String last, Long phone, String email, Long emergency) {
+        ContentValues cv = new ContentValues();
+        cv.put("fname", first);
+        cv.put("lname", last);
+        cv.put("phone", phone);
+        cv.put("email", email);
+        cv.put("emergency", emergency);
+        db.beginTransaction();
+        int rowsAltered = db.update(MySQLiteHelper.TABLE_USERS, cv,
+                MySQLiteHelper.COLUMN_USER_ID + " = ?",
+                new String[] { currentUser + "" });
+        if(rowsAltered == 1) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            return getUserById(currentUser);
+        }else{
+            db.execSQL("ROLLBACK");
+            db.endTransaction();
+            return null;
+        }
+    }
+
+    public Users getUserById(int currentUser) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
+                MySQLiteHelper.COLUMN_USER_ID + " = " + currentUser,
+                null, null, null, null);
+        cursor.moveToFirst();
+        if(cursor.getCount() == 1) {
+            return cursorToUser(cursor);
+        }else {
+            return null;
+        }
+    }
+
     public boolean checkForUserByEmail(String email){
         Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
-                MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase(),
+                MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase() + "';",
                 null,null,null,null);
-        cursor.moveToNext();
+        cursor.moveToFirst();
         if(cursor.getCount() == 1){
             return true;
         }else{
@@ -308,7 +342,7 @@ public class DataSource {
         cursor.close();
         return usersList;
     }
-    // TODO: this should be players, which can still return a usable user_id...
+
     public List<Users> getListOfUsersByTeam(int teamID){
         List<Users> usersList = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT u.user_id, u.fname, u.lname, u.phone, u.emergency, u.email, u.user_type, u.pass " +
@@ -454,6 +488,18 @@ public class DataSource {
         return newTeam;
     }
 
+    public Team getTeamById(int currentTeam) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
+                MySQLiteHelper.COLUMN_TEAM_ID + " = " + currentTeam,
+                null, null, null, null);
+        cursor.moveToFirst();
+        if(cursor.getCount() == 1){
+            return cursorToTeam(cursor);
+        }else{
+            return null;
+        }
+    }
+
     private Team cursorToTeam(Cursor cursor) {
         Team newTeam = new Team();
         newTeam.setTeamID(cursor.getInt(0));
@@ -532,6 +578,58 @@ public class DataSource {
         cursor.moveToFirst();
         Player newPlayer = cursorToPlayer(cursor);
         return newPlayer;
+    }
+
+    public Player updatePlayer(int currentPlayerId, String fname, String lname, int currentUserId){
+        ContentValues cv = new ContentValues();
+        cv.put("player_id", currentPlayerId);
+        cv.put("fname", fname);
+        cv.put("lname", lname);
+        cv.put("user_id", currentUserId);
+
+        int rowsAltered = db.update(MySQLiteHelper.TABLE_PLAYER, cv,
+                MySQLiteHelper.COLUMN_PLAYER_ID + " = " + currentPlayerId, null);
+        if(rowsAltered == 1) {
+            return getPlayerById(currentPlayerId);
+        }else
+        {
+            return null;
+        }
+    }
+
+    public Collection<? extends Player> getListOfPlayersByTeam(int currentTeam) {
+        Cursor cursor = db.rawQuery("SELECT p." + MySQLiteHelper.COLUMN_PLAYER_ID    + ", " +
+                           "p." + MySQLiteHelper.COLUMN_PLAYER_FIRST + ", " +
+                           "p." + MySQLiteHelper.COLUMN_PLAYER_LAST  + ", "  +
+                           "p." + MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " " +
+                        "FROM " + MySQLiteHelper.TABLE_PLAYER + " p, " +
+                                  MySQLiteHelper.TABLE_ENROLLMENT + " e " +
+                     "WHERE p." + MySQLiteHelper.COLUMN_PLAYER_ID + " = " +
+                           "e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_PLAYER_ID +
+                      " AND e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeam + ";"
+                , null);
+        List<Player> players = new ArrayList<>();
+
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            Player tempPlayer = cursorToPlayer(cursor);
+            players.add(tempPlayer);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return players;
+    }
+
+    public Player getPlayerById(int currentPlayer) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
+                MySQLiteHelper.COLUMN_PLAYER_ID + " = " + currentPlayer,
+                null, null, null, null);
+        cursor.moveToFirst();
+        if(cursor.getCount() == 1){
+            return cursorToPlayer(cursor);
+        }else{
+            return null;
+        }
     }
 
     public boolean checkForPlayerByFirstLastAndUserId(String first, String last, int userID){
@@ -641,7 +739,7 @@ public class DataSource {
                 MySQLiteHelper.COLUMN_PLAYER_ID + " = " + playerID + " AND " +
                         MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID + " = " + userID + " AND " +
                         MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " + currentLeague + " AND " +
-                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + "';",
+                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeam +";",
                 null, null, null, null);
         if(cursor.getCount() == 0){
             return null;

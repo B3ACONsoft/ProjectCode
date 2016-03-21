@@ -97,20 +97,23 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         loadSpinner();
     }
 
-    public void loadSpinner(){
+    public void loadSpinner() {
 
         coachArrayList.clear();
         coachArrayList.addAll(dataSource.getListOfUsersAvailableToCoach(currentLeague));
-        spinnerCoaches = (Spinner)findViewById(R.id.spinnerCoachesQuickAddTeams);
+        spinnerCoaches = (Spinner) findViewById(R.id.spinnerCoachesQuickAddTeams);
         adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList.toArray());
         adapterSpinnerCoaches.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCoaches.setAdapter(adapterSpinnerCoaches);
         spinnerCoaches.setOnItemSelectedListener(this);
         spinnerCoaches.setEnabled(true);
-        Users tempUser = (Users)spinnerCoaches.getSelectedItem();
-        currentUser = tempUser.getUserID();
+        Users tempUser = (Users) spinnerCoaches.getSelectedItem();
+        if (tempUser != null) {
+            currentUser = tempUser.getUserID();
+        }else{
+            currentUser = 0;
+        }
     }
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Users tempUser = (Users)parent.getItemAtPosition(position);
@@ -149,7 +152,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
                 League league = dataSource.getLeagueById(currentLeague);
                 resultIntent.putExtra("team_id", team.getTeamID());
                 resultIntent.putExtra("league_id", team.getLeagueID());
-                resultIntent.putExtra("sport_id", league.getLeagueID());
+                resultIntent.putExtra("sport_id", league.getSportID());
                 setResult(RESULT_OK, resultIntent);
                 finish();
             }else if(teamNames.contains(teamName)){

@@ -2,6 +2,7 @@ package beaconsoft.sycorowlayouts.activities;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.MySQLiteHelper;
+import beaconsoft.sycorowlayouts.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Users;
 import string.utils.ProperCase;
 import android.content.Intent;
@@ -35,6 +36,19 @@ public class MainActivity extends AppCompatActivity {
         } catch (SQLException e) {
             Log.w(MySQLiteHelper.class.getName(), e.getMessage());
         }
+
+
+        Intent intent = new Intent();
+        intent.setClassName("SYCOServerAccess", "SYCOServerAccess.UpdateService");
+        startService(intent);
+
+
+
+
+        int x = 0;
+
+
+
 
 //        CustomFlag outFlag = new CustomFlag();
 //        TestConnectionThread connInstance = new TestConnectionThread(outFlag);

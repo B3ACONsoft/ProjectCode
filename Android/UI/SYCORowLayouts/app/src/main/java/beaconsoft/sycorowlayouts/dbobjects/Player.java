@@ -44,6 +44,6 @@ public class Player {
     }
 
     public String toString(){
-        return fname + " " + lname;
+        return playerID + " " + fname + " " + lname;
     }
 }

@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts.Debugging;
+package SYCOServerAccess;
 
 /**
  * These are the flags which set debugging options throughout

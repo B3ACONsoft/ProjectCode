@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts.SYCOServerAccess;
+package SYCOServerAccess;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,8 +7,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import beaconsoft.sycorowlayouts.Debugging.DebugFLAGS;
-
 
 /**This class allows connection to a remove location via
  * a POST request.
@@ -18,12 +16,12 @@ import beaconsoft.sycorowlayouts.Debugging.DebugFLAGS;
  * @author David Johnson
  *
  */
-public final class RemoteConnection {
+public class RemoteConnection {
 	
 	//private final static String 		SERVER_URL = "http://localhost/SYCOsync/sync.php";	
-	private final static String 		SERVER_URL = "http://capstone1.netai.net/devDave/sync.php";
-	//private final static String         SERVER_URL = "http://172.20.23.103/SYCOsync/sync.php";
-    private static HttpURLConnection 	conn;             //http connection
+	//private final static String 		SERVER_URL = "http://capstone1.netai.net/devDave/sync.php";
+	private final static String			SERVER_URL = "http://172.20.23.103/SYCOsync/sync.php";
+	private static HttpURLConnection 	conn;             //http connection
     private static URL 					url;   
     
     /*
@@ -87,7 +85,7 @@ public final class RemoteConnection {
      * @return The server response in string form.
      * @throws Exception
      */
-    public static String postRequest(String params) throws Exception {
+    private static String postRequest(String params) throws Exception {
         StringBuilder responseBuffer = new StringBuilder();
         try
         {
