@@ -4,10 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -810,6 +813,17 @@ public class DataSource {
         return newPlace;
     }
 
+    public Place getPlaceById(int placeID) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLACE, columnsPlace,
+                MySQLiteHelper.COLUMN_PLACE_ID + " = " + placeID, null, null, null, null);
+        cursor.moveToFirst();
+        if(cursor.getCount() == 1){
+            return cursorToPlace(cursor);
+        }else{
+            return null;
+        }
+    }
+
     public List<Place> getListOfPlaces(){
         List<Place> placesList = new ArrayList<>();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_PLACE, columnsPlace,
@@ -855,9 +869,20 @@ public class DataSource {
 
     private Event cursorToEvent(Cursor cursor) {
         Event newEvent = new Event();
+
         newEvent.setEventID(cursor.getInt(0));
         newEvent.setEventType(cursor.getString(1));
-        newEvent.setStartDateTime(new Date(cursor.getString(2)));
+
+        /* What could go wrong? */
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
+        Date date = new Date();
+        try {
+            date = format.parse(cursor.getString(2));
+        } catch (ParseException e) {
+            Log.e("DATE EXCEPTION THROWN", "..................DATE DATE DATE EXC EXC EXC" + e.getMessage());
+        }
+        newEvent.setStartDateTime(date);
+
         newEvent.setPlaceID(cursor.getInt(3));
         newEvent.setHomeTeamID(cursor.getInt(4));
         newEvent.setAwayTeamID(cursor.getInt(5));
@@ -942,7 +967,4 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
-
-
-
 }

@@ -38,24 +38,7 @@ import beaconsoft.sycorowlayouts.dbobjects.Event;
 
 public class CalendarActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar);
-        datasource = new DataSource(this);
-
-       /*Okay Jolichelle, I've got your intent extras passing in the current team and league, and admin id */
-        Intent intent = getIntent();
-        currentAdminEmail = intent.getStringExtra(EMAIL_KEY);
-        currentAdminName  = intent.getStringExtra(NAME_KEY);
-        currentAdminId    = intent.getIntExtra(ADMIN_KEY, 0);
-        currentLeagueId   = intent.getIntExtra(LEAGUE_KEY, 0);
-        currentTeamId     = intent.getIntExtra(TEAM_KEY, 0);
-
-        TextView eventTextPrompt = (TextView)findViewById(R.id.eventTextPrompt);
-        eventTextPrompt.setText("Admin:" + currentAdminId + " League:" + currentLeagueId + " Team:" + currentTeamId);
-    }
-
+    private TextView eventTextPrompt;
     private int currentAdminId;
     private int currentLeagueId;
     private int currentTeamId;
@@ -66,40 +49,62 @@ public class CalendarActivity extends AppCompatActivity {
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
-    public List<Event> eventList = new ArrayList<Event>();
+    private List<Event> eventList = new ArrayList<Event>();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
     GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("US/Central"));
-    public DataSource datasource;
+    private DataSource datasource;
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_calendar);
+        datasource = new DataSource(this);
+        try {
+            datasource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-        final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.activity_calendar, null);
-        final CalendarView c = (CalendarView) root.findViewById(R.id.calendarView1);
+       /*Okay Jolichelle, I've got your intent extras passing in the current team and league, and admin id */
+        Intent intent = getIntent();
+        currentAdminEmail = intent.getStringExtra(EMAIL_KEY);
+        currentAdminName  = intent.getStringExtra(NAME_KEY);
+        currentAdminId    = intent.getIntExtra(ADMIN_KEY, 0);
+        currentLeagueId   = intent.getIntExtra(LEAGUE_KEY, 0);
+        currentTeamId     = intent.getIntExtra(TEAM_KEY, 0);
+
+        eventTextPrompt = (TextView)findViewById(R.id.eventTextPrompt);
+        eventTextPrompt.setText("Admin:" + currentAdminId + " League:" + currentLeagueId + " Team:" + currentTeamId);
+
+        final CalendarView c = (CalendarView) findViewById(R.id.calendarView1);
         cal.setTimeInMillis(c.getDate());
-        eventList = datasource.getListOfEvents(Integer.parseInt(sdf.format(cal.getTime())));
-
-        ListAdapter adapter = new EventListAdapter(this, R.layout.notification_list_item, eventList);
-        ListView listview = (ListView)root.findViewById(R.id.eventList);
+        //eventList = datasource.getListOfEvents(Integer.parseInt(sdf.format(cal.getTime())));
+        eventList = datasource.getListOfEvents();
+        ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, datasource);
+        ListView listview = (ListView) findViewById(R.id.eventList);
         listview.setAdapter(adapter);
-
-        c.setOnDateChangeListener(new OnDateChangeListener() {
-
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                cal.setTimeInMillis(c.getDate());
-                eventList = datasource.getListOfEvents(Integer.parseInt(sdf.format(cal.getTime())));
-
-                ListAdapter adapter = new EventListAdapter(CalendarActivity.this, R.layout.notification_list_item, eventList);
-                ListView listview = (ListView) root.findViewById(R.id.eventList);
-                listview.setAdapter(adapter);
-            }
-        });
-
-
-        return root;
+//        c.setOnDateChangeListener(new OnDateChangeListener() {
+//
+//            @Override
+//            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+//                cal.setTimeInMillis(c.getDate());
+//                //eventList = datasource.getListOfEvents(Integer.parseInt(sdf.format(cal.getTime())));
+//                eventList = datasource.getListOfEvents();
+//                ListAdapter adapter = new EventListAdapter(CalendarActivity.this, R.layout.notification_list_item, eventList);
+//                ListView listview = (ListView) findViewById(R.id.eventList);
+//                listview.setAdapter(adapter);
+//            }
+//        });
     }
 
-      @Override
+
+    @Override
+    protected void onDestroy(){
+        datasource.close();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
         try {
             datasource.open();
