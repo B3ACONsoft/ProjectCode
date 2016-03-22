@@ -78,7 +78,6 @@
             android:name=".activities.CalendarActivity"
             android:label="@string/title_activity_calendar"
             android:parentActivityName=".activities.LeaguesActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

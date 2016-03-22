@@ -864,6 +864,20 @@ public class DataSource {
         return newEvent;
     }
 
+    public List<Event> getListOfEvents(int i){
+        List<Event> eventsList = new ArrayList<>();
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
+                null, null, null, null, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            Event tempEvent = cursorToEvent(cursor);
+            eventsList.add(tempEvent);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return eventsList;
+    }
+
     public List<Event> getListOfEvents(){
         List<Event> eventsList = new ArrayList<>();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
