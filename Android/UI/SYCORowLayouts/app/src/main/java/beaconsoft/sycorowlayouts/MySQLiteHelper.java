@@ -11,58 +11,58 @@ import android.util.Log;
  */
 public class MySQLiteHelper extends SQLiteOpenHelper {
 
-    public static final String TABLE_USERS = "users";
-    public static final String COLUMN_USER_ID = "user_id";
-    public static final String COLUMN_FIRST = "fname";
-    public static final String COLUMN_LAST = "lname";
-    public static final String COLUMN_PHONE = "phone";
-    public static final String COLUMN_EMAIL = "email";
-    public static final String COLUMN_EMERGENCY = "emergency";
-    public static final String COLUMN_USER_TYPE = "user_type";
-    public static final String COLUMN_PASSWORD = "pass";
+    public static final String TABLE_USERS                    =           "users";
+    public static final String COLUMN_USER_ID                 =         "user_id";
+    public static final String COLUMN_FIRST                   =           "fname";
+    public static final String COLUMN_LAST                    =           "lname";
+    public static final String COLUMN_PHONE                   =           "phone";
+    public static final String COLUMN_EMAIL                   =           "email";
+    public static final String COLUMN_EMERGENCY               =       "emergency";
+    public static final String COLUMN_USER_TYPE               =       "user_type";
+    public static final String COLUMN_PASSWORD                =            "pass";
 
-    public static final String TABLE_SPORT = "sport";
-    public static final String COLUMN_SPORT_ID = "sport_id";
-    public static final String COLUMN_SPORT_NAME = "sport_name";
+    public static final String TABLE_SPORT                    =           "sport";
+    public static final String COLUMN_SPORT_ID                =        "sport_id";
+    public static final String COLUMN_SPORT_NAME              =      "sport_name";
 
-    public static final String TABLE_LEAGUE = "league";
-    public static final String COLUMN_LEAGUE_ID = "league_id";
-    public static final String COLUMN_FK_LEAGUE_USER_ID = "user_id";
-    public static final String COLUMN_FK_LEAGUE_SPORT_ID = "sport_id";
-    public static final String COLUMN_LEAGUE_NAME = "league_name";
-    public static final String COLUMN_MIN_AGE = "min_age";
-    public static final String COLUMN_MAX_AGE = "max_age";
-    public static final String COLUMN_START_DATE = "start_date";
-    public static final String COLUMN_END_DATE = "end_date";
+    public static final String TABLE_LEAGUE                   =          "league";
+    public static final String COLUMN_LEAGUE_ID               =       "league_id";
+    public static final String COLUMN_FK_LEAGUE_USER_ID       =         "user_id";
+    public static final String COLUMN_FK_LEAGUE_SPORT_ID      =        "sport_id";
+    public static final String COLUMN_LEAGUE_NAME             =     "league_name";
+    public static final String COLUMN_MIN_AGE                 =         "min_age";
+    public static final String COLUMN_MAX_AGE                 =         "max_age";
+    public static final String COLUMN_START_DATE              =      "start_date";
+    public static final String COLUMN_END_DATE                =        "end_date";
 
-    public static final String TABLE_TEAM = "team";
-    public static final String COLUMN_TEAM_ID = "team_id";
-    public static final String COLUMN_FK_TEAM_LEAGUE_ID = "league_id";
-    public static final String COLUMN_TEAM_NAME = "team_name";
-    public static final String COLUMN_FK_TEAM_USER_ID = "user_id";
+    public static final String TABLE_TEAM                     =            "team";
+    public static final String COLUMN_TEAM_ID                 =         "team_id";
+    public static final String COLUMN_FK_TEAM_LEAGUE_ID       =       "league_id";
+    public static final String COLUMN_TEAM_NAME               =       "team_name";
+    public static final String COLUMN_FK_TEAM_USER_ID         =         "user_id";
 
-    public static final String TABLE_PLAYER = "player";
-    public static final String COLUMN_PLAYER_ID = "player_id";
-    public static final String COLUMN_PLAYER_FIRST = "fname";
-    public static final String COLUMN_PLAYER_LAST = "lname";
-    public static final String COLUMN_FK_PLAYER_USER_ID = "user_id";
+    public static final String TABLE_PLAYER                   =          "player";
+    public static final String COLUMN_PLAYER_ID               =       "player_id";
+    public static final String COLUMN_PLAYER_FIRST            =           "fname";
+    public static final String COLUMN_PLAYER_LAST             =           "lname";
+    public static final String COLUMN_FK_PLAYER_USER_ID       =         "user_id";
 
-    public static final String TABLE_ENROLLMENT = "enrollment";
-    public static final String COLUMN_ENROLLMENT_ID = "enrollment_id";
-    public static final String COLUMN_FK_ENROLLMENT_USER_ID = "user_id";
-    public static final String COLUMN_FK_ENROLLMENT_PLAYER_ID = "player_id";
-    public static final String COLUMN_FK_ENROLLMENT_LEAGUE_ID = "league_id";
-    public static final String COLUMN_FK_ENROLLMENT_TEAM_ID = "team_id";
-    public static final String COLUMN_ENROLLMENT_DATE = "enrollment_date";
-    public static final String COLUMN_FEE = "fee";
+    public static final String TABLE_ENROLLMENT               =      "enrollment";
+    public static final String COLUMN_ENROLLMENT_ID           =   "enrollment_id";
+    public static final String COLUMN_FK_ENROLLMENT_USER_ID   =         "user_id";
+    public static final String COLUMN_FK_ENROLLMENT_PLAYER_ID =       "player_id";
+    public static final String COLUMN_FK_ENROLLMENT_LEAGUE_ID =       "league_id";
+    public static final String COLUMN_FK_ENROLLMENT_TEAM_ID   =         "team_id";
+    public static final String COLUMN_ENROLLMENT_DATE         = "enrollment_date";
+    public static final String COLUMN_FEE                     =             "fee";
 
-    public static final String TABLE_PLACE = "place";
-    public static final String COLUMN_PLACE_ID = "place_id";
-    public static final String COLUMN_PLACE_NAME = "place_name";
-    public static final String COLUMN_STREET_ADDRESS = "street_address";
-    public static final String COLUMN_CITY = "city";
-    public static final String COLUMN_STATE = "state";
-    public static final String COLUMN_ZIP = "zip";
+    public static final String TABLE_PLACE                   =            "place";
+    public static final String COLUMN_PLACE_ID               =         "place_id";
+    public static final String COLUMN_PLACE_NAME             =       "place_name";
+    public static final String COLUMN_STREET_ADDRESS         =   "street_address";
+    public static final String COLUMN_CITY                   =             "city";
+    public static final String COLUMN_STATE                  =            "state";
+    public static final String COLUMN_ZIP                    =              "zip";
 
     public static final String TABLE_EVENT                   =            "event";
     public static final String COLUMN_EVENT_ID               =         "event_id";
@@ -72,12 +72,12 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_FK_EVENT_HOME_TEAM_ID  =     "home_team_id";
     public static final String COLUMN_FK_EVENT_AWAY_TEAM_ID  =     "away_team_id";
 
-    public static final String TABLE_ATTENDANCE              =    "attendance";
-    public static final String COLUMN_ATTENDANCE_ID          = "attendance_id";
-    public static final String COLUMN_FK_ATTENDANCE_EVENT_ID =      "event_id";
-    public static final String COLUMN_FK_ATTENDANCE_USER_ID  =       "user_id";
-    public static final String COLUMN_STATUS                 =        "status";
-    public static final String COLUMN_MESSAGE                =       "message";
+    public static final String TABLE_ATTENDANCE              =       "attendance";
+    public static final String COLUMN_ATTENDANCE_ID          =    "attendance_id";
+    public static final String COLUMN_FK_ATTENDANCE_EVENT_ID =         "event_id";
+    public static final String COLUMN_FK_ATTENDANCE_USER_ID  =          "user_id";
+    public static final String COLUMN_STATUS                 =           "status";
+    public static final String COLUMN_MESSAGE                =          "message";
 
     public static final String[] CREATE_DATABASE = {
 
@@ -91,7 +91,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                     COLUMN_USER_TYPE       + " TEXT        ,      " +
                     COLUMN_PASSWORD        + " TEXT ) ; ",
 
-            " CREATE TABLE " + TABLE_SPORT + " ( "                              +
+            " CREATE TABLE " + TABLE_SPORT + " ( "                             +
                     COLUMN_SPORT_ID   + " INTEGER PRIMARY KEY       ,        " +
                     COLUMN_SPORT_NAME + " TEXT ) ; ",
 
@@ -215,15 +215,15 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         Log.w(MySQLiteHelper.class.getName(),
             "Upgrading... Old Version: " + oldVersion + "\n" +
                     "New Version: " + newVersion + ", which destroys all old data...");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ENROLLMENT + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE  + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENT  + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLACE  + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYER  + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEAM  + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS  + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LEAGUE + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SPORT  + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ENROLLMENT   + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE   + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENT        + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLACE        + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYER       + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEAM         + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS        + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LEAGUE       + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SPORT        + ";");
         onCreate(db);
     }
 }
