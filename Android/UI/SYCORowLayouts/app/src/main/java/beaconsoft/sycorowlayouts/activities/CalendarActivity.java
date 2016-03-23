@@ -98,7 +98,11 @@ public class CalendarActivity extends AppCompatActivity {
 
     public void goToEditEvents(View view){
         Intent intent = new Intent(getApplicationContext(), EditEventsActivity.class);
-
+        intent.putExtra(NAME_KEY, currentAdminName);
+        intent.putExtra(ADMIN_KEY, currentAdminId);
+        intent.putExtra(LEAGUE_KEY, currentLeagueId);
+        intent.putExtra(TEAM_KEY, currentTeamId);
+        intent.putExtra(EMAIL_KEY, currentAdminEmail);
         startActivity(intent);
     }
 
