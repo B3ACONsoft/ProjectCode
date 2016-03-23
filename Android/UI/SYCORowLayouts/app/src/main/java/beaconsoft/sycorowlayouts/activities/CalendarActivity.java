@@ -75,9 +75,6 @@ public class CalendarActivity extends AppCompatActivity {
         currentLeagueId   = intent.getIntExtra(LEAGUE_KEY, 0);
         currentTeamId     = intent.getIntExtra(TEAM_KEY, 0);
 
-        eventTextPrompt = (TextView)findViewById(R.id.eventTextPrompt);
-        eventTextPrompt.setText("Admin:" + currentAdminId + " League:" + currentLeagueId + " Team:" + currentTeamId);
-
         final CalendarView c = (CalendarView) findViewById(R.id.calendarView1);
         cal.setTimeInMillis(c.getDate());
         //eventList = datasource.getListOfEvents(Integer.parseInt(sdf.format(cal.getTime())));
@@ -97,6 +94,12 @@ public class CalendarActivity extends AppCompatActivity {
 //                listview.setAdapter(adapter);
 //            }
 //        });
+    }
+
+    public void goToEditEvents(View view){
+        Intent intent = new Intent(getApplicationContext(), EditEventsActivity.class);
+
+        startActivity(intent);
     }
 
 
