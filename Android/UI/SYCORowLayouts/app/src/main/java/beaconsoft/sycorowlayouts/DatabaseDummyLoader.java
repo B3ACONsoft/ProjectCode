@@ -154,5 +154,6 @@ public class DatabaseDummyLoader {
             , "INSERT INTO event VALUES(NULL, 'PRACTICE', '2016/03/27 17:00:00', 2, 3,    1);"
             , "INSERT INTO event VALUES(NULL, 'PRACTICE', '2016/03/28 19:00:00', 1, 2, NULL);"
             , "INSERT INTO event VALUES(NULL, 'GAME',     '2016/03/26 14:00:00', 1, 2,    1);"
+            , "INSERT INTO event VALUES(NULL, 'GAME',     '2016/03/23 17:00:00', 1, 1,    2);"
     };
 }

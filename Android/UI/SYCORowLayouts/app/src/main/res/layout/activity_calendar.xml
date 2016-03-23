@@ -9,23 +9,22 @@
         android:layout_width="match_parent"
         android:layout_height="310dp" />
 
-    <TextView
-        android:id="@+id/eventTextPrompt"
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Add &amp; Edit Events"
+        android:id="@+id/buttonGoToEditEvents"
         android:layout_below="@+id/calendarView1"
         android:layout_centerHorizontal="true"
-        android:text="Events"
-        android:textStyle="bold"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:onClick="goToEditEvents" />
 
     <ListView
         android:id="@+id/eventList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonGoToEditEvents"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/eventTextPrompt"
-        android:layout_marginTop="1dp" >
+        android:layout_alignParentStart="true">
     </ListView>
 
 </RelativeLayout>

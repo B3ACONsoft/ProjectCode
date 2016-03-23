@@ -174,7 +174,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                     TABLE_USERS + " ( " + COLUMN_USER_ID + " ) ) ; "};
 
     private static final String DATABASE_NAME = "baconator.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -204,7 +204,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.setTransactionSuccessful();
         db.endTransaction();
     }
-
 
     public void onOpen(SQLiteDatabase db){
         Log.w(MySQLiteHelper.class.getName(), "The Database appears to be open...version: " + db.getVersion());
