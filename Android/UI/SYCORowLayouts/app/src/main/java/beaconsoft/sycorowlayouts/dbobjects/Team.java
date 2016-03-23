@@ -1,5 +1,7 @@
 package beaconsoft.sycorowlayouts.dbobjects;
 
+import java.util.Comparator;
+
 /**
  * Created by Patrick on 3/8/2016.
  */
@@ -45,5 +47,16 @@ public class Team {
 
     public String toString(){
         return teamID + " " + teamName;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(this == o){
+            return true;
+        }else if (this.getTeamID() == ((Team) o).getTeamID()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
