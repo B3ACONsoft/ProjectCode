@@ -38,6 +38,8 @@ import beaconsoft.sycorowlayouts.dbobjects.Event;
 
 public class CalendarActivity extends AppCompatActivity {
 
+    //I am writing something in the Calendar Activity
+
     private TextView eventTextPrompt;
     private int currentAdminId;
     private int currentLeagueId;
