@@ -19,6 +19,7 @@ import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
 import beaconsoft.sycorowlayouts.dbobjects.League;
+import beaconsoft.sycorowlayouts.dbobjects.Place;
 import beaconsoft.sycorowlayouts.dbobjects.Sport;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
 
@@ -31,6 +32,7 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
     private String currentAdminName;
     private Team currentHomeTeam;
     private Team currentAwayTeam;
+    private Place currentPlace;
     private static final String   NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
     private static final String  ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
@@ -40,12 +42,37 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
     private ArrayList<Event> arrayListEvents = new ArrayList<>();
     private ArrayList<Team>  arrayListHomeTeamCandidates  = new ArrayList<>();
     private ArrayList<Team>  arrayListAwayTeamCandidates  = new ArrayList<>();
+    private ArrayList<Place> arrayListPlaces              = new ArrayList<>();
     private CheckBox isGame;
-    private Spinner spinnerHomeTeam = null;
-    private Spinner spinnerAwayTeam = null;
+    private Spinner spinnerHomeTeam;
+    private Spinner spinnerAwayTeam;
+    private Spinner spinnerPlaces;
     private SpinnerAdapter spinnerAdapterHomeTeam;
     private SpinnerAdapter spinnerAdapterAwayTeam;
     private ArrayList<Team> teamsList = new ArrayList<>();
+
+    @Override
+    protected void onPause(){
+        dataSource.close();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy(){
+        dataSource.close();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume(){
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        super.onResume();
+        initializePlaces();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +98,10 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
         spinnerHomeTeam = (Spinner)findViewById(R.id.spinnerHomeTeam);
         spinnerAwayTeam = (Spinner)findViewById(R.id.spinnerAwayTeam);
         spinnerAwayTeam.setEnabled(false);
-
+        spinnerPlaces   = (Spinner)findViewById(R.id.spinnerPlaces);
         spinnerHomeTeam.setOnItemSelectedListener(EditEventsActivity.this);
         spinnerAwayTeam.setOnItemSelectedListener(EditEventsActivity.this);
+        spinnerPlaces  .setOnItemSelectedListener(EditEventsActivity.this);
         isGame.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isGame.isChecked()) {
@@ -84,6 +112,13 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
             }
         });
         initializeTeams();
+        initializePlaces();
+    }
+
+    private void initializePlaces() {
+        arrayListPlaces.addAll(dataSource.getListOfPlaces());
+        spinnerPlaces.setAdapter(new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item,
+                arrayListPlaces));
 
     }
 
@@ -117,6 +152,13 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
         if (parent == spinnerAwayTeam) {
             onSpinnerHomeChange();
         }
+        if (parent == spinnerPlaces)   {
+            onSpinnerPlacesChange();
+        }
+    }
+
+    private void onSpinnerPlacesChange() {
+        currentPlace = (Place)spinnerPlaces.getSelectedItem();
     }
 
     private void onSpinnerAwayChange() {
@@ -125,5 +167,10 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
 
     private void onSpinnerHomeChange() {
         currentHomeTeam = (Team)spinnerHomeTeam.getSelectedItem();
+    }
+
+    public void goToAddPlace(View view){
+        Intent intent = new Intent(getApplicationContext(), AddPlaceActivity.class);
+        startActivity(intent);
     }
 }
