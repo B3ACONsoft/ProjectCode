@@ -93,13 +93,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.LeaguesActivity" />
         </activity>
-        <activity android:name=".activities.EditEventsActivity"
-            android:parentActivityName=".activities.CalendarActivity"
+        <activity
+            android:name=".activities.EditEventsActivity"
             android:label="Edit Events"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:parentActivityName=".activities.CalendarActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.CalendarActivity" />
+        </activity>
+        <activity android:name=".activities.AddPlaceActivity"
+            android:label="Add Places"
+            android:launchMode="singleTop"
+            android:parentActivityName=".activities.EditEventsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.EditEventsActivity" />
         </activity>
     </application>
 

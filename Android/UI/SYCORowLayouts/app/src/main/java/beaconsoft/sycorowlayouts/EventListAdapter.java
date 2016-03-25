@@ -1,4 +1,4 @@
-package beaconsoft.sycorowlayouts.activities;
+package beaconsoft.sycorowlayouts;
 
 import android.content.Context;
 import android.util.Log;

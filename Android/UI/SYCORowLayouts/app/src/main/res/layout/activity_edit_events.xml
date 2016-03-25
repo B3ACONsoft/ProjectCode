@@ -19,20 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Testing Testing"
-                android:id="@+id/textViewEditEventsTest"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:textAlignment="center" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -65,6 +51,107 @@
                 android:layout_below="@+id/spinnerHomeTeam"
                 android:layout_centerHorizontal="true" />
         </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Set Date"
+                android:id="@+id/buttonForwardDatePicker"
+                android:layout_weight="1"
+                android:onClick="forwardDatePicker" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Set Time"
+                android:id="@+id/buttonForwardTimePicker"
+                android:layout_weight="1"
+                android:onClick="forwardTimePicker" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Place"
+                android:id="@+id/textViewEditEventsPlace"
+                android:layout_column="0"
+                android:textAlignment="center" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinnerPlaces"
+                android:layout_column="0" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="New Place"
+                android:id="@+id/buttonAddPlace"
+                android:onClick="goToAddPlace"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Edit Place"
+                android:id="@+id/buttonEditPlace"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:id="@+id/listViewLeagueEvents"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="New Event"
+                android:id="@+id/buttonAddEvent"
+                android:layout_weight="1"
+                android:onClick="addEventToLeagueEventList" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Edit Event"
+                android:id="@+id/buttonEditEvent"
+                android:layout_weight="1"
+                android:onClick="updateEvent" />
+        </TableRow>
+
     </TableLayout>
 
 </RelativeLayout>
