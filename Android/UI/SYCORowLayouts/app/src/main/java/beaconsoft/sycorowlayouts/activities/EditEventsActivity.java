@@ -19,13 +19,16 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.EventListAdapter;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.dbobjects.Attendance;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
 import beaconsoft.sycorowlayouts.dbobjects.League;
 import beaconsoft.sycorowlayouts.dbobjects.Place;
@@ -39,7 +42,7 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
     private int currentTeamId;
     private String currentAdminEmail;
     private String currentAdminName;
-    private TextView test;
+    private TextView testPlace;
     private Team currentHomeTeam;
     private Team currentAwayTeam;
     private Place currentPlace;
@@ -64,6 +67,7 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
     private SpinnerAdapter spinnerAdapterAwayTeam;
     private ArrayList<Team> teamsList = new ArrayList<>();
     private ListView listview;
+    private String eventType = "PRACTICE";
 
     @Override
     protected void onPause(){
@@ -106,6 +110,7 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
         currentLeagueId   = intent.getIntExtra(LEAGUE_KEY, 0);
         currentTeamId     = intent.getIntExtra(TEAM_KEY, 0);
 
+        testPlace = (TextView)findViewById(R.id.textViewEditEventsPlace);
         isGame = (CheckBox)findViewById(R.id.checkBoxIsGame);
         isGame.setChecked(false);
         spinnerHomeTeam = (Spinner)findViewById(R.id.spinnerHomeTeam);
@@ -119,22 +124,24 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isGame.isChecked()) {
                     spinnerAwayTeam.setEnabled(true);
+                    eventType = "GAME";
                 } else if (!isGame.isChecked()) {
                     spinnerAwayTeam.setEnabled(false);
+                    eventType = "PRACTICE";
                 }
             }
         });
         initializeTeams();
         initializePlaces();
-        initializeListView();
+        initializeListView(currentHomeTeam);
         spinnerHomeTeam.isInEditMode();
         spinnerAwayTeam.isInEditMode();
         spinnerPlaces.isInEditMode();
     }
 
-    private void initializeListView() {
+    private void initializeListView(Team team) {
         eventList.clear();
-        eventList.addAll(dataSource.getListOfEvents());
+        eventList.addAll(dataSource.getListOfEventsByHomeTeam(team));
         ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, dataSource);
         listview = (ListView) findViewById(R.id.listViewLeagueEvents);
         listview.setAdapter(adapter);
@@ -173,10 +180,10 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
         parent.getItemAtPosition(position);
 
         if (parent == spinnerHomeTeam) {
-            onSpinnerAwayChange();
+            onSpinnerHomeChange();
         }
         if (parent == spinnerAwayTeam) {
-            onSpinnerHomeChange();
+            onSpinnerAwayChange();
         }
         if (parent == spinnerPlaces)   {
             onSpinnerPlacesChange();
@@ -189,10 +196,14 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
 
     private void onSpinnerAwayChange() {
         currentAwayTeam = (Team)spinnerAwayTeam.getSelectedItem();
+        testPlace.setText("AwayTeam: " + currentAwayTeam);
+        initializeListView(currentAwayTeam);
     }
 
     private void onSpinnerHomeChange() {
         currentHomeTeam = (Team)spinnerHomeTeam.getSelectedItem();
+        testPlace.setText("HomeTeam: " + currentHomeTeam);
+        initializeListView(currentHomeTeam);
     }
 
     public void goToAddPlace(View view){
@@ -210,7 +221,30 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
         timePickerFragment.show(getFragmentManager(), "timePicker");
     }
 
-    public void addEventToLeaguesList(View view){
-        
+    public void addEventToLeagueEventList(View view) {
+
+        Date date = new Date();
+        Event event = new Event();
+
+        if (eventType.equals("GAME") && currentHomeTeam != currentAwayTeam) {
+            event = dataSource.createEvent(eventType, date, currentPlace.getPlaceID(),
+                    currentHomeTeam.getTeamID(), currentAwayTeam.getTeamID());
+        } else if (eventType.equals("PRACTICE")) {
+            event = dataSource.createEvent(eventType, date, currentPlace.getPlaceID(),
+                    currentHomeTeam.getTeamID(), currentAwayTeam.getTeamID());
+        }else{
+            Toast toast = Toast.makeText(this, "A team cannot play itself. Please uncheck the 'game' box for a practice!",
+                    Toast.LENGTH_LONG);
+            toast.show();
+        }
+        initializeListView(event.getEventID());
+    }
+
+    private void initializeListView(int eventId) {
+        eventList.clear();
+        eventList.addAll(dataSource.getListOfEventsById(eventId));
+        ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, dataSource);
+        listview = (ListView) findViewById(R.id.listViewLeagueEvents);
+        listview.setAdapter(adapter);
     }
 }

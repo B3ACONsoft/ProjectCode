@@ -12,6 +12,7 @@ import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
 import beaconsoft.sycorowlayouts.dbobjects.Place;
+import beaconsoft.sycorowlayouts.dbobjects.Team;
 
 public class EventListAdapter extends ArrayAdapter<Event>{
 	private DataSource dataSource;
@@ -29,18 +30,25 @@ public class EventListAdapter extends ArrayAdapter<Event>{
 		View row = convertView;
 		if(convertView == null){
 			inflater = LayoutInflater.from(getContext());
-			row = inflater.inflate(R.layout.notification_list_item, null);
+			row = inflater.inflate(R.layout.list_view_event_items, null);
 		}
 		
-		TextView type = (TextView)row.findViewById(R.id.notificationType);
-		TextView place = (TextView)row.findViewById(R.id.notificationPlace);
+		TextView type = (TextView)row.findViewById(R.id.eventItemTypeDateTime);
+		TextView place = (TextView)row.findViewById(R.id.eventItemPlace);
+			TextView participants = (TextView)row.findViewById(R.id.eventParticipants);
 
 			Event e = data.get(position);
 			Place p = dataSource.getPlaceById(e.getPlaceID());
 		type.setText(e.getEventType() + " " + e.getStartDateTime());
 		place.setText(p.getPlaceName() + "\n" + p.getStreetAddress() + " " + p.getCity() + ", " +
 				p.getState() + " " + p.getZip());
-		
-		return row;
+			Team t2 = dataSource.getTeamById(e.getAwayTeamID());
+			Team t1 = dataSource.getTeamById(e.getHomeTeamID());
+		if(t2 == null){
+			participants.setText(t1.getTeamName());
+		}else {
+			participants.setText(t1.getTeamName() + " vs " + t2.getTeamName());
+		}
+			return row;
 	}
 }
