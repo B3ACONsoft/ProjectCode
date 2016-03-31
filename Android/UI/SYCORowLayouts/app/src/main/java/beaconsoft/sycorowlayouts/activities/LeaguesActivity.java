@@ -74,6 +74,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
             e.printStackTrace();
         }
         super.onResume();
+        sportsArrayList.clear();
         sportsArrayList.addAll(dataSource.getListOfSports());
         adapterSpinnerSports = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, sportsArrayList.toArray());
         adapterSpinnerSports.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -89,6 +90,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         }
         spinnerSports.setSelection(sportsPointer);
 
+        leaguesArrayList.clear();
         leaguesArrayList.addAll(dataSource.getListOfLeaguesBySport(currentSport));
         adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, leaguesArrayList.toArray());
         spinnerLeagues.setAdapter(adapterSpinnerLeagues);
@@ -103,6 +105,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         }
         spinnerLeagues.setSelection(leaguesPointer);
 
+        teamsArrayList.clear();
         teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
         adapterSpinnerTeams = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, teamsArrayList);
         adapterSpinnerTeams.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -238,6 +241,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
         /*LOAD THE SPORTS SPINNER AND ADAPTER*/
         sportsArrayList = new ArrayList<>();
+        sportsArrayList.clear();
         sportsArrayList.addAll(dataSource.getListOfSports());
         if(sportsArrayList.isEmpty()){
             deactivateView(spinnerSports);
@@ -274,6 +278,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         }
 
         leaguesArrayList = new ArrayList<>();
+        leaguesArrayList.clear();
         leaguesArrayList.addAll(dataSource.getListOfLeaguesBySport(currentSport));
         if (leaguesArrayList.isEmpty()) {
             deactivateView(spinnerLeagues);
@@ -303,7 +308,9 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
             currentLeague = tempLeague.getLeagueID();
         }
 
+
         teamsArrayList = new ArrayList<>();
+        teamsArrayList.clear();
         teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
         if(teamsArrayList.isEmpty()){
             deactivateView(spinnerTeams);
@@ -323,6 +330,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         }
 
         playersArrayList = new ArrayList<>();
+        playersArrayList.clear();
         playersArrayList.addAll(dataSource.getListOfPlayersByTeam(currentTeam));
         if(playersArrayList.isEmpty()){
             deactivateView( spinnerPlayers);

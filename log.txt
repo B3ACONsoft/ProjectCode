@@ -1,0 +1,825 @@
+commit 3dba239f9293491c5cf7f9b9954d12ec74dcf895
+Merge: fcabdca 10d2c37
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Fri Mar 25 05:25:26 2016 -0400
+
+    Merge pull request #33 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Patrick add teams ui
+
+commit 10d2c377f8e05a3f3e4f8b8f1ae655ad06a5622e
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Fri Mar 25 05:17:42 2016 -0400
+
+    Getting Ready to Make Logic for Event Add Activity and Fragments
+
+commit 609aadac22057a405266fe4d4204ee5cb5b71d07
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Mar 24 17:35:40 2016 -0400
+
+    Add Places Button Works and Replenishes ListView
+
+commit fcabdca3b4fc1247be90fd769264de7732edcc39
+Merge: 11fbfb9 b2a9e1c
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Wed Mar 23 19:01:18 2016 -0400
+
+    Merge pull request #32 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Patrick add teams ui
+
+commit b2a9e1cc4b1893e3f193512b9bb7b22e1e585f81
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Wed Mar 23 18:59:19 2016 -0400
+
+    Adding UI Components to EditEventsActivity
+
+commit 11fbfb96839ac85ed04873c60aaec3fe58cf620d
+Merge: 3fe2790 f2729ab
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Wed Mar 23 15:42:01 2016 -0400
+
+    Merge pull request #31 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Added Edit Events Activity
+
+commit f2729ab2d541411025d053a3eeea70fc1a65bf30
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Wed Mar 23 15:41:19 2016 -0400
+
+    Added Edit Events Activity
+    
+    We should be able to edit events and add places within this last
+    administrative activity
+
+commit 3fe279079b33e8524dce70fdac3074230d3fbddd
+Merge: 150f264 7f3721f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Wed Mar 23 14:47:26 2016 -0400
+
+    Merge pull request #30 from B3ACONsoft/Lisa-development-branch
+    
+    Change 2.43pm
+
+commit 150f26470b92651a0b4544d7807709f832fd6a82
+Merge: 5fe406a d2ec970
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Wed Mar 23 14:46:23 2016 -0400
+
+    Merge pull request #29 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    I wrote something in the calendar activity
+
+commit 7f3721fe6c618b711262fefce7790220d9551b55
+Author: Jolichelle <lhoo@my.waketech.edu>
+Date:   Wed Mar 23 14:44:06 2016 -0400
+
+    Change 2.43pm
+
+commit d2ec9700a7b64e1f300eaa66466fde7c50209748
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Wed Mar 23 14:42:15 2016 -0400
+
+    I wrote something in the calendar activity
+
+commit 5fe406aaf3306f181f73ad4c1e25ab4e2b6d6a70
+Merge: 5aeba8e 9a6f106
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 22 11:34:54 2016 -0400
+
+    Merge pull request #28 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Calendar Listview fixes
+
+commit 9a6f1064239d86ce9caa54905d75a19275292d05
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 22 11:25:05 2016 -0400
+
+    Calendar Listview fixes
+
+commit 5aeba8eb555001bf4fd3cc2202c3291584e7fcc0
+Merge: 77eda09 46e7605
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 22 00:52:29 2016 -0400
+
+    Merge pull request #27 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Calendar Activity Update
+
+commit 46e76051b51182e113227586e3118cd6ffbee9a0
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 21 23:57:24 2016 -0400
+
+    Calendar Activity
+    
+    Ready for Event Display, and Intent information passed forward. Lisa's
+    event list method now overloads the old one with an Integer parameter as
+    the current time. Thanks Lisa!!!!
+
+commit 77eda09a2fea0e97ce14faf22d85a001ea410a2a
+Merge: 741f403 3e90cc1
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 21 21:41:55 2016 -0400
+
+    Merge pull request #26 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    I'm guessing that Dave had to change the default JDK
+
+commit 3e90cc1f1f8517619600373f04aa0398d52be8b4
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 21 21:40:17 2016 -0400
+
+    I'm guessing that Dave had to change the default JDK
+
+commit 741f4037117896c2aff8a299e9b0ef7ffc043ceb
+Merge: d7042a0 a2e2d2f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 21 15:47:24 2016 -0400
+
+    Merge pull request #25 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Patrick add teams ui
+
+commit a2e2d2fcefe8ebb0a750954fef08bee2f36a5e1d
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 21 15:40:05 2016 -0400
+
+    Update Player to SQLite DB running smoothly
+    
+    The UI is working well with the update logic and the screen immediately
+    updates to the new information if anything was changed. When I return to
+    the Leagues screen, it registers in the appropriate spinner.
+    Patrick
+
+commit be6df0e215846ddae41d70a28cfa917adfb9921f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Mar 17 05:46:46 2016 -0400
+
+    Backend is in testing phase
+    
+    UI For Add Teams - Logic done
+
+commit d7042a0461a6df04fbab7b50f09d4f1580a6b14f
+Merge: b096bc1 e4b4597
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 15 21:20:46 2016 -0400
+
+    Merge pull request #24 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Attempting to add backwards information sharing
+
+commit e4b459786efcf99c0737c7e327fff69100dde689
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 15 21:19:38 2016 -0400
+
+    Small changes, attempting to pass Activity information backwards
+
+commit b096bc19734c09685a1df0936649e84fc1fe75d4
+Merge: 9e0e4fb e5da4cb
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 14 14:26:29 2016 -0400
+
+    Merge pull request #23 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Patrick add teams ui
+
+commit e5da4cbc77f30a0e92e67ca32319a3c4291f9543
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 14 14:25:38 2016 -0400
+
+    Add Teams Working Again
+    
+    There was a power outage and my computer lost some files last night. I
+    would kick myself if I were limber enough...
+
+commit d1d2abbad2eee32773e9b661714cdbd35acf4435
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 14 12:47:14 2016 -0400
+
+    Trying to get back
+
+commit a994a2e16d9cc59d1aa329cfa99f628e3ad3b313
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 14 12:31:42 2016 -0400
+
+    Why Lord Why
+    
+    Frustrating crash last night...
+
+commit 9e0e4fbcb55011e58623eb9f04ca92781f8be8a7
+Merge: 3356e0f faab137
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 14 03:54:59 2016 -0400
+
+    Merge pull request #22 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Different Organization of Files -
+
+commit faab1376b4f9127c13178d93e02d4487054bc6aa
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Mar 14 03:53:48 2016 -0400
+
+    Different Organization of Files -
+    
+    Add Teams and Add PLayer Work
+
+commit 3356e0f20ea5efe9046b58bc36fb2ead7e2cd00d
+Merge: ba2ff3f dea41e6
+Author: Jolichelle <lhoo@my.waketech.edu>
+Date:   Sun Mar 13 17:09:39 2016 -0400
+
+    Merge pull request #21 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    A LOT of changes in this publish.... DOA Model In Place, but...
+
+commit dea41e6377ee7b282769e491e6aea299f1591557
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sun Mar 13 16:33:07 2016 -0400
+
+    A LOT of changes in this publish.... DOA Model In Place, but...
+    
+    4 out of 5 basic admin functions are still not fixed. It works much
+    better though
+
+commit ba2ff3fffe7a87fcb7675066646dd45b0fddcb84
+Merge: 3ad0c38 f3b626c
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Wed Mar 9 00:18:56 2016 -0500
+
+    Merge pull request #20 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    DOA Approach, 2 Major Classes Set up for Object Manipulation
+
+commit f3b626cd64e360407ce86f3fcb01ac73ae3064a3
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Wed Mar 9 00:15:18 2016 -0500
+
+    DOA Approach, 2 Major Classes Set up for Object Manipulation
+
+commit 3ad0c386a47436738d1d362352053c4a239ba014
+Merge: c93d385 bc3f8fc
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 8 00:41:37 2016 -0500
+
+    Merge pull request #19 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Working on Adding Sports and Leagues I hope the Calendar is going well Lisa!!!!
+
+commit bc3f8fc90a600e31a2fa51ded0e9fda72efb5a78
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 8 00:37:36 2016 -0500
+
+    Working on Adding Sports and Leagues
+
+commit c93d3857b85f7d1756fe71094d4ec606631794e8
+Merge: 9e7b91c bb7f0db
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sun Mar 6 17:15:56 2016 -0500
+
+    Merge pull request #18 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Calendar Screen/Activity Create, Merged From Add-Teams-UI
+    -Patrick
+
+commit bb7f0db42762b4e2c4a892e0f5913a806b9a53e8
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sun Mar 6 17:10:54 2016 -0500
+
+    Calendar Screen/Activity
+
+commit 9e7b91c975e7bc139b0388d5ad0a3c434f5b3d14
+Merge: 80019d0 1caeced
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sun Mar 6 15:39:39 2016 -0500
+
+    Merge pull request #17 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    UI Teams Complete
+
+commit 1caecedd874fe4cd2c4ba33f1ff1fc05fc636e6a
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sun Mar 6 15:37:46 2016 -0500
+
+    UI Teams Complete
+
+commit 80019d04a52aa11b71fff240be57c09678c08f32
+Merge: 0077dd0 04b35ed
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Mar 5 08:47:45 2016 -0500
+
+    Merge pull request #16 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Add Teams/ Add Coaches UI is up and running. - Patrick
+
+commit 04b35ed6dfff52ff1dcb58b8d2fe15e6933b5212
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Mar 5 08:44:06 2016 -0500
+
+    Add Teams/ Add Coaches UI is up and running.
+
+commit 0077dd05dab7f76fe436301150ad3dd9ce0b19a2
+Merge: 87a5cfa fc8a783
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Mar 5 04:41:28 2016 -0500
+
+    Merge pull request #15 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Patrick add teams ui
+    Teams UI coming together. Successful inserts and successful display on Admin Screen
+
+commit fc8a783c077f77361f72fa6a4a95a8f9bf6aa184
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Mar 5 04:37:50 2016 -0500
+
+    Please Please Please Merge
+
+commit 73aa149b933f1f816b16dad59c94bb9db475f063
+Merge: ce58f36 87a5cfa
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Mar 5 02:23:30 2016 -0500
+
+    Merge remote-tracking branch 'refs/remotes/origin/Patrick-branch' into Patrick---Add-Teams-UI
+
+commit 87a5cfadf137210aa639d0e98f78edc293a783ec
+Merge: 585c321 f7ae975
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Fri Mar 4 15:20:56 2016 -0500
+
+    Merge pull request #14 from B3ACONsoft/Patrick's-Development-Branch
+    
+    Patrick s development branch is merging with Patrick Branch after positive function completion QuickAddPlayers Activity
+
+commit ce58f3698f8e23d3c1ac33c940ae9bf88510aeaa
+Merge: 95cc19e 20955f4
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Fri Mar 4 15:15:01 2016 -0500
+
+    Merge remote-tracking branch 'refs/remotes/origin/Patrick's-Development-Branch' into Patrick---Add-Teams-UI
+
+commit f7ae975e74cdc98f1bf36acbec139e685ca602d4
+Merge: 20955f4 95cc19e
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Fri Mar 4 15:14:43 2016 -0500
+
+    Merge pull request #13 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Tested Quick Add Player
+
+commit 95cc19e9ba9215a307abcedef35276fa7638332f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Fri Mar 4 15:10:53 2016 -0500
+
+    Tested Quick Add Player
+    
+    This Code will be useful adding a Coach or updating player records. The
+    enrollment table now spits out the enrollment_id, user_id, and player_id
+    every time you add someone successfully. Previously, it had been the
+    users table and a name but that just isn't as useful.
+
+commit 20955f4221a196a61e18b18021e422623cfefe85
+Merge: 6cb3870 8f39639
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Fri Mar 4 00:30:43 2016 -0500
+
+    Merge pull request #12 from B3ACONsoft/Patrick---Add-Teams-UI
+    
+    Patrick add players quickly
+
+commit 8f396399bb63d5a8d4ef1538de5dba2996414586
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Fri Mar 4 00:28:44 2016 -0500
+
+    Quick Add Player Works and has Exception Handling
+    
+    Boom. Love over here please!!!
+
+commit 765f53f73815f7ac58a73f53dddf9e383718c142
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 1 23:55:59 2016 -0500
+
+    QuickAddTeams methods
+    
+    Mostly housecleaning on Admin-QuickAddTeams
+
+commit aea51decb862eea435e10a406e88b10397253cdb
+Merge: 6cb3870 585c321
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 1 16:25:07 2016 -0500
+
+    Merge remote-tracking branch 'refs/remotes/origin/Patrick-branch' into Patrick---Add-Teams-UI
+
+commit 585c321725e14fcff6098e34efa87707b1c2e716
+Merge: 149b7f5 6cb3870
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 1 16:21:50 2016 -0500
+
+    Merge pull request #11 from B3ACONsoft/Patrick's-Development-Branch
+    
+    Patrick s development branch
+    
+    For Lisa - look into placing these new records in the "users" and "player" tables. You must have a user before you have a player, because the user_id goes into the "player" table
+
+commit 6cb38705cbe3e2de51a494afdb062704087d159f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 1 16:18:57 2016 -0500
+
+    QuickAddPlayer UI Complete
+    
+    The checkbox works and the button below should force text into a
+    hashmap.
+    DBHelper should allow you to open a connection and insert new records,
+    Lisa.
+
+commit 149b7f5bc53d347fab11ac1eeee9fbb733659c08
+Merge: 400129e 11f2b5e
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 1 01:55:08 2016 -0500
+
+    Merge pull request #10 from B3ACONsoft/Patrick's-Development-Branch
+    
+    Patrick s development branch just dropping off the Admin UI
+
+commit 11f2b5e72e4bc063f443f6beb594d3001731e4ac
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Mar 1 01:51:17 2016 -0500
+
+    League Administration UI 75% Finished
+    
+    Spinners all operate properly, disappear slightly when they have no
+    information to display. They take the needed information from the
+    database and display it, after building a Hashmap that can eventually be
+    passed somewhere or just used to switch items in the next method.
+    Cheers!
+
+commit 802f3d2ee34ab5ab46028087c62323f998857f8b
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Feb 29 19:03:05 2016 -0500
+
+    Administrative UI 50%
+    
+    Added extensions to onSelectItem, split each one by parent. Most
+    functionality for Admin page becoming apparent. Still buggy.
+
+commit 400129e6e21a02e7a2410642f7f17c3f12b9e068
+Merge: 2f8214e 151da69
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Feb 29 05:01:33 2016 -0500
+
+    Merge pull request #9 from B3ACONsoft/Patrick's-Development-Branch
+    
+    Patrick s development branch
+    Halfway to functional league admin spinners...
+
+commit 151da695c4d6545996d268b77d844ee46290df8b
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Mon Feb 29 04:46:11 2016 -0500
+
+    First Two Admin Spinners Hooked to Database
+
+commit a88713122ce108c3b23b96c6837607b2aabcf3f6
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sun Feb 28 16:35:09 2016 -0500
+
+    Version Update Patrick v1.8?
+    
+    NAME_KEY added, new intent string extra
+    Henry Johnson is always what shows up in the admin email and name in
+    Administrative Dash
+    ProperCase.toProperCase(String s) returns uppercase to propercase, but
+    only one word at a time
+
+commit 2f8214e4bc3c2f7d8d66d9d4ee4fd36c4fc80963
+Merge: bab9e3d e77f234
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Feb 23 20:37:32 2016 -0500
+
+    Merge pull request #8 from B3ACONsoft/Patrick's-Development-Branch
+    
+    Patrick s development branch
+
+commit e77f2344f5c787149c462b77d1f1acf3e50cfa08
+Merge: 365f333 df3080a
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Feb 23 20:23:04 2016 -0500
+
+    Merge pull request #7 from B3ACONsoft/master
+    
+    hello is good and bacony
+
+commit df3080a8b316e34c36d3f484bae80ce133d5eb71
+Author: Jolichelle <lhoo@my.waketech.edu>
+Date:   Tue Feb 23 20:04:34 2016 -0500
+
+    hello
+
+commit bab9e3dfdeb141762f6af59bdbb96ced8a9f0955
+Merge: 4ec6446 365f333
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Feb 23 19:58:37 2016 -0500
+
+    Merge pull request #6 from B3ACONsoft/Patrick's-Development-Branch
+    
+    Patrick s development branch into the Main Patrick Branch
+
+commit 365f3331a1857365ac1e30592e3682633caaf432
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Feb 23 19:55:32 2016 -0500
+
+    Lisa Coming Online
+    
+    This commit is to ready things for Lisa.
+
+commit af4b594f1825828808a0734276a6c72a386c2f37
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Feb 23 18:16:32 2016 -0500
+
+    Using Database to retrieve a user_id(Coach)
+
+commit 4ec64462621c3dbea9b68189006e72e4db6fb99d
+Merge: 68594c7 aff23a9
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Feb 23 06:09:37 2016 -0500
+
+    Merge pull request #5 from B3ACONsoft/Patrick's-Development-Branch
+    
+    Working SQLite DB
+
+commit aff23a9f48041ff01d3d4bcf916c5f78b57122d5
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Tue Feb 23 06:04:23 2016 -0500
+
+    Working SQLite DB
+    
+    The db is implemented in main. Any time you start a new activity, all
+    you have to do is get a SQLiteDatabase object and call
+    getWritableDatabase(), then use the object to query or select things
+    with rawQuery for now...
+
+commit 68594c79dd4e71b3e35bd4aa4319cb3fa612d56e
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sun Feb 21 19:22:31 2016 -0500
+
+    Final Commit Before Push to PATRICK- MASTER
+
+commit e4e4ec61ae3733d331bad250d5db204c52daef4f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Feb 20 18:48:14 2016 -0500
+
+    Changed Activity Name to UserRosterActivity
+
+commit f4058c4af7744ad9c20531236387626fd8da372b
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Feb 20 18:43:06 2016 -0500
+
+    UserActivity
+    Quick and Dirty View Alignment on Test ListView
+
+commit e25927cfa5ce58ea817ba15f062a151d7154285f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Feb 20 18:26:26 2016 -0500
+
+    Added UserActivity (lowest permission level user)
+    It creates a little database, puts me and katy perry
+    inside, and deletes us after displaying roster rows.
+
+commit 03d6fcebe74a0f2a946fc01183746f8d9c4f826f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 23:44:14 2016 -0500
+
+    Really really pretty again
+
+commit 6a4cdbc50ce56814be41a102e4b41362907f80d8
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 22:37:30 2016 -0500
+
+    This might work, added DAtaBaseConstantssalkdjls;k
+
+commit 7c8f0f73137c37944621c41feb6d3ecccdf60ae5
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 22:34:13 2016 -0500
+
+    copy the git
+
+commit 79caeebaf96db423e95f24f75d34dacda955fb2f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 22:25:07 2016 -0500
+
+    it had to be done. sorry JSON
+
+commit 791424856fbd6f530484e24166044569d5969743
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 19:46:09 2016 -0500
+
+    maint commit
+
+commit df54c674390ba6e26fcf78a0ef6db236c8626d4f
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 19:31:19 2016 -0500
+
+    Awesome! Found your work right under my nose. I was looking in JSONUpdateDemo and it was broken! My bad! You migrated!!! THANK OYU THAK OUY THAAANK OYU!!!!
+
+commit 8f3edf7e74c9837bfb37462ba685ee585ac2f598
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 19:19:59 2016 -0500
+
+    did stuff
+
+commit e3f1676f1a09beba41584cff9d91c8b48e3b9fac
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 18:50:33 2016 -0500
+
+    Awesome! Found your work right under my nose. I was looking in JSONUpdateDemo and it was broken! My bad! You migrated!!! THANK OYU THAK OUY THAAANK OYU!!!!
+
+commit 212f7eb1ebcb9d6113fa097aa8c99772dbb56d77
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 18:50:04 2016 -0500
+
+    Awesome! Found your work right under my nose. I was looking in JSONUpdateDemo and it was broken! My bad! You migrated!!! THANK OYU THAK OUY THAAANK OYU!!!!
+
+commit dd31ae2d68261329d36cd2e3fc932874955bbcea
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 18:05:19 2016 -0500
+
+    Awesome! Found your work right under my nose. I was looking in JSONUpdateDemo and it was broken! My bad! You migrated!!! THANK OYU THAK OUY THAAANK OYU!!!!
+
+commit b36efca6acf2b5a4ec37c827e123291102f3c00e
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 17:41:53 2016 -0500
+
+    Awesome! Found your work right under my nose. I was looking in JSONUpdateDemo and it was broken! My bad! You migrated!!! THANK OYU THAK OUY THAAANK OYU!!!!
+
+commit ce28486949a733a20baeeabcacae731080b46682
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Thu Feb 18 17:10:26 2016 -0500
+
+    what is going on
+
+commit 4f176b9e91bde1aeafa65e89a796ecbca5ce300b
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Wed Feb 17 22:41:45 2016 -0500
+
+    Started on DatabaseConstants;
+
+commit 50ac577a59392a9178159d9c912fcc8ffd98c635
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Wed Feb 17 21:13:44 2016 -0500
+
+    commit after:
+    git rm -r --cached ./ in ProjectCode: daveBranch
+
+commit 6ce5d672c4d3ce9539b388f1084b0a42cdc30e31
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Wed Feb 17 21:07:12 2016 -0500
+
+    added .gitignore to daveBranch
+
+commit 5da469eb0f77ff582086c1c201ecc1052d480cb4
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Wed Feb 17 20:48:31 2016 -0500
+
+    commit of INCOMPLETE JSON connect thingy
+
+commit dd7be673695611ffe3958caff55fa0fadcf12744
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sun Feb 14 03:26:09 2016 -0500
+
+    Yeti Update 3:00am
+    
+    While watching "The Hunt for Red October" and "Ronin," (don't want you
+    to think I'm working too hard here) added
+    Registration Activity
+    +one button works lol
+    LoginActivity
+    +Registration Direction button
+    +"Remember Me" Checkbox
+    QuickAddPlayerActivity finished
+    +Add Player makes a hashmap
+    +Clear clears the forms
+
+commit 45eb90d571e28552d0b40cc28ec4fa91e985bd9d
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sun Feb 14 00:27:50 2016 -0500
+
+    Yeti Update
+    
+    Starting on creating Coaches
+
+commit 5827385068edb3f80c6f93daeee29b7453b2d96e
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Feb 13 22:16:33 2016 -0500
+
+    League Admin Screen Pretty Much Complete...
+    
+    reorganized, added player spinner, all things flow from this screen for
+    admins now
+
+commit 01bc5afc75647100554165e9460d75dea445c859
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Feb 13 20:43:12 2016 -0500
+
+    Team Hash Map Cranked Out
+    
+    String keyTeamName, String keyCoach in QuickAddTeamsActivity
+
+commit b31516fb0adbacb0a42a4f11075263d1c4c93067
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Feb 13 17:28:47 2016 -0500
+
+    Yeti Update
+    
+    Replaced with QuickAddActivity
+
+commit 40220b6acf2c208eb68619e982a8175b867d74b8
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Feb 13 16:24:33 2016 -0500
+
+    Yeti Update
+    
+    Working On Quick Add
+
+commit 54b85c715424ce412003efda92ba70c319fe6fb6
+Author: ptcurrin <ptcurrin@my.waketech.edu>
+Date:   Sat Feb 13 15:11:58 2016 -0500
+
+    Row Layouts for SYCO
+    
+    I've tussled with the program all week in one aspect or another. It's
+    finally making sense and doing what I think it's supposed to.
+
+commit 8976e388cbf71974cc02dc4e09ff6b48b0b02364
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Mon Feb 8 23:20:42 2016 -0500
+
+    Cleaned up Directory Structure.
+    Removed unused code.
+
+commit 3eeb7b6ed1743e631685e4eb82a9ddb79611b7e6
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Mon Feb 8 23:16:33 2016 -0500
+
+    Added Comments
+    Added more constants.
+    Removed unused code.
+
+commit 5282923cf4c054894cfa2005ff4c78da6d9f7930
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Mon Feb 8 00:41:20 2016 -0500
+
+    Added the ConnectToBacon Class, supporting interfaces, and READ-ME
+
+commit b02f36fc2db6e71921b8a9d26393b753e0ab0b45
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Mon Feb 8 00:28:00 2016 -0500
+
+    Updated to latest cloudVersion
+
+commit 971dcc4a5f57af0b07a7dc3110d1f6c51c1b2f8c
+Author: Jolichelle <lhoo@my.waketech.edu>
+Date:   Sun Feb 7 18:37:54 2016 -0500
+
+    stuff
+    
+    Added POST app using the org.apache libraries
+
+commit f3c6c73a64f16a036cad98cd2f24ba08dd1d5f2a
+Author: Patrick <currin.patrick@gmail.com>
+Date:   Sun Feb 7 15:19:17 2016 -0500
+
+    The yeti called.
+    But I did not answer...
+
+commit 507fe08bea0388c4a422df8474bf4651bc838319
+Author: Patrick <currin.patrick@gmail.com>
+Date:   Sun Feb 7 14:56:53 2016 -0500
+
+    ghj
+
+commit 38cebf516cf7a8b685303f06d3b71d640c5e1a32
+Author: David <david.johnson@fireflyrfid.com>
+Date:   Thu Feb 4 11:12:15 2016 -0500
+
+    Added table to show entire DB
+
+commit 3a40ad2bbd22dc18a9cd3a947ecf9e52d3ad55fc
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Wed Feb 3 23:19:48 2016 -0500
+
+    Added comments to MainActivity.java
+
+commit a9b68b10d6e566c31fc1563f613026d0884a6f33
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Wed Feb 3 23:07:10 2016 -0500
+
+    Added Comments to postDemo.php
+
+commit f84d20ceee6759dbdeb529d685ca1f8a40ef1d21
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Wed Feb 3 22:58:42 2016 -0500
+
+    Commit of postDemo files
+
+commit cf24de7103d068e24d8ec6759e9de35b86aae2d5
+Author: wakeTechN00b <dhjohnson3@my.waketech.edu>
+Date:   Mon Jan 18 13:36:12 2016 -0500
+
+    Initial commit

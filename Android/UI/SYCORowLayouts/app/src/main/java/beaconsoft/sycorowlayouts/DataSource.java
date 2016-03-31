@@ -851,19 +851,37 @@ public class DataSource {
     * */
 
     public Event createEvent(String eventType, Date startDateTime, int placeID, int homeTeamID, int awayTeamID){
+
         ContentValues values = new ContentValues();
         values.putNull(MySQLiteHelper.COLUMN_EVENT_ID);
         values.put(MySQLiteHelper.COLUMN_EVENT_TYPE, eventType);
         values.put(MySQLiteHelper.COLUMN_START_DATE_TIME, startDateTime.toString());
         values.put(MySQLiteHelper.COLUMN_FK_EVENT_PLACE_ID, placeID);
         values.put(MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID, homeTeamID);
-        values.put(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID, awayTeamID);
+
+        if(eventType.equals("GAME")) {
+            values.put(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID, awayTeamID);
+
+        } else {
+            values.putNull(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID);
+        }
 
         long insertID = db.insert(MySQLiteHelper.TABLE_EVENT, null, values);
         Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
                 MySQLiteHelper.COLUMN_EVENT_ID + " = " + insertID, null, null, null, null);
         cursor.moveToFirst();
         Event newEvent = cursorToEvent(cursor);
+
+        if(newEvent != null) {
+            ArrayList<Users> attendanceMakingList = new ArrayList<>();
+            attendanceMakingList.addAll(getListOfUsersByTeam(homeTeamID));
+            if(eventType.equals("GAME")) {
+                attendanceMakingList.addAll(getListOfUsersByTeam(awayTeamID));
+            }
+            for (Users u : attendanceMakingList) {
+                createAttendance(newEvent.getEventID(), u.getUserID(), "GOING", "");
+            }
+        }
         return newEvent;
     }
 
@@ -889,10 +907,25 @@ public class DataSource {
         return newEvent;
     }
 
-    public List<Event> getListOfEvents(int i){
+    public Collection<? extends Event> getListOfEventsByHomeTeam(Team currentHomeTeam) {
         List<Event> eventsList = new ArrayList<>();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
-                null, null, null, null, null);
+                MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID + " = " + currentHomeTeam.getTeamID(),
+                null, null, null, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            Event tempEvent = cursorToEvent(cursor);
+            eventsList.add(tempEvent);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return eventsList;
+    }
+
+    public List<Event> getListOfEventsById(int eventId){
+        List<Event> eventsList = new ArrayList<>();
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
+                MySQLiteHelper.COLUMN_EVENT_ID + " = " + eventId, null, null, null, null);
         cursor.moveToFirst();
         while(!cursor.isAfterLast()){
             Event tempEvent = cursorToEvent(cursor);
@@ -967,4 +1000,6 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
+
+
 }
