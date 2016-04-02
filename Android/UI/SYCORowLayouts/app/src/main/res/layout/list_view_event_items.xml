@@ -9,7 +9,7 @@
         android:layout_height="2dp"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/notificationType"
-        android:background="#33ccff"
+        android:background="#000000"
         android:orientation="horizontal" >
     </LinearLayout>
 

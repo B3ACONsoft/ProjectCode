@@ -1,12 +1,12 @@
 package beaconsoft.sycorowlayouts.activities;
 
-import android.app.*;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v4.app.*;
+import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,21 +21,23 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.EventListAdapter;
 import beaconsoft.sycorowlayouts.R;
-import beaconsoft.sycorowlayouts.dbobjects.Attendance;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
-import beaconsoft.sycorowlayouts.dbobjects.League;
 import beaconsoft.sycorowlayouts.dbobjects.Place;
-import beaconsoft.sycorowlayouts.dbobjects.Sport;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
 
-public class EditEventsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+import static android.widget.AdapterView.*;
+
+public class EditEventsActivity extends AppCompatActivity implements OnItemSelectedListener {
 
     private int currentAdminId;
     private int currentLeagueId;
@@ -120,6 +122,29 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
         spinnerHomeTeam.setOnItemSelectedListener(EditEventsActivity.this);
         spinnerAwayTeam.setOnItemSelectedListener(EditEventsActivity.this);
         spinnerPlaces  .setOnItemSelectedListener(EditEventsActivity.this);
+        listview = (ListView)findViewById(R.id.listViewLeagueEvents);
+        listview.setLongClickable(true);
+        listview.setOnItemLongClickListener(new OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if(parent == listview) {
+                    int placeID = eventList.get(position).getPlaceID();
+                    Place p = dataSource.getPlaceById(placeID);
+                    Geocoder geocoder = new Geocoder(getApplicationContext());
+                    try {
+                        geocoder.getFromLocationName(
+                                String.format(Locale.ENGLISH, "%s %s %s, %s %d", p.getPlaceName(),
+                                        p.getStreetAddress(), p.getCity(), p.getState(),
+                                        p.getZip()), 1);
+                    } catch (IOException e) {
+                        Log.e("GEOLOCATION VARIABLES", "***");
+                    }
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geocoder.toString()));
+                    intent.setClassName(getApplicationContext(), "beaconsoft.sycorowlayouts.activities.MapsActivity");
+                    startActivity(intent);
+                }
+                return true;
+            }
+        });
         isGame.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isGame.isChecked()) {
@@ -141,7 +166,7 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
 
     private void initializeListView(Team team) {
         eventList.clear();
-        eventList.addAll(dataSource.getListOfEventsByHomeTeam(team));
+        eventList.addAll(dataSource.getListOfEventsByTeam(team));
         ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, dataSource);
         listview = (ListView) findViewById(R.id.listViewLeagueEvents);
         listview.setAdapter(adapter);
@@ -196,13 +221,11 @@ public class EditEventsActivity extends AppCompatActivity implements AdapterView
 
     private void onSpinnerAwayChange() {
         currentAwayTeam = (Team)spinnerAwayTeam.getSelectedItem();
-        testPlace.setText("AwayTeam: " + currentAwayTeam);
         initializeListView(currentAwayTeam);
     }
 
     private void onSpinnerHomeChange() {
         currentHomeTeam = (Team)spinnerHomeTeam.getSelectedItem();
-        testPlace.setText("HomeTeam: " + currentHomeTeam);
         initializeListView(currentHomeTeam);
     }
 
