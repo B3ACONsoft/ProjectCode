@@ -907,10 +907,11 @@ public class DataSource {
         return newEvent;
     }
 
-    public Collection<? extends Event> getListOfEventsByHomeTeam(Team currentHomeTeam) {
+    public Collection<? extends Event> getListOfEventsByTeam(Team currentTeam) {
         List<Event> eventsList = new ArrayList<>();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
-                MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID + " = " + currentHomeTeam.getTeamID(),
+                MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID + " = " + currentTeam.getTeamID() + " OR " +
+                MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID + " = " + currentTeam.getTeamID(),
                 null, null, null, null);
         cursor.moveToFirst();
         while(!cursor.isAfterLast()){
@@ -921,6 +922,8 @@ public class DataSource {
         cursor.close();
         return eventsList;
     }
+
+
 
     public List<Event> getListOfEventsById(int eventId){
         List<Event> eventsList = new ArrayList<>();
