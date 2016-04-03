@@ -16,9 +16,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ListViewActivity" />
-        <activity android:name=".adapter.CalendarAdapter" />
-        <activity android:name=".adapter.AndroidListAdapter" />
-        <activity android:name=".util.CalendarCollection"></activity>
+
     </application>
 
 </manifest>
