@@ -1,4 +1,4 @@
-package com.example.jolichelle.calendartester1.adapter;
+package beaconsoft.sycorowlayouts.activities.adapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,8 +12,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jolichelle.calendartester1.R;
-import com.example.jolichelle.calendartester1.util.CalendarCollection;
+import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.activities.util.CalendarCollection;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -22,7 +22,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import static com.example.jolichelle.calendartester1.R.drawable.*;
+import static beaconsoft.sycorowlayouts.R.drawable.*;
 
 
 public class CalendarAdapter extends BaseAdapter {
@@ -121,6 +121,8 @@ public class CalendarAdapter extends BaseAdapter {
 
 
         if (day_string.get(position).equals(curentDateString)) {
+            /*TODO: call the datasource, and find out if there is anything on this day, and if so,
+            then change the background color*/
 
             v.setBackgroundColor(Color.CYAN);
         } else {
@@ -267,7 +269,7 @@ public class CalendarAdapter extends BaseAdapter {
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Date: "+event_date)
                         .setMessage("Event: "+event_message)
-                        .setPositiveButton("OK",new android.content.DialogInterface.OnClickListener(){
+                        .setPositiveButton("OK",new DialogInterface.OnClickListener(){
                             public void onClick(DialogInterface dialog, int which)
                             {
                                 act.finish();

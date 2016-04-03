@@ -1,4 +1,4 @@
-package com.example.jolichelle.calendartester1.util;
+package beaconsoft.sycorowlayouts.activities.util;
 
 import java.util.ArrayList;
 

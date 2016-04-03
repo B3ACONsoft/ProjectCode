@@ -2,6 +2,7 @@ package beaconsoft.sycorowlayouts.activities;
 
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import beaconsoft.sycorowlayouts.DataSource;
@@ -70,6 +72,7 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
     private ArrayList<Team> teamsList = new ArrayList<>();
     private ListView listview;
     private String eventType = "PRACTICE";
+    private List<Address> addresses = new ArrayList<>();
 
     @Override
     protected void onPause(){
@@ -131,16 +134,34 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
                     Place p = dataSource.getPlaceById(placeID);
                     Geocoder geocoder = new Geocoder(getApplicationContext());
                     try {
-                        geocoder.getFromLocationName(
-                                String.format(Locale.ENGLISH, "%s %s %s, %s %d", p.getPlaceName(),
+
+                        addresses.addAll(geocoder.getFromLocationName(
+                                String.format(Locale.ENGLISH, "%s %s, %s %d",
                                         p.getStreetAddress(), p.getCity(), p.getState(),
-                                        p.getZip()), 1);
+                                        p.getZip()), 1));
                     } catch (IOException e) {
                         Log.e("GEOLOCATION VARIABLES", "***");
                     }
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geocoder.toString()));
-                    intent.setClassName(getApplicationContext(), "beaconsoft.sycorowlayouts.activities.MapsActivity");
-                    startActivity(intent);
+                    if (addresses.size() > 0) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "google.navigation:q=" +
+                                Uri.encode(p.getStreetAddress() + " " +
+                                        p.getCity() + ", " +
+                                        p.getState() + " " +
+                                        p.getZip()) + "&mode=d&avoid=tf"
+                        ));
+//                        intent.putExtra("LATITUDE", addresses.get(0).getLatitude());
+//                        intent.putExtra("LONGITUDE", addresses.get(0).getLongitude());
+//                        intent.putExtra("LOCATION_NAME", p.getPlaceName());
+                        intent.setPackage("com.google.android.apps.maps");
+//                        intent.setClassName(getApplicationContext(), "beaconsoft.sycorowlayouts.activities.MapsActivity");
+                        startActivity(intent);
+                    }else{
+                        Toast toast = Toast.makeText(getApplicationContext(), "Perhaps you've typed the wrong address?", Toast.LENGTH_LONG);
+                        toast.setText(addresses.size() + " results from " + p.getStreetAddress() + " " +
+                        p.getCity() + " , " + p.getState() + " " + p.getZip());
+                        toast.show();
+                    }
                 }
                 return true;
             }

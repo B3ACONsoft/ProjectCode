@@ -1,5 +1,6 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -15,6 +16,9 @@ import beaconsoft.sycorowlayouts.R;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    double latitude;
+    double longitude;
+    String locationName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +28,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        Intent intent = getIntent();
+        latitude  = intent.getDoubleExtra("LATITUDE",  0.0);
+        longitude = intent.getDoubleExtra("LONGITUDE", 0.0);
+        locationName = intent.getStringExtra("LOCATION_NAME");
     }
 
-
+//    @Override
+//    protected void onPause(){
+//        onDestroy();
+//        super.onPause();
+//    }
+//
+//    @Override
+//    protected void onDestroy(){
+//        super.onDestroy();
+//    }
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -41,8 +59,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng location = new LatLng(latitude, longitude);
+        mMap.addMarker(new MarkerOptions().position(location).title(locationName));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f));
+        mMap.setTrafficEnabled(true);
     }
 }

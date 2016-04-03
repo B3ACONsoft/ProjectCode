@@ -15,7 +15,6 @@ import com.example.jolichelle.calendartester1.util.CalendarCollection;
 
 import java.util.GregorianCalendar;
 
-
 public class CalendarActivity extends AppCompatActivity {
 
     public GregorianCalendar cal_month, cal_month_copy;
@@ -30,7 +29,7 @@ public class CalendarActivity extends AppCompatActivity {
 
         cal_month = (GregorianCalendar) GregorianCalendar.getInstance();
         cal_month_copy = (GregorianCalendar) cal_month.clone();
-        cal_adapter = new CalendarAdapter(this, cal_month, CalendarCollection.date_collection_arr);
+        cal_adapter = new CalendarAdapter(this, cal_month, /* What is this? */ CalendarCollection.date_collection_arr);
 
 
 
