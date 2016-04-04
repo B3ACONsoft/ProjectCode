@@ -88,11 +88,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         editTextPhone     = (EditText)findViewById(R.id.editTextCoachPhone);
         editTextEmergency = (EditText)findViewById(R.id.editTextCoachEmergency);
         editTextCoachEmail= (EditText)findViewById(R.id.editTextCoachEmail);
-        editTextFirst        .setText("El");
-        editTextLast         .setText("Guapo");
-        editTextCoachEmail   .setText("GoodLooking@ndAvailable.com");
-        editTextPhone        .setText("1594658789");
-        editTextEmergency    .setText("3626659856");
+
         coachArrayList = new ArrayList<>();
         loadSpinner();
     }

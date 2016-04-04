@@ -80,6 +80,16 @@ public class Users {
         this.password = password;
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(this == o){
+            return true;
+        } else if(this.getUserID() == ((Users)o).getUserID()){
+            return true;
+        } else
+        return false;
+    }
+
     public String toString(){
         String str = "";
         if(getUser_type().equals("COACH")){
