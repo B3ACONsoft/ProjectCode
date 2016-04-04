@@ -456,7 +456,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         playersArrayList.addAll(dataSource.getListOfPlayersByTeam(currentTeam));
 
         if(playersArrayList.isEmpty()){
-            deactivateView( spinnerPlayers);
+            deactivateView(spinnerPlayers);
             currentUser = 0;
             currentPlayer = 0;
         }else {
@@ -544,7 +544,17 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(LEAGUE_KEY, currentLeague);
         intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra(EMAIL_KEY, email);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, 2);
+    }
+
+    public void goToEditTeams(View view){
+        Intent intent = new Intent(getApplicationContext(), EditTeamsActivity.class);
+        intent.putExtra(  NAME_KEY, name);
+        intent.putExtra( ADMIN_KEY, currentAdmin);
+        intent.putExtra(LEAGUE_KEY, currentLeague);
+        intent.putExtra(  TEAM_KEY, currentTeam);
+        intent.putExtra(EMAIL_KEY, email);
+        startActivityForResult(intent, 3);
     }
 
     public void goToEditLeagues(View view){

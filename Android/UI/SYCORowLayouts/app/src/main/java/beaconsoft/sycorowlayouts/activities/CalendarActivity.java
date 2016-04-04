@@ -127,7 +127,6 @@ public class CalendarActivity extends AppCompatActivity {
             cal_month.set(GregorianCalendar.MONTH,
                     cal_month.get(GregorianCalendar.MONTH) + 1);
         }
-
     }
 
     protected void setPreviousMonth() {
@@ -139,7 +138,6 @@ public class CalendarActivity extends AppCompatActivity {
             cal_month.set(GregorianCalendar.MONTH,
                     cal_month.get(GregorianCalendar.MONTH) - 1);
         }
-
     }
 
     public void refreshCalendar() {

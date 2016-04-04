@@ -175,12 +175,13 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="EDIT TEAM"
+                android:text="UPDATE TEAM"
                 android:id="@+id/buttonMyLeaguesEditTeam"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@+id/buttonMyLeaguesCalendar"
                 android:layout_alignBottom="@+id/buttonMyLeaguesRemoveTeam"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:onClick="goToEditTeams" />
 
         </TableRow>
 

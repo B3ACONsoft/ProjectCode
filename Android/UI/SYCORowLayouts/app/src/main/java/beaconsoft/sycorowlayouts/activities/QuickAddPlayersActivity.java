@@ -89,20 +89,6 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
         kidBox.setChecked(true);
 
         /**
-         * Test script
-         */
-        et1.setText("Paddy");
-        et2.setText("Currin");
-        et3.setText("John");
-        et4.setText("Currin");
-        et5.setText("1234567891");
-        et6.setText("fearth@yeti.com");
-        et7.setText("9876543210");
-        /**
-         * End test script
-         */
-
-        /**
          * Advertise the current user's email at the top of the screen so that he knows which
          * administrator will be adding things
          */

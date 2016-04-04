@@ -512,6 +512,42 @@ public class DataSource {
         return newTeam;
     }
 
+    public Team updateTeamCoach(int currentTeamId, int currentCoachId){
+        ContentValues cv = new ContentValues();
+        cv.put(MySQLiteHelper.COLUMN_FK_TEAM_USER_ID, currentCoachId);
+        db.beginTransaction();
+        int rowsAltered = db.update(MySQLiteHelper.TABLE_TEAM, cv,
+                MySQLiteHelper.COLUMN_TEAM_ID + " = ?", new String[] { String.format("%d", currentTeamId) });
+        if(rowsAltered == 1) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            return getTeamById(currentTeamId);
+        }else{
+            db.execSQL("ROLLBACK");
+            db.endTransaction();
+            return null;
+        }
+    }
+
+    public Team updateTeamName(Team team, String teamName, int leagueId, int coachUserId){
+        ContentValues cv = new ContentValues();
+        cv.put("team_name", teamName);
+        cv.put("league_id", leagueId);
+        cv.put("user_id", coachUserId);
+        db.beginTransaction();
+        int rowsAltered = db.update(MySQLiteHelper.TABLE_TEAM, cv,
+                MySQLiteHelper.COLUMN_TEAM_ID + " = ?", new String[] { team.getTeamID() + "" });
+        if(rowsAltered == 1) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            return getTeamById(team.getTeamID());
+        }else{
+            db.execSQL("ROLLBACK");
+            db.endTransaction();
+            return null;
+        }
+    }
+
     public List<Team> getListOfTeams(){
         List<Team> teamsList = new ArrayList<>();
         Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
@@ -735,6 +771,55 @@ public class DataSource {
         newEnrollment.setEnrollmentDate(new Date(cursor.getString(5)));
         newEnrollment.setFee(cursor.getDouble(6));
         return newEnrollment;
+    }
+
+    public Enrollment updateCoachEnrollmentWithTeamIdAndLeagueId(int currentTeamId, int currentCoachUserId, int currentLeagueId) {
+
+        ContentValues cv = new ContentValues();
+        cv.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID, currentCoachUserId);
+
+        int rowsAltered = db.update(MySQLiteHelper.TABLE_ENROLLMENT, cv,
+                MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = ?" + " AND " +
+                MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = ?", new String[] {
+                        "" + currentTeamId, "" + currentLeagueId
+                });
+        if(rowsAltered == 1) {
+            return getEnrollmentByUserLeagueAndTeam(currentCoachUserId, currentTeamId, currentLeagueId);
+        }else
+        {
+            return null;
+        }
+    }
+
+    private Enrollment getEnrollmentByTeamIdAndLeagueId(int currentTeamId, int currentLeagueId) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
+                MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeamId + " AND " +
+                MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " + currentLeagueId, null,
+                null, null, null
+                );
+
+        return null;
+    }
+
+    public Enrollment getEnrollmentByUserLeagueAndTeam(int coachUserId, int leagueId, int teamId) {
+        Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
+                MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID   + " = " + coachUserId + " AND " +
+                MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " +    leagueId + " AND " +
+                MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID   + " = " +      teamId,
+                null, null, null, null);
+        if(cursor.getCount() == 0){
+            return null;
+        }else if(cursor.getCount() == 1){
+            return cursorToEnrollment(cursor);
+        }else
+        {
+            try {
+                throw new Exception("There is more than one record with these parameters. The database is not atomic...");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new Enrollment();
     }
 
     public Enrollment getEnrollmentByPlayerUserLeagueAndTeam(int playerID, int userID, int currentLeague, int currentTeam) {
@@ -1003,6 +1088,4 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
-
-
 }
