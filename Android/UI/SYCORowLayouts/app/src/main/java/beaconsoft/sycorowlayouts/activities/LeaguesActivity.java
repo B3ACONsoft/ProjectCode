@@ -1,5 +1,6 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
@@ -13,6 +14,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -35,6 +38,8 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     private static final String   USER_KEY = "beaconsoft.sycorowlayouts.USER";
     private static final String SERVICEKEY = "beaconsoft.sycorowlayouts.SERVICEKEY";
     private static final String PLAYER_KEY = "beaconsoft.sycorowlayouts.PLAYER";
+    private static final int INTENT_REQUEST_CODE_EDIT_LEAGUES = 1;
+    private static final int INTENT_REQUEST_CODE_ADD_TEAMS = 2;
     private String name;
     private String email;
     private TextView textViewLeaguesEmail;
@@ -65,7 +70,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     private DataSource dataSource;
 
     @Override
-    public void onResume()  {
+    public void onResume() {
         Log.e("ON_RESUME", ".....................................................ON_RESUME_BEGIN");
 
         try {
@@ -74,55 +79,8 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
             e.printStackTrace();
         }
         super.onResume();
-        sportsArrayList.clear();
-        sportsArrayList.addAll(dataSource.getListOfSports());
-        adapterSpinnerSports = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, sportsArrayList.toArray());
-        adapterSpinnerSports.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSports.setAdapter(adapterSpinnerSports);
-        spinnerSports.setOnItemSelectedListener(this);
-        spinnerSports.setEnabled(true);
-        int sportsPointer = -1;
-        for(int i = 0; i < sportsArrayList.size(); i++){
-            if(sportsArrayList.get(i).getSportID() == currentSport){
-                sportsPointer = i;
-                break;
-            }
-        }
-        spinnerSports.setSelection(sportsPointer);
-
-        leaguesArrayList.clear();
-        leaguesArrayList.addAll(dataSource.getListOfLeaguesBySport(currentSport));
-        adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, leaguesArrayList.toArray());
-        spinnerLeagues.setAdapter(adapterSpinnerLeagues);
-        spinnerLeagues.setOnItemSelectedListener(this);
-        spinnerLeagues.setEnabled(true);
-        int leaguesPointer = -1;
-        for(int i = 0; i < leaguesArrayList.size(); i++){
-            if(leaguesArrayList.get(i).getLeagueID() == currentLeague){
-                leaguesPointer = i;
-                break;
-            }
-        }
-        spinnerLeagues.setSelection(leaguesPointer);
-
-        teamsArrayList.clear();
-        teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
-        adapterSpinnerTeams = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, teamsArrayList);
-        adapterSpinnerTeams.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerTeams.setAdapter(adapterSpinnerTeams);
-        spinnerTeams.setOnItemSelectedListener(this);
-        spinnerTeams.setEnabled(true);
-        int teamsPointer = -1;
-        for(int i = 0; i < teamsArrayList.size(); i++) {
-            if (teamsArrayList.get(i).getTeamID() == currentTeam) {
-                teamsPointer = i;
-                break;
-            }
-        }
-        spinnerTeams.setSelection(teamsPointer);
-
-        Log.e("ON_RESUME", ".....................................................ON_RESUME_END");
     }
+
     @Override
     public void onPause() {
         Log.e("ON_PAUSE", ".....................................................ON_PAUSE");
@@ -136,6 +94,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         super.onDestroy();
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,7 +106,6 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         startService(serviceIntent);
 
         Log.e("ON_CREATE", ".....................................................ON_CREATE");
-
 
         /* Receive whats passed from Main and insert into appropriate variables, start database in this activity */
         Intent intent = getIntent();
@@ -186,25 +144,85 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        super.onActivityResult(requestCode, resultCode, data);
         try {
             dataSource.open();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        int resultInt1 = 2;
-        int resultInt2 = 2;
-        if(requestCode == 1){
-            if(resultCode == RESULT_OK){
 
-                currentSport = data.getIntExtra("sport_id", 0);
-                currentLeague = data.getIntExtra("league_id", 0);
-                currentTeam = data.getIntExtra("team_id", 0);
+        if(requestCode == INTENT_REQUEST_CODE_EDIT_LEAGUES && data != null){
+            if(resultCode == Activity.RESULT_OK) {
+                Log.e("REQUEST CODE", "................................................REQUEST CODE " + requestCode);
+                loadSpinners();
+                int resultSport = data.getIntExtra("sport_id", 0);
+                int resultLeague = data.getIntExtra("league_id", 0);
 
-                Log.d("Result 1", "....................................." + currentSport + " " + currentLeague + " " + currentTeam);
-            }else if(resultCode == RESULT_CANCELED){
-                Log.e("BAD RESULT", "...........................................BAD_RESULT");
+                for (int i = 0; i < sportsArrayList.size(); i++) {
+                    if (sportsArrayList.get(i).getSportID() == resultSport) {
+                        spinnerSports.setSelection(i);
+                        onSpinnerSportsChange();
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < leaguesArrayList.size(); i++) {
+                    if (leaguesArrayList.get(i).getLeagueID() == resultLeague) {
+                        spinnerLeagues.setSelection(i);
+                        onSpinnerLeaguesChange();
+                        break;
+                    }
+                }
+                if(leaguesArrayList.size() > 0){
+                    activateView(buttonAddTeams);
+                }else{
+                    deactivateView(buttonAddTeams);
+                }
+                Log.e("INT EXTRAS", ".........sport_id: " + resultSport +
+                        ".....league_id: " + resultLeague);
+                Log.e("CURRENT SPORT/LEAGUE", ".........sport: " + currentSport + " ....league: " + currentLeague );
+            } else{
+                Toast toast = Toast.makeText(this, "BAD RESULT", Toast.LENGTH_LONG);
             }
+        }else if(requestCode == INTENT_REQUEST_CODE_ADD_TEAMS && data != null){
+            if(resultCode == Activity.RESULT_OK){
+                Log.e("REQUEST CODE", "................................................REQUEST CODE " + requestCode);
+                int resultTeam = data.getIntExtra("team_id", 0);
+
+                teamsArrayList.clear();
+                teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
+                adapterSpinnerTeams = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, teamsArrayList);
+                spinnerTeams.setAdapter(adapterSpinnerTeams);
+                if(!teamsArrayList.isEmpty()){
+                    activateView(spinnerTeams);
+                    activateView(buttonEditTeam);
+                    activateView(buttonAddPlayers);
+                    activateView(buttonCalendar);
+                }else{
+                    deactivateView(spinnerTeams);
+                    deactivateView(buttonEditTeam);
+                    deactivateView(buttonAddPlayers);
+                    deactivateView(buttonCalendar);
+                }
+
+                for(int i = 0; i < teamsArrayList.size(); i++){
+                    if(teamsArrayList.get(i).getTeamID() == resultTeam){
+                        spinnerTeams.setSelection(i);
+                        onSpinnerTeamsChange();
+                        break;
+                    }
+                }
+                Log.e("INT EXTRAS", "........team_id: " + resultTeam);
+                Log.e("Current TEAM", "................TEAM: " + currentTeam);
+            }else{
+                if(teamsArrayList.isEmpty()){
+                    deactivateView(buttonEditTeam);
+                }else{
+                    activateView(buttonEditTeam);
+                }
+            }
+        }else{
+            Toast toast = Toast.makeText(this, "UNRECOGNIZED REQUEST CODE", Toast.LENGTH_LONG);
         }
     }
 
@@ -383,22 +401,34 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
             activateView(spinnerTeams);
             activateView( spinnerPlayers);
             activateView(buttonStartLeague);
-            activateView(buttonCalendar);
+            //activateView(buttonCalendar);
             activateView(buttonAddTeams);
             activateView(buttonEditTeam);
             activateView(buttonAddPlayers);
             activateView(buttonEditPlayer);
-            adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, leaguesArrayList.toArray());
+            adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, leaguesArrayList);
             spinnerLeagues.setAdapter(adapterSpinnerLeagues);
             spinnerLeagues.setOnItemSelectedListener(this);
             spinnerLeagues.setEnabled(true);
-            League listLeague = (League)spinnerLeagues.getSelectedItem();
-            currentLeague = listLeague.getLeagueID();
+
+            boolean foundLeague = false;
+            for(int i = 0; i < leaguesArrayList.size(); i++){
+                if(leaguesArrayList.get(i).getLeagueID() == currentLeague){
+                    spinnerLeagues.setSelection(i);
+                    onSpinnerLeaguesChange();
+                    foundLeague = true;
+                    break;
+                }
+            }
+            if(!foundLeague){
+                League league = (League)spinnerLeagues.getSelectedItem();
+                currentLeague = league.getLeagueID();
+            }
 
         } else {
             deactivateView(spinnerLeagues);
             deactivateView(spinnerTeams);
-            deactivateView( spinnerPlayers);
+            deactivateView(spinnerPlayers);
             deactivateView(buttonCalendar);
             deactivateView(buttonEditPlayer);
             deactivateView(buttonEditTeam);
@@ -422,7 +452,8 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         if(!teamsArrayList.isEmpty()){
 
             activateView(spinnerTeams);
-            activateView( spinnerPlayers);
+            activateView(spinnerPlayers);
+            activateView(buttonCalendar);
             activateView(buttonEditTeam);
             activateView(buttonAddTeams);
             activateView(buttonAddPlayers);
@@ -437,7 +468,8 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
         }else{
             deactivateView(spinnerTeams);
-            deactivateView( spinnerPlayers);
+            deactivateView(spinnerPlayers);
+            deactivateView(buttonCalendar);
             deactivateView(buttonEditTeam);
             deactivateView(buttonAddPlayers);
             deactivateView(buttonEditPlayer);
@@ -544,7 +576,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(LEAGUE_KEY, currentLeague);
         intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra(EMAIL_KEY, email);
-        startActivityForResult(intent, 2);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_ADD_TEAMS);
     }
 
     public void goToEditTeams(View view){
@@ -565,6 +597,6 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra(EMAIL_KEY, email);
         intent.putExtra( USER_KEY, currentUser);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_EDIT_LEAGUES);
     }
 }

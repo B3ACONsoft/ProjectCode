@@ -17,7 +17,7 @@ public class DatabaseDummyLoader {
             , "DELETE FROM sport          WHERE      sport_id > 0;"
 
 
-            /* MAKE ADMIN AND 4 COACHES */
+            // MAKE ADMIN AND 4 COACHES
             , "INSERT INTO users VALUES(NULL, 'HENRY', 'JOHNSON', 5434327890,  2323548302, 'A.A@YAHOO.COM', 'ADMIN', 'PASS');"
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,     'SOCCER');"
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,   'FOOTBALL');"
@@ -25,7 +25,7 @@ public class DatabaseDummyLoader {
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,       'POLO');"
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,     'TENNIS');"
 
-            /* LEAGUE_ID AUTOINCREMENTED, USER_ID(ADMIN), LEAGUE_NAME, SPORT_ID, MIN_AGE, MAX_AGE, START_DATE, END_DATE */
+     /*       // LEAGUE_ID AUTOINCREMENTED, USER_ID(ADMIN), LEAGUE_NAME, SPORT_ID, MIN_AGE, MAX_AGE, START_DATE, END_DATE
             , "INSERT INTO league VALUES (NULL, 1, 'OXFORD PARKS AND RECREATION'       , 1,  4,  6, '15-MAR-2016', '15-JUN-2016');"
             , "INSERT INTO league VALUES (NULL, 1, 'DURHAM KICKERS'                    , 1,  7,  9, '15-MAR-2016', '15-JUN-2016');"
             , "INSERT INTO league VALUES (NULL, 1, 'GELA PARK SERVICE'                 , 2, 10, 12, '15-MAR-2016', '15-JUN-2016');"
@@ -78,8 +78,8 @@ public class DatabaseDummyLoader {
             , "INSERT INTO users VALUES(NULL, 'PRINCE',    'CHARLES',        1542658745, 4854558562, 'FAFAFAFA@DEARY.COM',                'USER','PASS');" //28
             , "INSERT INTO users VALUES(NULL, 'PRINCESS',  'MONOKE',         2569656965, 5525478845, 'IAMAPRINCESS@INJAPAN.COM',          'USER','PASS');" //29
 
-            /* THE FIRST 5 USERS ARE AN ADMIN(1) AND 4 COACHES
-            * PLAYER_ID AUTOINCREMENTED, FIRST, LAST, USER_ID (WHICH SHOULD BE THEIR PARENT OR GUARDIAN OR THEMSELVES) */
+            // THE FIRST 5 USERS ARE AN ADMIN(1) AND 4 COACHES
+            // PLAYER_ID AUTOINCREMENTED, FIRST, LAST, USER_ID (WHICH SHOULD BE THEIR PARENT OR GUARDIAN OR THEMSELVES)
             , "INSERT INTO player VALUES(NULL, 'MARY',     'ORAZEM',     6);"
             , "INSERT INTO player VALUES(NULL, 'JACK',     'KAROAK',     7);"
             , "INSERT INTO player VALUES(NULL, 'PATRICK',  'KEARNEY',    8);"
@@ -105,7 +105,7 @@ public class DatabaseDummyLoader {
             , "INSERT INTO player VALUES(NULL, 'COOKIE',   'MONSTER',   28);"
             , "INSERT INTO player VALUES(NULL, 'DA-DA',    'BAHAM',     29);"
 
-            /* ENROLLMENT_ID AUTOINCREMENTED,    UID,PID,T_ID, LEAGUE_ID, DATE_ADDED, FEE */
+            // ENROLLMENT_ID AUTOINCREMENTED,    UID,PID,T_ID, LEAGUE_ID, DATE_ADDED, FEE
 
             , "INSERT INTO enrollment VALUES(NULL,  6,  1,  1,  1, '12-APR-2015', 1.99);"
             , "INSERT INTO enrollment VALUES(NULL,  7,  2,  1,  1, '03-MAR-2016', 1.99);"
@@ -132,28 +132,27 @@ public class DatabaseDummyLoader {
             , "INSERT INTO enrollment VALUES(NULL, 28, 23, 13,  1, '03-MAR-2016', 1.99);"
             , "INSERT INTO enrollment VALUES(NULL, 29, 24, 13,  1, '03-MAR-2016', 1.99);"
 
-            /*had to add the coaches to the enrollment table late !!!! I FORGOT TO  !!!!! NO FREEDLOADERS !!! FEAR THE YETI!!!!!*/
-/*
-            * , "INSERT INTO users VALUES(NULL, 'COUNT', 'BASSY'   , 2548752145, 5326547852, 'BANGSOUNDTHORUGHD@WINDA.NET', 'COACH', 'PASS');"
+            //had to add the coaches to the enrollment table late !!!! I FORGOT TO  !!!!! NO FREEDLOADERS !!! FEAR THE YETI!!!!!
+            , "INSERT INTO users VALUES(NULL, 'COUNT', 'BASSY'   , 2548752145, 5326547852, 'BANGSOUNDTHORUGHD@WINDA.NET', 'COACH', 'PASS');"
             , "INSERT INTO users VALUES(NULL, 'SAM'  , 'NEIL'    , 9191594896, 1548693584, 'JURASSIC@PARK.AAH'          , 'COACH', 'PASS');"
             , "INSERT INTO users VALUES(NULL, 'PAT'  , 'COX'     , 9196934563, 7645378909, 'PAT.COX@MINEFIELDBIRD.NET'  , 'COACH', 'PASS');"
             , "INSERT INTO users VALUES(NULL, 'MIKE' , 'KERTCHER', 9587463784, 9588867754, 'KERTCHDADDY@SKINSONTOP.COM' , 'COACH', 'PASS');"
-            * */
+
             , "INSERT INTO enrollment VALUES(NULL,  2,  0,  1,  1,  '01-MAR-2016', 0.00);"
             , "INSERT INTO enrollment VALUES(NULL,  3,  0,  2,  1,  '01-MAR-2016', 0.00);"
             , "INSERT INTO enrollment VALUES(NULL,  4,  0,  1,  2,  '01-MAR-2016', 0.00);"
             , "INSERT INTO enrollment VALUES(NULL,  5,  0,  2,  2,  '01-MAR-2016', 0.00);"
 
-            /* PLACE_ID AUTOINCREMENT, PLACE_NAME, STREET_ADDRESS, CITY, STATE, ZIP */
+            // PLACE_ID AUTOINCREMENT, PLACE_NAME, STREET_ADDRESS, CITY, STATE, ZIP
             , "INSERT INTO place VALUES(NULL, 'HIX COMPLEX', '313 E. SPRING STREET', 'OXFORD', 'NC', '27565' );"
             , "INSERT INTO place VALUES(NULL, 'DIAMOND AT OXFORD PARK', '6048 HORNER SIDING ROAD', 'OXFORD', 'NC', '27565');"
             , "INSERT INTO place VALUES(NULL, 'LAKE DEVIN', 'LAKE DEVIN ROAD', 'OXFORD', 'NC', '27565');"
             , "INSERT INTO place VALUES(NULL, 'GRASSY CREEK RECREATION AREA AT KERR LAKE', '3169 HARRY DAVIS ROAD', 'BULLOCK', 'NC', '27507');"
 
-            /* EVENT_ID, EVENT_TYPE, START_DATE_TIME, PLACE_ID, HOME_TEAM_ID, AWAY_TEAM_ID */
+            // EVENT_ID, EVENT_TYPE, START_DATE_TIME, PLACE_ID, HOME_TEAM_ID, AWAY_TEAM_ID
             , "INSERT INTO event VALUES(NULL, 'PRACTICE', '2016/03/27 17:00:00', 2, 3,    1);"
             , "INSERT INTO event VALUES(NULL, 'PRACTICE', '2016/03/28 19:00:00', 1, 2, NULL);"
             , "INSERT INTO event VALUES(NULL, 'GAME',     '2016/03/26 14:00:00', 1, 2,    1);"
-            , "INSERT INTO event VALUES(NULL, 'GAME',     '2016/03/23 17:00:00', 1, 1,    2);"
+            , "INSERT INTO event VALUES(NULL, 'GAME',     '2016/03/23 17:00:00', 1, 1,    2);" */
     };
 }

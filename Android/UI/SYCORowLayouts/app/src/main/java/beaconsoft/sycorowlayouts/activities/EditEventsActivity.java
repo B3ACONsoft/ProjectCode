@@ -179,6 +179,7 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
         });
         initializeTeams();
         initializePlaces();
+        if(currentHomeTeam != null)
         initializeListView(currentHomeTeam);
         spinnerHomeTeam.isInEditMode();
         spinnerAwayTeam.isInEditMode();
@@ -187,7 +188,9 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
 
     private void initializeListView(Team team) {
         eventList.clear();
-        eventList.addAll(dataSource.getListOfEventsByTeam(team));
+        if(team != null) {
+            eventList.addAll(dataSource.getListOfEventsByTeam(team));
+        }
         ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, dataSource);
         listview = (ListView) findViewById(R.id.listViewLeagueEvents);
         listview.setAdapter(adapter);

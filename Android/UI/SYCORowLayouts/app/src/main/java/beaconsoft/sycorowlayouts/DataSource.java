@@ -146,6 +146,25 @@ public class DataSource {
         return newSport;
     }
 
+    public Collection<? extends Sport> getListOfSportsByCoach(int coachId) {
+        List<Sport> sportsList = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT s.sport_id, s.sport_name " +
+                    "FROM sport s, league l, team t " +
+                    "WHERE t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID + " = " + coachId + " AND " +
+                    "t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + " = " + "l." + MySQLiteHelper.COLUMN_LEAGUE_ID + " AND " +
+                    "l." + MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + "s." + MySQLiteHelper.COLUMN_SPORT_ID
+
+                , null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            Sport tempSport = cursorToSport(cursor);
+            sportsList.add(tempSport);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return sportsList;
+    }
+
     public Collection<? extends Sport> getListOfSportsByAdmin(int currentAdminId) {
         List<Sport> sportsList = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT DISTINCT s.sport_id, s.sport_name FROM sport s, league l " +
@@ -405,6 +424,36 @@ public class DataSource {
         newLeague.setStartDate(new Date(cursor.getString(6)));
         newLeague.setEndDate(new Date(cursor.getString(7)));
         return newLeague;
+    }
+
+    public Collection<? extends League> getListOfLeaguesByCoachAndSport(int coachId, int sportId) {
+        List<League> leaguesList = new ArrayList<>();
+        Cursor cursor = db.rawQuery(
+                "SELECT l." + MySQLiteHelper.COLUMN_LEAGUE_ID           + ", " +
+                       "l." + MySQLiteHelper.COLUMN_FK_LEAGUE_USER_ID   + ", " +
+                       "l." + MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID  + ", " +
+                       "l." + MySQLiteHelper.COLUMN_LEAGUE_NAME         + ", " +
+                       "l." + MySQLiteHelper.COLUMN_MIN_AGE             + ", " +
+                       "l." + MySQLiteHelper.COLUMN_MAX_AGE             + ", " +
+                       "l." + MySQLiteHelper.COLUMN_START_DATE          + ", " +
+                       "l." + MySQLiteHelper.COLUMN_END_DATE            + " " +
+                       "FROM " +
+                        MySQLiteHelper.TABLE_LEAGUE + " l, " +
+                        MySQLiteHelper.TABLE_TEAM   + " t " +
+                        "WHERE " +
+                        " t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID    + " = " + coachId   + " AND " +
+                        " t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID  + " = " +
+                        " l." + MySQLiteHelper.COLUMN_LEAGUE_ID                              + " AND " +
+                        " l." + MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + sportId
+                , null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            League tempLeague = cursorToLeague(cursor);
+            leaguesList.add(tempLeague);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return leaguesList;
     }
 
     public League getLeagueById(int currentLeague) {
@@ -1088,4 +1137,7 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
+
+
+
 }
