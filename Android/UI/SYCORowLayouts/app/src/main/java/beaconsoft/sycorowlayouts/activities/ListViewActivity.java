@@ -57,8 +57,8 @@ public class ListViewActivity extends Activity implements OnClickListener {
             default:
                 break;
         }
-
     }
+
 
 }
 

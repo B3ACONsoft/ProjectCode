@@ -105,13 +105,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendToCoachHomeActivity(String email){
 
-        Users tempUser = dataSource.getUserByEmail(email.toUpperCase());
-        int coachId  = tempUser.getUserID();
         email = email.toUpperCase();
+        Users coach = dataSource.getUserByEmail(email);
+        int coachId  = coach.getUserID();
 
         Intent intent = new Intent(this, CoachHomeActivity.class);
         intent.putExtra(EMAIL_KEY, email);
         intent.putExtra(COACH_KEY, coachId);
+        intent.putExtra(NAME_KEY, coach.getFname() + " " + coach.getLname());
         startActivity(intent);
         dataSource.close();
     }

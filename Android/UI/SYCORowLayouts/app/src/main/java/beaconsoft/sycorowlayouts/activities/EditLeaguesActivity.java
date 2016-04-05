@@ -1,5 +1,6 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,7 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -56,50 +59,32 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
     private DataSource dataSource;
 
     @Override
-    public void onResume()  {
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        super.onResume();
-        loadSportSpinner();
-    }
-    @Override
-    public void onPause() {
-        dataSource.close();
-        super.onPause();
-    }
-    @Override
-    public void onDestroy(){
-        dataSource.close();
-        super.onDestroy();
-    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
+        if (item.getItemId() == android.R.id.home) {
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event){
-        //Changes 'back' button action
-        if(keyCode==KeyEvent.KEYCODE_BACK)
-        {
             onBackPressed();
-            return false;
+            return true;
         }
-        return super.onKeyDown(keyCode, event);
+        return false;
     }
-
 
     @Override
     public void onBackPressed(){
+
         Intent intent = new Intent();
         intent.putExtra("sport_id", currentSport);
         intent.putExtra("league_id", currentLeague);
-        setResult(RESULT_OK, intent);
-        this.finish();
+        setResult(Activity.RESULT_OK, intent);
+        Log.e("ON BACK PRESSED", "..........................ON BACK PRESSED");
+        super.onBackPressed();
+        finish();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        Log.e("ON CREATE EDIT LEAGUES", "......................ON CREATE EDIT LEAGUES");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_leagues);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -157,6 +142,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
                 currentSport = ((Sport) spinnerEditLeaguesChooseSport.getSelectedItem()).getSportID();
                 loadLeagueSpinner();
             } else {
+                Log.e("SPORTS EMPTY", "..................SOMEHOW THE SPORTS ARRAYLIST IS EMPTY..EDIT LEAGUES");
                 currentSport = 0;
                 deactivateView(spinnerEditLeaguesChooseSport);
                 deactivateView(spinnerEditLeaguesChooseLeague);
@@ -229,6 +215,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
     }
 
     public void addLeague(View view){
+
         try {
             Date startDate = new Date();
             Date endDate   = new Date();
@@ -238,11 +225,21 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
             }
             League league = dataSource.createLeague(currentAdminId, currentSport, name, 0, 0,
                     startDate, endDate);
-
-            textViewEditLeaguesTopPrompt.setText("New League: " + name + ", "
-                    + league.getStartDate());
-            currentLeague = league.getLeagueID();
+            int tempLeagueId = league.getLeagueID();
             loadLeagueSpinner();
+            editTextEditLeaguesLeagueName.setText("");
+            /**
+             * this is a patch to get the spinner back where it's supposed to be with the new entry
+             */
+            loadLeagueSpinner();
+            for(int i = 0; i < arrayListLeagues.size(); i++){
+                if(arrayListLeagues.get(i).getLeagueID() == tempLeagueId){
+                    spinnerEditLeaguesChooseLeague.setSelection(i);
+                }
+            }
+            Toast toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
+            toast.setText("Created New League: " + league.getLeagueName());
+
         }catch(Exception e){
             textViewEditLeaguesTopPrompt.setText(e.getMessage().toString());
         }
@@ -274,7 +271,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        parent.setSelection(parent.getCount()-1);
+
     }
 
 

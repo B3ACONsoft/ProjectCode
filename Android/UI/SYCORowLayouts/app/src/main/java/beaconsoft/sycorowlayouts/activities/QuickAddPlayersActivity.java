@@ -204,38 +204,50 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
              * query for a user_id necessary to adding any PLAYER
              */
         Users user;
-            Player player;
-            if(dataSource.checkForUserByEmail(email)){
-                user = dataSource.getUserByEmail(email.toUpperCase());
-                if(dataSource.checkForPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID())){
-                    player = dataSource.getPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID());
-                }else{
-                    player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
-                }
-            }else{
-                user = dataSource.createUsers(first, last, phone, email, emergency, "USER", "PASS");
-                if(dataSource.checkForPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID())){
-                    player = dataSource.getPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID());
-                }else{
-                    player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
-                }
-            }
+        Player player;
+
+        /**
+         * Check and see if the user exists
+         */
+        if(dataSource.checkForUserByEmail(email)){
 
             /**
-             * clear content values and close the cursor
+             * if the user DOES exist, get the user
              */
-            dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(), 1.99);
+            user = dataSource.getUserByEmail(email.toUpperCase());
 
-            //clearForm(findViewById(R.id.buttonQuickAddPlayerAddPlayer));
+            /**
+             * check to see if the player exists, and is attached to the user
+             */
+            if(dataSource.checkForPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID())){
+                /**
+                 * if the player exists, get the player
+                 */
+                player = dataSource.getPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID());
+
+            }else{
+                /**
+                 * if the player does not exist, then make a new one
+                 */
+                player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
+            }
+
+        }else{
+            /**
+             * if the user does not exist, then we must make a user and a player
+              */
+            user = dataSource.createUsers(first, last, phone, email, emergency, "USER", "PASS");
+            player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
+        }
+
 
             /**
              * A successful ENROLLMENT will requre successful inserts into the USER and PLAYER table. There is a hidden textview
              * beneathe the last buttons that will show the last record inserted.
              */
-            Enrollment enrollment = dataSource.getEnrollmentByPlayerUserLeagueAndTeam(player.getPlayerID(), player.getUserID(), currentLeague, currentTeam);
+            Enrollment enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(), 1.99);
 
-
-            int successfulEID = 0;
+        int successfulEID = 0;
             int successfulUID = 0;
             int successfulPID = 0;
             int successfulLID = 0;

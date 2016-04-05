@@ -1,8 +1,11 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,6 +28,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
 
     private int currentLeague;
     private int currentUser;
+    private int currentTeam;
     private DataSource dataSource;
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
@@ -69,6 +73,32 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
+        if (item.getItemId() == android.R.id.home) {
+
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        Log.e("ON BACK PRESSED", "...............QUICK ADD TEAMS ON BACK PRESSED");
+        if(currentTeam > 0) {
+            Intent intent = new Intent();
+            intent.putExtra("team_id", currentTeam);
+            setResult(Activity.RESULT_OK, intent);
+        }else{
+            setResult(Activity.RESULT_CANCELED);
+        }
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_teams);
@@ -88,7 +118,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         editTextPhone     = (EditText)findViewById(R.id.editTextCoachPhone);
         editTextEmergency = (EditText)findViewById(R.id.editTextCoachEmergency);
         editTextCoachEmail= (EditText)findViewById(R.id.editTextCoachEmail);
-
+        currentTeam = 0;
         coachArrayList = new ArrayList<>();
         loadSpinner();
     }
@@ -123,43 +153,45 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
 
     public void createTeam(View view){
 
+        /**
+         * get the new team name from the edit text
+         */
         editTeamName = (EditText) findViewById(R.id.editTextNewTeamName);
         teamName = editTeamName.getText().toString().toUpperCase();
 
         try {
+            Users coach = (Users)spinnerCoaches.getSelectedItem();
+            if(coach != null) {
+                ArrayList<Team> allLeagueTeams = new ArrayList<>();
+                allLeagueTeams.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
+                ArrayList<String> teamNames = new ArrayList<>();
+                for (int i = 0; i < allLeagueTeams.size(); i++) {
+                    teamNames.add(allLeagueTeams.get(i).getTeamName());
+                }
+                ArrayList<Team> tempList = new ArrayList<>();
+                tempList.addAll(dataSource.getListOfTeamsCoachedByUser(currentUser, currentLeague));
+                if (tempList.isEmpty() && !teamNames.contains(teamName)) {
+                    Team team = dataSource.createTeam(teamName, currentLeague, coach.getUserID());
+                    dataSource.createEnrollment(coach.getUserID(), 0, currentLeague, team.getTeamID(),
+                            new Date(), 1.99);
+                    currentTeam = team.getTeamID();
+                    toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
+                    String msg = "User Enrolled as Coach of the " + team.getTeamName();
+                    toastCoach.setText(msg);
+                    toastCoach.show();
 
-            ArrayList<Team> allLeagueTeams = new ArrayList<>();
-            allLeagueTeams.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
-            ArrayList<String> teamNames = new ArrayList<>();
-            for(int i =0; i < allLeagueTeams.size(); i++){
-                teamNames.add(allLeagueTeams.get(i).getTeamName());
-            }
-            ArrayList<Team> tempList = new ArrayList<>();
-            tempList.addAll(dataSource.getListOfTeamsCoachedByUser(currentUser, currentLeague));
-            if(tempList.isEmpty() && !teamNames.contains(teamName)){
-                Team team = dataSource.createTeam(teamName, currentLeague, currentUser);
-                dataSource.createEnrollment(currentUser, 0, currentLeague, team.getTeamID(),
-                        new Date(), 1.99);
-                toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
-                String msg = "User Enrolled as Coach of the " + team.getTeamName();
-                toastCoach.setText(msg);
-                toastCoach.show();
-                Intent resultIntent = new Intent();
-                League league = dataSource.getLeagueById(currentLeague);
-                resultIntent.putExtra("team_id", team.getTeamID());
-                resultIntent.putExtra("league_id", team.getLeagueID());
-                resultIntent.putExtra("sport_id", league.getSportID());
-                setResult(RESULT_OK, resultIntent);
-                finish();
-            }else if(teamNames.contains(teamName)){
-                throw new Exception(teamName + " taken...");
-            }
-            else
-            {
-                Team tempTeam = tempList.get(0);
-                setResult(RESULT_CANCELED);
-                throw new Exception("This Coach already coaches the " + tempTeam.getTeamName());
+                } else if (teamNames.contains(teamName)) {
+                    throw new Exception(teamName + " taken...");
+                } else {
+                    Team tempTeam = tempList.get(0);
+                    setResult(RESULT_CANCELED);
+                    throw new Exception("This Coach already coaches the " + tempTeam.getTeamName());
 
+                }
+            }else{
+                Toast toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
+                toast.setText("There are no coaches to choose from, presently... make a coach");
+                toast.show();
             }
         }catch(Exception e){
             toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
