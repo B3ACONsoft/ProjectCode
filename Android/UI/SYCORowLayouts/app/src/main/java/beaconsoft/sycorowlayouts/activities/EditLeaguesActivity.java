@@ -239,6 +239,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
             }
             Toast toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
             toast.setText("Created New League: " + league.getLeagueName());
+            toast.show();
 
         }catch(Exception e){
             textViewEditLeaguesTopPrompt.setText(e.getMessage().toString());

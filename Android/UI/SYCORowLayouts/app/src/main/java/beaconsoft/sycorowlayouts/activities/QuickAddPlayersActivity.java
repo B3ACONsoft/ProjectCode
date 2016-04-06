@@ -164,7 +164,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
      */
     public void quickAddPlayer(View view){
 
-//        try {
+        try {
         /**
          * taking in strings from edittexts
          */
@@ -247,59 +247,46 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
              */
             Enrollment enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(), 1.99);
 
-        int successfulEID = 0;
-            int successfulUID = 0;
-            int successfulPID = 0;
-            int successfulLID = 0;
-            int successfulTID = 0;
-
-//            if (enrollment != null) {
-
-                    successfulEID = enrollment.getEnrollmentID();
-                    successfulUID = enrollment.getUserID();
-                    successfulPID = enrollment.getPlayerID();
-                    successfulLID = enrollment.getLeagueID();
-                    successfulTID = enrollment.getTeamID();
-//            }else{
-//                throw new Exception("Bad Player Creation...please debug");
-//            }
-
-            TextView textViewSuccess = (TextView) findViewById(R.id.textViewSuccessfulInsert);
-            textViewSuccess.setText("EID: " + successfulEID + " UID: " + successfulUID + " PID: "
-                    + successfulPID + " LID:" + successfulLID + " TID: " + successfulTID);
+            if(enrollment != null){
+                Toast toast = Toast.makeText(this,
+                        "User:  (" + user.getFname() + " " + user.getLname()     + ") and\n" +
+                        "Player (" + player.getFname() + " " + player.getLname() + ")" +
+                        "enrolled as user#" + enrollment.getUserID() + " and player#" + enrollment.getPlayerID()
+                , Toast.LENGTH_LONG);
+            }
 
             /**
              * All Exceptions are caught and displayed here, with a toast, and inside of the catch
              * block, every entry point is tested for minumum input first.
               */
-//        }catch(Exception e){
-//
-//            Toast toast = Toast.makeText(this, null, Toast.LENGTH_LONG);
-//            String msg = e.getMessage();
-//            if(et1.getText().toString().length() < 1){
-//                msg = "Please fill in your first name";
-//            }
-//            if(et2.getText().toString().length() < 1){
-//                msg = "Please fill in your last name";
-//            }
-//            if(et3.getText().toString().length() < 1 && kidBox.isChecked()){
-//                msg = "Is your child the player? Please fill in their first name";
-//            }
-//            if(et4.getText().toString().length() < 1 && kidBox.isChecked()){
-//                msg = "Is your child the player? Please fill in their last name";
-//            }
-//            if(et5.getText().toString().length() < 1){
-//                msg = "Please fill in your phone number";
-//            }
-//            if(et6.getText().toString().length() < 1){
-//                msg = "You must enter a valid email address";
-//            }
-//            if(et7.getText().toString().length() < 1){
-//                msg = "Please give an emergency number";
-//            }
-//            toast.setText(msg);
-//            toast.show();
-//        }
+        }catch(Exception e){
+
+            Toast toast = Toast.makeText(this, null, Toast.LENGTH_LONG);
+            String msg = e.getMessage();
+            if(et1.getText().toString().length() < 1){
+                msg = "Please fill in your first name";
+            }
+            if(et2.getText().toString().length() < 1){
+                msg = "Please fill in your last name";
+            }
+            if(et3.getText().toString().length() < 1 && kidBox.isChecked()){
+                msg = "Is your child the player? Please fill in their first name";
+            }
+            if(et4.getText().toString().length() < 1 && kidBox.isChecked()){
+                msg = "Is your child the player? Please fill in their last name";
+            }
+            if(et5.getText().toString().length() < 1){
+                msg = "Please fill in your phone number";
+            }
+            if(et6.getText().toString().length() < 1){
+                msg = "You must enter a valid email address";
+            }
+            if(et7.getText().toString().length() < 1){
+                msg = "Please give an emergency number";
+            }
+            toast.setText(msg);
+            toast.show();
+        }
     }
 
     /**
