@@ -40,6 +40,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     private static final String PLAYER_KEY = "beaconsoft.sycorowlayouts.PLAYER";
     private static final int INTENT_REQUEST_CODE_EDIT_LEAGUES = 1;
     private static final int INTENT_REQUEST_CODE_ADD_TEAMS = 2;
+    private static final int INTENT_REQUEST_CODE_EDIT_TEAMS = 3;
     private String name;
     private String email;
     private TextView textViewLeaguesEmail;
@@ -154,7 +155,9 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         if(requestCode == INTENT_REQUEST_CODE_EDIT_LEAGUES && data != null){
             if(resultCode == Activity.RESULT_OK) {
                 Log.e("REQUEST CODE", "................................................REQUEST CODE " + requestCode);
+
                 loadSpinners();
+
                 int resultSport = data.getIntExtra("sport_id", 0);
                 int resultLeague = data.getIntExtra("league_id", 0);
 
@@ -173,11 +176,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                         break;
                     }
                 }
-                if(leaguesArrayList.size() > 0){
-                    activateView(buttonAddTeams);
-                }else{
-                    deactivateView(buttonAddTeams);
-                }
+
                 Log.e("INT EXTRAS", ".........sport_id: " + resultSport +
                         ".....league_id: " + resultLeague);
                 Log.e("CURRENT SPORT/LEAGUE", ".........sport: " + currentSport + " ....league: " + currentLeague );
@@ -194,15 +193,9 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 adapterSpinnerTeams = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, teamsArrayList);
                 spinnerTeams.setAdapter(adapterSpinnerTeams);
                 if(!teamsArrayList.isEmpty()){
-                    activateView(spinnerTeams);
-                    activateView(buttonEditTeam);
-                    activateView(buttonAddPlayers);
-                    activateView(buttonCalendar);
+
                 }else{
-                    deactivateView(spinnerTeams);
-                    deactivateView(buttonEditTeam);
-                    deactivateView(buttonAddPlayers);
-                    deactivateView(buttonCalendar);
+
                 }
 
                 for(int i = 0; i < teamsArrayList.size(); i++){
@@ -212,6 +205,12 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                         break;
                     }
                 }
+
+                activateView(spinnerTeams);
+                activateView(buttonEditTeam);
+                activateView(buttonCalendar);
+                activateView(buttonAddPlayers);
+
                 Log.e("INT EXTRAS", "........team_id: " + resultTeam);
                 Log.e("Current TEAM", "................TEAM: " + currentTeam);
             }else{
@@ -220,6 +219,33 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 }else{
                     activateView(buttonEditTeam);
                 }
+            }
+        }else if(requestCode == INTENT_REQUEST_CODE_EDIT_TEAMS ){
+            if(resultCode == Activity.RESULT_OK){
+
+                Log.e("REQUEST CODE", "................................................REQUEST CODE " + requestCode);
+                int resultTeam = data.getIntExtra("team_id", 0);
+
+                teamsArrayList.clear();
+                teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
+                adapterSpinnerTeams = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, teamsArrayList);
+                spinnerTeams.setAdapter(adapterSpinnerTeams);
+                if(!teamsArrayList.isEmpty()){
+
+                }else{
+
+                }
+
+                for(int i = 0; i < teamsArrayList.size(); i++){
+                    if(teamsArrayList.get(i).getTeamID() == resultTeam){
+                        spinnerTeams.setSelection(i);
+                        onSpinnerTeamsChange();
+                        break;
+                    }
+                }
+
+            }else{
+
             }
         }else{
             Toast toast = Toast.makeText(this, "UNRECOGNIZED REQUEST CODE", Toast.LENGTH_LONG);
@@ -232,14 +258,16 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
             foo.setEnabled(false);
         }
         parent.setEnabled(false);
+        parent.setClickable(false);
     }
 
     private void activateView(View parent){
-        for(View foo:  spinnerPlayers.getTouchables()){
+        for(View foo: parent.getTouchables()){
             foo.setClickable(true);
             foo.setEnabled(true);
         }
         parent.setEnabled(true);
+        parent.setClickable(true);
     }
 
         /* Call the database and ask for the sports we have leagues for, insert into the first spinner
@@ -586,7 +614,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(LEAGUE_KEY, currentLeague);
         intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra(EMAIL_KEY, email);
-        startActivityForResult(intent, 3);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_EDIT_TEAMS);
     }
 
     public void goToEditLeagues(View view){

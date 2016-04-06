@@ -44,7 +44,7 @@
                 android:hint="i.e. Strikers"
                 android:editable="false"
                 android:layout_weight="1"
-                android:imeOptions="actionDone"/>
+                />
         </TableRow>
 
         <TableRow

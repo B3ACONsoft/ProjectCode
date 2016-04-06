@@ -1,8 +1,11 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -73,6 +76,28 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
     public void onPause(){
         dataSource.close();
         super.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
+        if (item.getItemId() == android.R.id.home) {
+
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        Log.e("ON BACK PRESSED", "...............QUICK ADD TEAMS ON BACK PRESSED");
+        Intent intent = new Intent();
+        intent.putExtra("team_id", currentTeamId);
+        setResult(Activity.RESULT_OK, intent);
+        super.onBackPressed();
+        finish();
     }
 
     @Override
