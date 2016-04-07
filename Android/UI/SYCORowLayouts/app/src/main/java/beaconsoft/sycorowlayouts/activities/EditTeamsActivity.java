@@ -226,36 +226,39 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
     public void updateCoach(View view){
 
         try {
-            fname = editTextFirst.getText().toString().toUpperCase();
-            lname = editTextLast.getText().toString().toUpperCase();
-            phone = Long.parseLong(editTextPhone.getText().toString());
-            emerg = Long.parseLong(editTextEmergency.getText().toString());
-            email = editTextCoachEmail.getText().toString().toUpperCase();
-            Users userToUpdate = dataSource.getUserByEmail(email);
-            if(userToUpdate != null && fname.length() > 1 && lname.length() > 1 &&
-                    phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
-                Users user = dataSource.updateUser(userToUpdate.getUserID(), fname.toUpperCase(), lname.toUpperCase(),
-                        phone, email.toUpperCase(), emerg);
-                textViewTop = (TextView) findViewById(R.id.textViewEditTeamsTop);
-                textViewTop.setText(user.toString());
-                editTextFirst.setText(user.getFname());
-                editTextLast.setText(user.getLname());
-                editTextPhone.setText(String.format("%d", user.getPhone()));
-                editTextEmergency.setText(String.format("%d", user.getEmergency()));
-                editTextCoachEmail.setText(user.getEmail());
-                editTextTeamName.setText(currentTeam.getTeamName());
-                coach = user;
-                currentCoachUserId = coach.getUserID();
-                int presentSpinnerPosition = spinnerCoaches.getSelectedItemPosition();
-                coachArrayList.set(presentSpinnerPosition, coach);
-                adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList);
-                spinnerCoaches.setAdapter(adapterSpinnerCoaches);
-                spinnerCoaches.setSelection(presentSpinnerPosition);
-            }
-            else if(userToUpdate != null) {
-                throw new Exception("Unable to update, check the email address and try again");
-            }
 
+            email = editTextCoachEmail.getText().toString().toUpperCase();
+
+            if(!dataSource.checkForDuplicateEmail(email)) {
+                fname = editTextFirst.getText().toString().toUpperCase();
+                lname = editTextLast.getText().toString().toUpperCase();
+                phone = Long.parseLong(editTextPhone.getText().toString());
+                emerg = Long.parseLong(editTextEmergency.getText().toString());
+
+                Users userToUpdate = dataSource.getUserByEmail(email);
+                if (userToUpdate != null && fname.length() > 1 && lname.length() > 1 &&
+                        phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
+                    Users user = dataSource.updateUser(userToUpdate.getUserID(), fname.toUpperCase(), lname.toUpperCase(),
+                            phone, email.toUpperCase(), emerg);
+                    textViewTop = (TextView) findViewById(R.id.textViewEditTeamsTop);
+                    textViewTop.setText(user.toString());
+                    editTextFirst.setText(user.getFname());
+                    editTextLast.setText(user.getLname());
+                    editTextPhone.setText(String.format("%d", user.getPhone()));
+                    editTextEmergency.setText(String.format("%d", user.getEmergency()));
+                    editTextCoachEmail.setText(user.getEmail());
+                    editTextTeamName.setText(currentTeam.getTeamName());
+                    coach = user;
+                    currentCoachUserId = coach.getUserID();
+                    int presentSpinnerPosition = spinnerCoaches.getSelectedItemPosition();
+                    coachArrayList.set(presentSpinnerPosition, coach);
+                    adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList);
+                    spinnerCoaches.setAdapter(adapterSpinnerCoaches);
+                    spinnerCoaches.setSelection(presentSpinnerPosition);
+                } else if (userToUpdate != null) {
+                    throw new Exception("Unable to update, check the email address and try again");
+                }
+            }
         }catch(Exception e){
 
             toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);

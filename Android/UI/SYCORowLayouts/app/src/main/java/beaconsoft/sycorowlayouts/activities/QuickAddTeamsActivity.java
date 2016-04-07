@@ -174,12 +174,13 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
                     Team team = dataSource.createTeam(teamName, currentLeague, coach.getUserID());
                     dataSource.createEnrollment(coach.getUserID(), 0, currentLeague, team.getTeamID(),
                             new Date(), 1.99);
+                    editTeamName.setText("");
                     currentTeam = team.getTeamID();
                     toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
                     String msg = "User Enrolled as Coach of the " + team.getTeamName();
                     toastCoach.setText(msg);
                     toastCoach.show();
-
+                    loadSpinner();
                 } else if (teamNames.contains(teamName)) {
                     throw new Exception(teamName + " taken...");
                 } else {
@@ -214,9 +215,17 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
                     phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
                 Users user = dataSource.createUsers(fname.toUpperCase(), lname.toUpperCase(),
                         phone, email.toUpperCase(), emerg, "COACH", "PASS");
-                textViewTop = (TextView) findViewById(R.id.textViewQuickAddTeamsTop);
-                textViewTop.setText(user.toString());
                 loadSpinner();
+                Toast toast = Toast.makeText(this,
+                        "User Created: (Coach) " + user.getFname() + " " + user.getLname() + "\n" +
+                                "UserId: " + user.getUserID() + " Email: " + user.getEmail()
+                , Toast.LENGTH_LONG);
+                toast.show();
+                editTextCoachEmail.setText("");
+                editTextEmergency.setText("");
+                editTextFirst.setText("");
+                editTextLast.setText("");
+                editTextPhone.setText("");
             }
             else if(testUser != null) {
                 throw new Exception("Email address taken...");

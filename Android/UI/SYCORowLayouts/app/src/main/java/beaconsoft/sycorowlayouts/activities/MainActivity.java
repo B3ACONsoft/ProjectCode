@@ -5,10 +5,14 @@ import beaconsoft.sycorowlayouts.MySQLiteHelper;
 import beaconsoft.sycorowlayouts.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Users;
 import string.utils.ProperCase;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -25,6 +29,24 @@ public class MainActivity extends AppCompatActivity {
     private static final String ADMIN = "ADMIN";
     private static final String COACH = "COACH";
     private DataSource dataSource;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
+        if (item.getItemId() == android.R.id.home) {
+
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed(){
+
+       
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

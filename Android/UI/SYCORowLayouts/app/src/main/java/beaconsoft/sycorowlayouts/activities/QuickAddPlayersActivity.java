@@ -1,11 +1,14 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -45,6 +48,33 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
     private int currentLeague;
     private int currentTeam;
     private int currentAdmin;
+    private int currentPlayer;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
+        if (item.getItemId() == android.R.id.home) {
+
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        Log.e("ON BACK PRESSED", "...............QUICK ADD TEAMS ON BACK PRESSED");
+        if(currentPlayer > 0) {
+            Intent intent = new Intent();
+            intent.putExtra("player_id", currentPlayer);
+            setResult(Activity.RESULT_OK, intent);
+        }else{
+            setResult(Activity.RESULT_CANCELED);
+        }
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -253,6 +283,9 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
                         "Player (" + player.getFname() + " " + player.getLname() + ")" +
                         "enrolled as user#" + enrollment.getUserID() + " and player#" + enrollment.getPlayerID()
                 , Toast.LENGTH_LONG);
+                toast.show();
+                clearForm();
+                currentPlayer = player.getPlayerID();
             }
 
             /**
@@ -294,6 +327,17 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
      * @param view
      */
     public void clearForm(View view){
+
+        et1.setText("");
+        et2.setText("");
+        et3.setText("");
+        et4.setText("");
+        et5.setText("");
+        et7.setText("");
+        et6.setText("");
+    }
+
+    public void clearForm(){
 
         et1.setText("");
         et2.setText("");

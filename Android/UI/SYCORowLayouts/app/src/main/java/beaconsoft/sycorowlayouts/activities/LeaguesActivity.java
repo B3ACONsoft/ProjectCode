@@ -1,12 +1,9 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,7 +23,6 @@ import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.dbobjects.Player;
 import beaconsoft.sycorowlayouts.dbobjects.Sport;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
-import beaconsoft.sycorowlayouts.dbobjects.Users;
 
 public class LeaguesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -41,6 +37,8 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     private static final int INTENT_REQUEST_CODE_EDIT_LEAGUES = 1;
     private static final int INTENT_REQUEST_CODE_ADD_TEAMS = 2;
     private static final int INTENT_REQUEST_CODE_EDIT_TEAMS = 3;
+    private static final int INTENT_REQUEST_CODE_ADD_PLAYERS = 4;
+    private static final int INTENT_REQUEST_CODE_EDIT_PLAYER = 5;
     private String name;
     private String email;
     private TextView textViewLeaguesEmail;
@@ -230,11 +228,6 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
                 adapterSpinnerTeams = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, teamsArrayList);
                 spinnerTeams.setAdapter(adapterSpinnerTeams);
-                if(!teamsArrayList.isEmpty()){
-
-                }else{
-
-                }
 
                 for(int i = 0; i < teamsArrayList.size(); i++){
                     if(teamsArrayList.get(i).getTeamID() == resultTeam){
@@ -243,11 +236,25 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                         break;
                     }
                 }
-
-            }else{
-
             }
-        }else{
+        }else if(requestCode == INTENT_REQUEST_CODE_ADD_PLAYERS ) {
+            if (resultCode == Activity.RESULT_OK) {
+                int resultPlayer = data.getIntExtra("player_id", 0);
+
+                playersArrayList.clear();
+                playersArrayList.addAll(dataSource.getListOfPlayersByTeam(currentTeam));
+                adapterSpinnerPlayers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, playersArrayList);
+                spinnerPlayers.setAdapter(adapterSpinnerPlayers);
+
+                for(int i = 0; i < playersArrayList.size(); i++){
+                    if(playersArrayList.get(i).getPlayerID() == resultPlayer){
+                        spinnerPlayers.setSelection(i);
+                        onSpinnerPlayersChange();
+                        break;
+                    }
+                }
+            }
+        } else {
             Toast toast = Toast.makeText(this, "UNRECOGNIZED REQUEST CODE", Toast.LENGTH_LONG);
         }
     }
@@ -411,7 +418,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
             onSpinnerTeamsChange();
         }
         if(parent ==  spinnerPlayers){
-            onSpinnerPlayersChange(choice);
+            onSpinnerPlayersChange();
         }
     }
 
@@ -530,12 +537,17 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         statusChangeDisplay();
     }
 
-    private void onSpinnerPlayersChange(String choiceUser){
+    private void onSpinnerPlayersChange(){
 
-        Player player = (Player) spinnerPlayers.getSelectedItem();
-        currentPlayer = player.getPlayerID();
-        currentUser   = player.getUserID();
-        statusChangeDisplay();
+        if(playersArrayList.isEmpty()){
+            deactivateView(buttonEditPlayer);
+        }else {
+            Player player = (Player) spinnerPlayers.getSelectedItem();
+            currentPlayer = player.getPlayerID();
+            currentUser = player.getUserID();
+            activateView(spinnerPlayers);
+            statusChangeDisplay();
+        }
     }
 
     private void statusChangeDisplay(){
@@ -561,30 +573,18 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(USER_KEY, currentUser);
         intent.putExtra(PLAYER_KEY, currentPlayer);
 
-        PendingIntent pendingIntent = TaskStackBuilder.create(this).addNextIntentWithParentStack(getIntent())
-                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setContentIntent(pendingIntent);
-        startActivity(intent);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_EDIT_PLAYER);
     }
 
     public void goToAddPlayerFromLeagues(View view){
+
         Intent intent = new Intent(getApplicationContext(), QuickAddPlayersActivity.class);
-        intent.putExtra(NAME_KEY, name);
-        intent.putExtra(ADMIN_KEY, currentAdmin);
+        intent.putExtra(  NAME_KEY, name);
+        intent.putExtra( ADMIN_KEY, currentAdmin);
         intent.putExtra(LEAGUE_KEY, currentLeague);
-        intent.putExtra(TEAM_KEY, currentTeam);
+        intent.putExtra(  TEAM_KEY, currentTeam);
         intent.putExtra(EMAIL_KEY, email);
-
-        PendingIntent pendingIntent = TaskStackBuilder.create(this).addNextIntentWithParentStack(getIntent())
-                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setContentIntent(pendingIntent);
-
-        startActivity(intent);
-
+        startActivityForResult(intent, INTENT_REQUEST_CODE_ADD_PLAYERS);
     }
 
     public void goToCalendar(View view){

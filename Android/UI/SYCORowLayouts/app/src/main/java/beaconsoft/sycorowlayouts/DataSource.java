@@ -251,6 +251,19 @@ public class DataSource {
         return newUser;
     }
 
+    public boolean checkForDuplicateEmail(String email) {
+        Cursor cursor = db.query(
+                MySQLiteHelper.TABLE_USERS, columnsUsers,
+                MySQLiteHelper.COLUMN_EMAIL + " = " + email,
+                null, null, null, null);
+        cursor.moveToFirst();
+        if(cursor.getCount() >= 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public Users updateUser(int currentUser, String first, String last, Long phone, String email, Long emergency) {
         ContentValues cv = new ContentValues();
         cv.put("fname", first);
@@ -1137,7 +1150,4 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
-
-
-
 }

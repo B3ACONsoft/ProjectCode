@@ -205,12 +205,10 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
 
     private void onSpinnerLeaguesChange(String choice) {
         currentLeague = ((League)spinnerEditLeaguesChooseLeague.getSelectedItem()).getLeagueID();
-        textViewEditLeaguesTopPrompt.setText(choice);
     }
 
     private void onSpinnerSportsChange(String choice) {
         currentSport = ((Sport)spinnerEditLeaguesChooseSport.getSelectedItem()).getSportID();
-        textViewEditLeaguesTopPrompt.setText(choice);
         loadLeagueSpinner();
     }
 
@@ -264,7 +262,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
 
             currentSport = sport.getSportID();
             loadSportSpinner();
-
+            editTextEditLeaguesSportName.setText("");
         }catch(Exception e){
             textViewEditLeaguesTopPrompt.setText(e.getMessage().toString());
         }
