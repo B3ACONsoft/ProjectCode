@@ -138,7 +138,7 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
         }
         editTextFirst        .setText(coach.getFname());
         editTextLast.setText(coach.getLname());
-        editTextCoachEmail.setEnabled(false);
+        
         editTextCoachEmail.setText(coach.getEmail());
         editTextPhone.setText(String.format(coach.getPhone() + ""));
         editTextEmergency.setText(String.format(coach.getEmergency() + ""));
@@ -258,6 +258,9 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
                 } else if (userToUpdate != null) {
                     throw new Exception("Unable to update, check the email address and try again");
                 }
+            }else{
+                Toast toast = Toast.makeText(this, "This email is taken", Toast.LENGTH_LONG);
+                toast.show();
             }
         }catch(Exception e){
 
