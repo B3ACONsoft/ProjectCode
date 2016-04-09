@@ -80,8 +80,7 @@
         </activity>
         <activity
             android:name=".activities.UserRosterActivity"
-            android:label="Back to Home Screen"
-            android:parentActivityName="activities.UserHomeActivity">
+            android:label="Team Roster">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.UserHomeActivity" />

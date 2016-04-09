@@ -93,6 +93,10 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,10 +1,12 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -56,6 +58,32 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
     private Player player;
     private Users user;
     private TextView textViewLeagueName;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
+        if (item.getItemId() == android.R.id.home) {
+
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        Log.e("ON BACK PRESSED", "...............QUICK ADD TEAMS ON BACK PRESSED");
+        if(currentPlayer > 0) {
+            Intent intent = new Intent();
+            intent.putExtra("player_id", currentPlayer);
+            setResult(Activity.RESULT_OK, intent);
+        }else{
+            setResult(Activity.RESULT_CANCELED);
+        }
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
