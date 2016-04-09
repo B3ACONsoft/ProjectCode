@@ -50,9 +50,7 @@ public class Event {
         return homeTeamID;
     }
 
-    public void setHomeTeamID(int homeTeamID) {
-        this.homeTeamID = homeTeamID;
-    }
+    public void setHomeTeamID(int homeTeamID) {this.homeTeamID = homeTeamID;}
 
     public int getAwayTeamID() {
         return awayTeamID;

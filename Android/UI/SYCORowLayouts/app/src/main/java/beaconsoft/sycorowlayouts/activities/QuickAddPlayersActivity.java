@@ -17,7 +17,8 @@ import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
+import java.sql.Date;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
@@ -275,7 +276,8 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
              * A successful ENROLLMENT will requre successful inserts into the USER and PLAYER table. There is a hidden textview
              * beneathe the last buttons that will show the last record inserted.
              */
-            Enrollment enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(), 1.99);
+        Calendar cal = Calendar.getInstance();
+            Enrollment enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(cal.getTimeInMillis()), 1.99);
 
             if(enrollment != null){
                 Toast toast = Toast.makeText(this,

@@ -127,8 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendToCoachHomeActivity(String email){
 
-        email = email.toUpperCase();
-        Users coach = dataSource.getUserByEmail(email);
+        Users coach = dataSource.getUserByEmail(email.toUpperCase());
         int coachId  = coach.getUserID();
 
         Intent intent = new Intent(this, CoachHomeActivity.class);

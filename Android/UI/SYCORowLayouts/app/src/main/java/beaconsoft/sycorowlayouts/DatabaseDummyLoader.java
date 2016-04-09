@@ -25,7 +25,7 @@ public class DatabaseDummyLoader {
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,       'POLO');"
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,     'TENNIS');"
 
-     /*       // LEAGUE_ID AUTOINCREMENTED, USER_ID(ADMIN), LEAGUE_NAME, SPORT_ID, MIN_AGE, MAX_AGE, START_DATE, END_DATE
+            // LEAGUE_ID AUTOINCREMENTED, USER_ID(ADMIN), LEAGUE_NAME, SPORT_ID, MIN_AGE, MAX_AGE, START_DATE, END_DATE
             , "INSERT INTO league VALUES (NULL, 1, 'OXFORD PARKS AND RECREATION'       , 1,  4,  6, '15-MAR-2016', '15-JUN-2016');"
             , "INSERT INTO league VALUES (NULL, 1, 'DURHAM KICKERS'                    , 1,  7,  9, '15-MAR-2016', '15-JUN-2016');"
             , "INSERT INTO league VALUES (NULL, 1, 'GELA PARK SERVICE'                 , 2, 10, 12, '15-MAR-2016', '15-JUN-2016');"
@@ -153,6 +153,6 @@ public class DatabaseDummyLoader {
             , "INSERT INTO event VALUES(NULL, 'PRACTICE', '2016/03/27 17:00:00', 2, 3,    1);"
             , "INSERT INTO event VALUES(NULL, 'PRACTICE', '2016/03/28 19:00:00', 1, 2, NULL);"
             , "INSERT INTO event VALUES(NULL, 'GAME',     '2016/03/26 14:00:00', 1, 2,    1);"
-            , "INSERT INTO event VALUES(NULL, 'GAME',     '2016/03/23 17:00:00', 1, 1,    2);" */
+            , "INSERT INTO event VALUES(NULL, 'GAME',     '2016/03/23 17:00:00', 1, 1,    2);" /**/
     };
 }

@@ -4,17 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import beaconsoft.sycorowlayouts.dbobjects.Attendance;
@@ -434,8 +430,8 @@ public class DataSource {
         newLeague.setLeagueName(cursor.getString(3));
         newLeague.setMinAge(cursor.getInt(4));
         newLeague.setMaxAge(cursor.getInt(5));
-        newLeague.setStartDate(new Date(cursor.getString(6)));
-        newLeague.setEndDate(new Date(cursor.getString(7)));
+        newLeague.setStartDate(new Date(cursor.getLong(6)));
+        newLeague.setEndDate(new Date(cursor.getLong(7)));
         return newLeague;
     }
 
@@ -678,6 +674,9 @@ public class DataSource {
                 MySQLiteHelper.COLUMN_PLAYER_ID + " = " + insertID, null, null, null, null);
         cursor.moveToFirst();
         Player newPlayer = cursorToPlayer(cursor);
+
+        //TODO: Make sure new players are added to attendance rolls
+
         return newPlayer;
     }
 
@@ -830,7 +829,7 @@ public class DataSource {
         newEnrollment.setPlayerID(cursor.getInt(2));
         newEnrollment.setLeagueID(cursor.getInt(3));
         newEnrollment.setTeamID(cursor.getInt(4));
-        newEnrollment.setEnrollmentDate(new Date(cursor.getString(5)));
+        newEnrollment.setEnrollmentDate(new Date(cursor.getLong(5)));
         newEnrollment.setFee(cursor.getDouble(6));
         return newEnrollment;
     }
@@ -1037,17 +1036,9 @@ public class DataSource {
 
         newEvent.setEventID(cursor.getInt(0));
         newEvent.setEventType(cursor.getString(1));
-
-        /* What could go wrong? */
-        SimpleDateFormat format = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
-        Date date = new Date();
-        try {
-            date = format.parse(cursor.getString(2));
-        } catch (ParseException e) {
-            Log.e("DATE EXCEPTION THROWN", "..................DATE DATE DATE EXC EXC EXC" + e.getMessage());
-        }
+        Calendar cal = new GregorianCalendar();
+        Date date = new Date(cursor.getString(2));
         newEvent.setStartDateTime(date);
-
         newEvent.setPlaceID(cursor.getInt(3));
         newEvent.setHomeTeamID(cursor.getInt(4));
         newEvent.setAwayTeamID(cursor.getInt(5));

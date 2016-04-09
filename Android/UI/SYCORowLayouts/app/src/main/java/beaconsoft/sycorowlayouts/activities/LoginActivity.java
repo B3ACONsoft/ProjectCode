@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mPasswordView = (EditText) findViewById(R.id.password);
 
-        mEmailView.setText("a.a@yahoo.com");  /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+        mEmailView.setText("JURASSIC@PARK.AAH");  /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
         mPasswordView.setText("password");   /* a.a@yahoo.com = ADMIN, JURASSIC@PARK.AAH = COACH anything else is user   */
 
             mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {

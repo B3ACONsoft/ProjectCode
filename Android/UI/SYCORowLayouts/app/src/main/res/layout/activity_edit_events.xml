@@ -64,6 +64,22 @@
                 android:layout_weight="1"
                 android:onClick="forwardDatePicker" />
 
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/textViewEditEventsDate"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:hint="Date" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/textViewEditEventsTime"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:hint="Time" />
+
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -71,6 +87,7 @@
                 android:id="@+id/buttonForwardTimePicker"
                 android:layout_weight="1"
                 android:onClick="forwardTimePicker" />
+
         </TableRow>
 
         <TableRow
@@ -122,7 +139,7 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="New Event"
+                android:text="Make Event"
                 android:id="@+id/buttonAddEvent"
                 android:layout_weight="1"
                 android:onClick="addEventToLeagueEventList" />

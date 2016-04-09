@@ -2,8 +2,8 @@ package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,14 +13,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
-import beaconsoft.sycorowlayouts.dbobjects.League;
-import beaconsoft.sycorowlayouts.dbobjects.Sport;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
 import beaconsoft.sycorowlayouts.dbobjects.Users;
 
@@ -172,8 +172,9 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
                 tempList.addAll(dataSource.getListOfTeamsCoachedByUser(currentUser, currentLeague));
                 if (tempList.isEmpty() && !teamNames.contains(teamName)) {
                     Team team = dataSource.createTeam(teamName, currentLeague, coach.getUserID());
+                    Calendar cal = Calendar.getInstance();
                     dataSource.createEnrollment(coach.getUserID(), 0, currentLeague, team.getTeamID(),
-                            new Date(), 1.99);
+                            new Date(cal.getTimeInMillis()), 1.99);
                     editTeamName.setText("");
                     currentTeam = team.getTeamID();
                     toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);

@@ -1,15 +1,11 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,9 +18,9 @@ import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
@@ -215,8 +211,10 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
     public void addLeague(View view){
 
         try {
-            Date startDate = new Date();
-            Date endDate   = new Date();
+            Calendar cal = new GregorianCalendar();
+            Date startDate = cal.getTime();
+            //TODO make the enddate 6 months from the startDate
+            Date endDate   = cal.getTime();
             String name = editTextEditLeaguesLeagueName.getText().toString().toUpperCase();
             if(name.length() < 2){
                 throw new Exception("Please Enter the Full Sport Name");

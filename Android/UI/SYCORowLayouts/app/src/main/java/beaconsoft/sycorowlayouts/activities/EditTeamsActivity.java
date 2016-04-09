@@ -138,7 +138,7 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
         }
         editTextFirst        .setText(coach.getFname());
         editTextLast.setText(coach.getLname());
-        
+
         editTextCoachEmail.setText(coach.getEmail());
         editTextPhone.setText(String.format(coach.getPhone() + ""));
         editTextEmergency.setText(String.format(coach.getEmergency() + ""));
