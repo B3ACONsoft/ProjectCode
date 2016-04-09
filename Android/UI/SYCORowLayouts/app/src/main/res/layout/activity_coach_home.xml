@@ -53,9 +53,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Sport:"
+            android:text="Sport"
             android:id="@+id/textView14"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:gravity="center_horizontal" />
     </TableRow>
 
     <TableRow
@@ -80,7 +81,8 @@
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
             android:id="@+id/textView4"
             android:text="League"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:gravity="center_horizontal" />
     </TableRow>
 
     <TableRow
@@ -103,21 +105,6 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Team"
-            android:id="@+id/textView15"
-            android:layout_weight="1"
-            android:textAlignment="center" />
-
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/textViewCoachHomeTeamName"
             android:layout_weight="1"
@@ -127,7 +114,7 @@
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_margin="10dp">
+        android:layout_margin="3dp">
 
         <TextView
             android:layout_width="0dp"
@@ -153,16 +140,18 @@
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp">
+        android:layout_margin="0dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Games Left To Play:"
+            android:text="Games Left:"
             android:id="@+id/textViewLabelGamesToPlay"
             android:layout_weight="1"
-            android:gravity="left" />
+            android:textAlignment="gravity"
+            android:singleLine="true"
+            android:gravity="center_vertical|center_horizontal" />
 
         <TextView
             android:layout_width="0dp"
@@ -172,13 +161,8 @@
             android:id="@+id/textViewCoachHomeGamesLeft"
             android:layout_weight="1"
             android:textAlignment="gravity"
-            android:singleLine="false"
-            android:gravity="right" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="100dp"
-        android:layout_height="match_parent">
+            android:singleLine="true"
+            android:gravity="center_vertical|center_horizontal" />
 
         <TextView
             android:layout_width="0dp"
@@ -186,9 +170,11 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Next Game:"
             android:id="@+id/textViewLabelNextGame"
-            android:layout_margin="10dp"
             android:layout_weight="1"
-            android:gravity="left" />
+            android:textAlignment="gravity"
+            android:singleLine="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_marginLeft="12dp" />
 
         <TextView
             android:layout_width="0dp"
@@ -205,22 +191,70 @@
 
     <TableRow
         android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Player"
+            android:id="@+id/textView15"
+            android:gravity="center_horizontal"
+            android:layout_weight="1" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="100dp"
+        android:layout_height="match_parent">
+
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerCoachHomePlayers"
+            android:spinnerMode="dropdown"
+            android:layout_weight="1" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="OPEN TEAM CALENDAR"
+            android:text="TEAM CALENDAR"
             android:id="@+id/buttonGoToCalendar"
             android:layout_weight="1"
             android:onClick="goToCalendar" />
 
         <Button
             android:layout_width="0dp"
-            android:layout_height="100dp"
+            android:layout_height="match_parent"
             android:text="ROSTER"
             android:id="@+id/buttonGoToRoster"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:onClick="goToUserRosterActivity" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="QUICK ADD PLAYERS"
+            android:id="@+id/buttonCoachHomeQuickAddPlayers"
+            android:layout_weight="1"
+            android:onClick="goToAddPlayers" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="EDIT PLAYER"
+            android:id="@+id/buttonCoachHomeEditPlayers"
+            android:layout_weight="1"
+            android:onClick="goToEditPlayer" />
     </TableRow>
 
 </TableLayout>

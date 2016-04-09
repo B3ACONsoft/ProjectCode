@@ -123,8 +123,9 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
          * Advertise the current user's email at the top of the screen so that he knows which
          * administrator will be adding things
          */
-        textViewAdminEmail.setText(email);
-
+        if(currentAdmin != 0) {
+            textViewAdminEmail.setText(email);
+        }
     }
 
     /**
