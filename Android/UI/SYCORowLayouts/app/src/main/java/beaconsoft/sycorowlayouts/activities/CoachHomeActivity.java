@@ -122,8 +122,9 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
         spinnerSports.setAdapter(adapterSpinnerSports);
         spinnerSports.setEnabled(true);
         currentSport = (Sport) spinnerSports.getSelectedItem();
-        currentSportId = currentSport.getSportID();
-        
+        if(currentSport != null) {
+            currentSportId = currentSport.getSportID();
+        }
         arrayListLeagues.clear();
         arrayListLeagues.addAll(dataSource.getListOfLeaguesByCoachAndSport(coachId, currentSportId));
         adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListLeagues);
@@ -131,9 +132,9 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
         spinnerLeagues.setAdapter(adapterSpinnerLeagues);
         spinnerLeagues.setEnabled(true);
         currentLeague = (League)spinnerLeagues.getSelectedItem();
-        currentLeagueId = currentLeague.getLeagueID();
-        
-        
+        if(currentLeague != null) {
+            currentLeagueId = currentLeague.getLeagueID();
+        }
     }
 
     @Override
@@ -185,8 +186,8 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
         arrayListLeagues.addAll(dataSource.getListOfLeaguesByCoachAndSport(coachId, currentSportId));
         adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListLeagues);
         spinnerLeagues.setAdapter(adapterSpinnerLeagues);
-
     }
+
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         

@@ -132,12 +132,6 @@ public class DatabaseDummyLoader {
             , "INSERT INTO enrollment VALUES(NULL, 28, 23, 13,  1, '03-MAR-2016', 1.99);"
             , "INSERT INTO enrollment VALUES(NULL, 29, 24, 13,  1, '03-MAR-2016', 1.99);"
 
-            //had to add the coaches to the enrollment table late !!!! I FORGOT TO  !!!!! NO FREEDLOADERS !!! FEAR THE YETI!!!!!
-            , "INSERT INTO users VALUES(NULL, 'COUNT', 'BASSY'   , 2548752145, 5326547852, 'BANGSOUNDTHORUGHD@WINDA.NET', 'COACH', 'PASS');"
-            , "INSERT INTO users VALUES(NULL, 'SAM'  , 'NEIL'    , 9191594896, 1548693584, 'JURASSIC@PARK.AAH'          , 'COACH', 'PASS');"
-            , "INSERT INTO users VALUES(NULL, 'PAT'  , 'COX'     , 9196934563, 7645378909, 'PAT.COX@MINEFIELDBIRD.NET'  , 'COACH', 'PASS');"
-            , "INSERT INTO users VALUES(NULL, 'MIKE' , 'KERTCHER', 9587463784, 9588867754, 'KERTCHDADDY@SKINSONTOP.COM' , 'COACH', 'PASS');"
-
             , "INSERT INTO enrollment VALUES(NULL,  2,  0,  1,  1,  '01-MAR-2016', 0.00);"
             , "INSERT INTO enrollment VALUES(NULL,  3,  0,  2,  1,  '01-MAR-2016', 0.00);"
             , "INSERT INTO enrollment VALUES(NULL,  4,  0,  1,  2,  '01-MAR-2016', 0.00);"
