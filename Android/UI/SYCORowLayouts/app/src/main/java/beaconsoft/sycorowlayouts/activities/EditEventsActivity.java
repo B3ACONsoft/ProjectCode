@@ -1,12 +1,14 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.app.DatePickerDialog;
 import android.app.DialogFragment;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,10 +25,11 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,7 +42,8 @@ import beaconsoft.sycorowlayouts.dbobjects.Team;
 
 import static android.widget.AdapterView.*;
 
-public class EditEventsActivity extends AppCompatActivity implements OnItemSelectedListener {
+public class EditEventsActivity extends FragmentActivity implements OnItemSelectedListener,
+       DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private int currentAdminId;
     private int currentLeagueId;
@@ -66,6 +70,7 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
     private Spinner spinnerAwayTeam;
     private Spinner spinnerPlaces;
     private DatePicker datePicker;
+    private TextView textViewDate;
     private TimePicker timePicker;
     private SpinnerAdapter spinnerAdapterHomeTeam;
     private SpinnerAdapter spinnerAdapterAwayTeam;
@@ -73,6 +78,15 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
     private ListView listview;
     private String eventType = "PRACTICE";
     private List<Address> addresses = new ArrayList<>();
+    private final static int TIME_PICKER_REQUESTCODE = 1;
+    private final static int DATE_PICKER_REQUESTCODE = 2;
+    private TextView textViewTime;
+    private Date date;
+    private int year = 0;
+    private int month = 0;
+    private int day = 0;
+    private int hour;
+    private int minute;
 
     @Override
     protected void onPause(){
@@ -114,7 +128,8 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
         currentAdminId    = intent.getIntExtra(ADMIN_KEY, 0);
         currentLeagueId   = intent.getIntExtra(LEAGUE_KEY, 0);
         currentTeamId     = intent.getIntExtra(TEAM_KEY, 0);
-
+        textViewTime = (TextView)findViewById(R.id.textViewEditEventsTime);
+        textViewDate = (TextView)findViewById(R.id.textViewEditEventsDate);
         testPlace = (TextView)findViewById(R.id.textViewEditEventsPlace);
         isGame = (CheckBox)findViewById(R.id.checkBoxIsGame);
         isGame.setChecked(false);
@@ -129,7 +144,7 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
         listview.setLongClickable(true);
         listview.setOnItemLongClickListener(new OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if(parent == listview) {
+                if (parent == listview) {
                     int placeID = eventList.get(position).getPlaceID();
                     Place p = dataSource.getPlaceById(placeID);
                     Geocoder geocoder = new Geocoder(getApplicationContext());
@@ -145,10 +160,10 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
                     if (addresses.size() > 0) {
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
                                 "google.navigation:q=" +
-                                Uri.encode(p.getStreetAddress() + " " +
-                                        p.getCity() + ", " +
-                                        p.getState() + " " +
-                                        p.getZip()) + "&mode=d&avoid=tf"
+                                        Uri.encode(p.getStreetAddress() + " " +
+                                                p.getCity() + ", " +
+                                                p.getState() + " " +
+                                                p.getZip()) + "&mode=d&avoid=tf"
                         ));
 //                        intent.putExtra("LATITUDE", addresses.get(0).getLatitude());
 //                        intent.putExtra("LONGITUDE", addresses.get(0).getLongitude());
@@ -156,10 +171,10 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
                         intent.setPackage("com.google.android.apps.maps");
 //                        intent.setClassName(getApplicationContext(), "beaconsoft.sycorowlayouts.activities.MapsActivity");
                         startActivity(intent);
-                    }else{
+                    } else {
                         Toast toast = Toast.makeText(getApplicationContext(), "Perhaps you've typed the wrong address?", Toast.LENGTH_LONG);
                         toast.setText(addresses.size() + " results from " + p.getStreetAddress() + " " +
-                        p.getCity() + " , " + p.getState() + " " + p.getZip());
+                                p.getCity() + " , " + p.getState() + " " + p.getZip());
                         toast.show();
                     }
                 }
@@ -184,6 +199,10 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
         spinnerHomeTeam.isInEditMode();
         spinnerAwayTeam.isInEditMode();
         spinnerPlaces.isInEditMode();
+        date = new Date(0);
+        Calendar calendar = Calendar.getInstance();
+        date.setTime(calendar.getTimeInMillis());
+
     }
 
     private void initializeListView(Team team) {
@@ -260,7 +279,7 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
 
     public void forwardDatePicker(View view){
         DialogFragment datePickerFragment = new DatePickerFragment();
-        datePickerFragment.show(getFragmentManager(), "datePicker");
+        datePickerFragment.show(getFragmentManager(), "edit_events_date_picker");
     }
 
     public void forwardTimePicker(View view){
@@ -270,7 +289,16 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
 
     public void addEventToLeagueEventList(View view) {
 
-        Date date = new Date();
+//        String[] ids = TimeZone.getAvailableIDs(-5 * 60 * 60 * 1000);
+//        SimpleTimeZone edt = new SimpleTimeZone(-5 * 60 * 60 * 1000, ids[0]);
+//        edt.setStartRule(Calendar.APRIL, 1, Calendar.SUNDAY, 2 * 60 * 60 * 1000);
+//        edt.setEndRule(Calendar.OCTOBER, -1, Calendar.SUNDAY, 2 * 60 * 60 * 1000);
+        Calendar cal = new GregorianCalendar(year, month, day, hour, minute);
+        date = new Date();
+        date = cal.getTime();
+
+        Toast timeToast = Toast.makeText(this, date.toString(), Toast.LENGTH_LONG);
+        timeToast.show();
         Event event = new Event();
 
         if (eventType.equals("GAME") && currentHomeTeam != currentAwayTeam) {
@@ -293,5 +321,45 @@ public class EditEventsActivity extends AppCompatActivity implements OnItemSelec
         ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, dataSource);
         listview = (ListView) findViewById(R.id.listViewLeagueEvents);
         listview.setAdapter(adapter);
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int passedYear, int monthOfYear, int dayOfMonth) {
+
+        year = passedYear;
+        month = monthOfYear;
+        day = dayOfMonth;
+        textViewDate.setText(year + "/" + (1 + month) +
+                "/" + day);
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int passedMinute) {
+
+        hour = hourOfDay;
+        minute = passedMinute;
+        String ts = "";
+
+        if(hour < 1 || hour > 23){
+            ts += "12";
+        }else if(hour > 12){
+            ts += (hour % 12) + "";
+        }else{
+            ts += hour + "";
+        }
+        ts += ":";
+        if(minute < 10){
+            ts += "0" + minute;
+        }else{
+            ts += minute;
+        }
+
+        if(hour > 11){
+            ts += " PM";
+        }else{
+            ts += " AM";
+        }
+
+        textViewTime.setText(ts);
     }
 }
