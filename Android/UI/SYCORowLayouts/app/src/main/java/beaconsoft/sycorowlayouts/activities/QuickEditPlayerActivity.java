@@ -118,7 +118,7 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
         currentUser       = intent.getIntExtra(USER_KEY, 0);
         currentPlayer     = intent.getIntExtra(PLAYER_KEY, 0);
 
-        et8.setText(currentAdminId + " " + currentAdminName);
+        et8.setText(currentAdminName);
         textViewAdminEmail.setText(currentAdminEmail);
 
         Team team = dataSource.getTeamById(currentTeam);
@@ -246,6 +246,12 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
                     et5.setText(user.getPhone() + "");
                     et6.setText(user.getEmail());
                     et7.setText(user.getEmergency() + "");
+
+                    Toast toast = Toast.makeText(this,
+                            "User  (" + user.getFname() + " " + user.getLname()     + ") and\n" +
+                                    "Player (" + player.getFname() + " " + player.getLname() + ")" + "UPDATED",
+                            Toast.LENGTH_LONG);
+                    toast.show();
                 }
             }else{
                 throw new Exception("Bad Player Update...please debug");
