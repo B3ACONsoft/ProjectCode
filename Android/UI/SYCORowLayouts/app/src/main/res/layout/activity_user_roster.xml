@@ -23,6 +23,7 @@
             android:id="@+id/listViewUserActivityTest"
             android:headerDividersEnabled="true"
             android:choiceMode="singleChoice"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:focusable="true" />
     </TableRow>
 </TableLayout>
