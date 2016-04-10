@@ -247,10 +247,6 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
 
     }
 
-    public void goToRoster(View view){
-
-    }
-
     public void goToAddPlayers(View view){
         Intent intent = new Intent(this, QuickAddPlayersActivity.class);
         intent.putExtra(COACH_KEY, coachId);

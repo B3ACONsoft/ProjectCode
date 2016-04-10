@@ -2,55 +2,95 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:padding="5dp">
 
     <LinearLayout
-        android:layout_width="240dp"
-        android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/testfname"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="0"
-        android:visibility="visible"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
-        android:paddingLeft="6dip"
-        android:paddingTop="6dip"/>
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:measureWithLargestChild="false"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            android:background="#00426f">
+        <TextView
+            android:id="@+id/player_fname"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:paddingLeft="6dip"
+            android:paddingTop="6dip"
+            android:text="Patrick"
+            android:layout_margin="2dp"
+            android:layout_gravity="left"
+            android:textColor="#8bbbd7" />
+
+        <TextView
+            android:id="@+id/player_lname"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:paddingLeft="6dip"
+            android:paddingTop="6dip"
+            android:text="Currin"
+            android:layout_margin="2dp"
+            android:layout_gravity="right"
+            android:textColor="#8bbbd7" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:background="#8bbbd7">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Patrick"
+                android:id="@+id/user_fname"
+                android:layout_margin="2dp"
+                android:layout_gravity="left"
+                android:textColor="#00426f" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Currin"
+                android:id="@+id/user_lname"
+                android:layout_margin="2dp"
+                android:textAlignment="gravity"
+                android:layout_gravity="right"
+                android:textColor="#00426f" />
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/testlname"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0"
-        android:layout_marginLeft="4dp"
-        android:visibility="visible"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
-        android:paddingLeft="6dip"
-        android:paddingTop="6dip"/>
-    </LinearLayout>
-    <Button
-        android:id="@+id/testphone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
-        android:paddingLeft="6dip"
-        android:paddingTop="6dip"
-        android:textColor="#008000"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        android:visibility="visible"
-        android:layout_weight="1"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="(919)812-7701"
+        android:id="@+id/user_phone"
+        android:layout_gravity="right"
+        android:layout_weight="1"
+        android:gravity="center_vertical|center_horizontal"
+        android:focusableInTouchMode="false"
+        android:background="#1b8b08"
+        android:textColor="#ffffff" />
 
 </LinearLayout>
