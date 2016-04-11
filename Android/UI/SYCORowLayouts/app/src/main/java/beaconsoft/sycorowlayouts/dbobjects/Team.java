@@ -50,10 +50,10 @@ public class Team {
     }
 
     @Override
-    public boolean equals(Object o){
-        if(this == o){
+    public boolean equals(Object object){
+        if(this == object){
             return true;
-        }else if (this.getTeamID() == ((Team) o).getTeamID()) {
+        }else if (this.getTeamID() == ((Team) object).getTeamID()) {
             return true;
         } else {
             return false;
