@@ -89,7 +89,7 @@
         </activity>
         <activity
             android:name=".activities.UserHomeActivity"
-            android:label="Users Home Panel" />
+            android:label="Super Yeti Home Dashboard" />
         <activity
             android:name=".activities.CoachHomeActivity"
             android:label="Coach&apos;s Panel" />

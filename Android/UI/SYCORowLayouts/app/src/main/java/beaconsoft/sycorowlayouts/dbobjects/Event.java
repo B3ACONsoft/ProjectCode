@@ -63,4 +63,15 @@ public class Event {
     public String toString(){
         return eventID + " " + startDateTime + " " + eventType;
     }
+
+    @Override
+    public boolean equals(Object object){
+        if(this == object){
+            return true;
+        }else if(this.getEventID() == ((Event)object).getEventID()){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

@@ -570,6 +570,33 @@ public class DataSource {
         return newTeam;
     }
 
+    public List<Team> getListOfTeamsByUser(String email) {
+        List<Team> teamsList = new ArrayList<>();
+        Cursor cursor = db.rawQuery(
+                "SELECT t." + MySQLiteHelper.COLUMN_TEAM_ID           + ", " +
+                       "t." + MySQLiteHelper.COLUMN_TEAM_NAME         + ", " +
+                       "t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + ", " +
+                       "t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID   + " " +
+                        "FROM " + MySQLiteHelper.TABLE_TEAM         + " t, "
+                                + MySQLiteHelper.TABLE_USERS        + " u, "
+                                + MySQLiteHelper.TABLE_ENROLLMENT   + " e  " +
+                        "WHERE e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " +
+                              "t." + MySQLiteHelper.COLUMN_TEAM_ID               + " AND " +
+                              "e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID + " = " +
+                              "u." + MySQLiteHelper.COLUMN_USER_ID               + " AND " +
+                              "u." + MySQLiteHelper.COLUMN_EMAIL
+                            + " = '" + email.toUpperCase() + "'"
+                , null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            Team tempTeam = cursorToTeam(cursor);
+            teamsList.add(tempTeam);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return teamsList;
+    }
+
     public Team updateTeamCoach(int currentTeamId, int currentCoachId){
         ContentValues cv = new ContentValues();
         cv.put(MySQLiteHelper.COLUMN_FK_TEAM_USER_ID, currentCoachId);
@@ -1141,4 +1168,6 @@ public class DataSource {
         cursor.close();
         return attendanceList;
     }
+
+
 }
