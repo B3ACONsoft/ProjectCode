@@ -7,32 +7,23 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".UserRosterActivity">
+    tools:context=".UserRosterActivity"
+    android:background="#2a423d">
 
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Parent Contact Roster"
-            android:id="@+id/textViewUserActivityHeader" />
-    </TableRow>
 
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ListView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceListItem"
             android:text="Roster Item"
             android:id="@+id/listViewUserActivityTest"
             android:headerDividersEnabled="true"
-            android:choiceMode="singleChoice" />
+            android:choiceMode="singleChoice"
+            android:layout_weight="1"
+            android:focusable="true" />
     </TableRow>
 </TableLayout>
