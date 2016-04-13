@@ -35,20 +35,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/spinnerUserHomeTeams"
+            android:layout_weight="3"
+            android:spinnerMode="dropdown" />
+
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="ROSTER"
             android:id="@+id/buttonRoster"
             android:layout_weight="1"
-            android:nestedScrollingEnabled="false" />
+            android:nestedScrollingEnabled="false"
+            android:onClick="goToRoster" />
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/buttonButton"
-            android:layout_weight="1" />
     </TableRow>
 
     <TableRow

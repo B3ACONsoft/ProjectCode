@@ -5,10 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,7 +23,8 @@ import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
 
-public class UserHomeActivity extends AppCompatActivity implements CalendarView.OnDateChangeListener {
+public class UserHomeActivity extends AppCompatActivity implements CalendarView.OnDateChangeListener,
+    Spinner.OnItemSelectedListener {
 
     private static final String EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private DataSource dataSource = new DataSource(this);
@@ -29,6 +33,9 @@ public class UserHomeActivity extends AppCompatActivity implements CalendarView.
     private String email = "";
     private ArrayList<Team> arrayListTeams = new ArrayList<>();
     private ListView listview;
+    private Spinner spinnerTeams;
+    private Team currentTeam;
+    private int currentTeamId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +59,8 @@ public class UserHomeActivity extends AppCompatActivity implements CalendarView.
         arrayListEvents.clear();
         arrayListTeams.clear();
 
+
+
         List<Team> teamArray = new ArrayList<>();
         teamArray.addAll(dataSource.getListOfTeamsByUser(email));
         for(Team t: teamArray){
@@ -59,26 +68,69 @@ public class UserHomeActivity extends AppCompatActivity implements CalendarView.
                 arrayListTeams.add(t);
             }
         }
+        Team all = new Team();
+        all.setTeamName("ALL");
+        all.setTeamID(0);
+        arrayListTeams.add(all);
 
-        if(arrayListTeams.size() > 0){
-            for(Team team: arrayListTeams) {
+        spinnerTeams = (Spinner)findViewById(R.id.spinnerUserHomeTeams);
+        spinnerTeams.setOnItemSelectedListener(this);
+        setSpinnerAdapter();
+
+        setListAdapter();
+    }
+
+    private void onSpinnerTeamsChange(){
+
+        currentTeam = (Team)spinnerTeams.getSelectedItem();
+        if(currentTeam != null) {
+            currentTeamId = currentTeam.getTeamID();
+            if (currentTeamId == 0 && arrayListTeams.size() > 1) {
+                for (Team team : arrayListTeams) {
+                    if (team.getTeamID() != 0) {
+                        List<Event> eventArray = new ArrayList<>();
+                        eventArray.addAll(dataSource.getListOfEventsByTeam(team));
+                        for (Event e : eventArray) {
+                            if (!arrayListEvents.contains(e)) {
+                                arrayListEvents.add(e);
+                            }
+                        }
+                    }
+                }
+
+            }else if(arrayListTeams.size() > 1){
                 List<Event> eventArray = new ArrayList<>();
-                eventArray.addAll(dataSource.getListOfEventsByTeam(team));
-                for(Event e: eventArray){
-                    if(!arrayListEvents.contains(e)){
+                eventArray.addAll(dataSource.getListOfEventsByTeam(currentTeam));
+                for (Event e : eventArray) {
+                    if (!arrayListEvents.contains(e)) {
                         arrayListEvents.add(e);
                     }
                 }
             }
+
         }
+    }
+
+    private void setSpinnerAdapter() {
+        ArrayAdapter adapterSpinnerTeams = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item,
+                arrayListTeams);
+        spinnerTeams.setAdapter(adapterSpinnerTeams);
+    }
+
+    private void setListAdapter(){
         ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, arrayListEvents, dataSource);
         listview = (ListView) findViewById(R.id.listViewUserHome);
         listview.setAdapter(adapter);
-
     }
 
-    public void sendToUserRoster(View view){
+    public void toUserRoster(View view){
         Intent intent = new Intent(this, UserRosterActivity.class);
+        List<Team> teams = dataSource.getListOfTeamsByUser(email);
+        int[] teamIDs = new int[teams.size()];
+        for(int i = 0; i < teamIDs.length; i++){
+            teamIDs[i] = teams.get(i).getTeamID();
+        }
+        intent.putExtra("TEAMS_KEY", teamIDs);
         startActivity(intent);
     }
 
@@ -128,5 +180,17 @@ public class UserHomeActivity extends AppCompatActivity implements CalendarView.
             e.printStackTrace();
         }
         super.onResume();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(parent == spinnerTeams){
+            onSpinnerTeamsChange();
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
