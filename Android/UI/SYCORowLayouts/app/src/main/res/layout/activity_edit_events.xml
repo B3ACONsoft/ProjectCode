@@ -162,7 +162,9 @@
                 android:layout_height="match_parent"
                 android:id="@+id/listViewLeagueEvents"
                 android:layout_weight="1"
-                android:longClickable="true"/>
+                android:longClickable="true"
+                android:focusable="true"
+                android:listSelector="#88ffaaaa" />
         </TableRow>
 
     </TableLayout>

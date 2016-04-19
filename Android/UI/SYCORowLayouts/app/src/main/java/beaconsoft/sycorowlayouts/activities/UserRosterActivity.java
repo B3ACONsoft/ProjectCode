@@ -1,20 +1,25 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import com.google.android.gms.wearable.MessageApi;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,15 +32,42 @@ import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.dbobjects.Player;
 import beaconsoft.sycorowlayouts.dbobjects.Users;
 
-public class UserRosterActivity extends AppCompatActivity {
+public class UserRosterActivity extends AppCompatActivity implements AdapterView.OnItemLongClickListener {
 
-
+    private static final String EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
+    private static final String PHONE_KEY = "beaconsoft.sycorowlayouts.PHONE";
+    private static final String NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
     private int currentTeamId = 0;
+    private String email = "";
     private DataSource dataSource;
     private ArrayList<Player> rosterList = new ArrayList<>();
     private ListView listViewPlayerContacts;
     List<HashMap<String, String>> fillMaps;
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
+        if (item.getItemId() == android.R.id.home) {
+
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        Log.e("ON BACK PRESSED", "...............QUICK ADD TEAMS ON BACK PRESSED");
+        Intent intent = new Intent();
+        intent.putExtra(TEAM_KEY, currentTeamId);
+        intent.putExtra(EMAIL_KEY, email);
+        setResult(Activity.RESULT_OK, intent);
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +82,7 @@ public class UserRosterActivity extends AppCompatActivity {
         }
         Intent intent = getIntent();
         currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
-
+        email = intent.getStringExtra(EMAIL_KEY);
         String[] from = new String[]{"player_fname", "player_lname", "user_fname", "user_lname", "user_phone"};
         int[] to = new int[]{R.id.player_fname, R.id.player_lname, R.id.user_fname, R.id.user_lname, R.id.user_phone};
         rosterList.clear();
@@ -93,6 +125,7 @@ public class UserRosterActivity extends AppCompatActivity {
                 startActivity(dialIntent);
             }
         });
+        listViewPlayerContacts.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -116,5 +149,18 @@ public class UserRosterActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         super.onResume();
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        String phoneNumber = fillMaps.get(position).get("user_phone");
+        String fname = fillMaps.get(position).get("user_fname");
+        String lname = fillMaps.get(position).get("user_lname");
+        String name = fname + " " + lname;
+        Intent intent = new Intent(this, MessagingActivity.class);
+        intent.putExtra(PHONE_KEY, phoneNumber);
+        intent.putExtra(NAME_KEY, name);
+        startActivity(intent);
+        return true;
     }
 }
