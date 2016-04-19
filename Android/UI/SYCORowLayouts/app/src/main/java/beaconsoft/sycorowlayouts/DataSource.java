@@ -704,8 +704,6 @@ public class DataSource {
         cursor.moveToFirst();
         Player newPlayer = cursorToPlayer(cursor);
 
-        //TODO: Make sure new players are added to attendance rolls
-
         return newPlayer;
     }
 
@@ -1210,5 +1208,15 @@ public class DataSource {
         return attendanceList;
     }
 
-
+    public int addUserToAttendance(int currentUser, int currentTeam) {
+        Team team = getTeamById(currentTeam);
+        ArrayList<Event> eventList = new ArrayList<>();
+        eventList.addAll(getListOfEventsByTeam(team));
+        int counter = 0;
+        for(Event e : eventList){
+            createAttendance(e.getEventID(), currentUser, "GOING", "");
+            counter++;
+        }
+        return counter;
+    }
 }

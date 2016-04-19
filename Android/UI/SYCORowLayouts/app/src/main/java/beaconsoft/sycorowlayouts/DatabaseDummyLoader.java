@@ -18,7 +18,7 @@ public class DatabaseDummyLoader {
 
 
             // MAKE ADMIN AND 4 COACHES
-            , "INSERT INTO users VALUES(NULL, 'HENRY', 'JOHNSON', 5434327890,  2323548302, 'A.A@YAHOO.COM', 'ADMIN', 'PASS');"
+            , "INSERT INTO users VALUES(NULL, 'HENRY', 'JOHNSON', 5434327890,  2323548302, 'A.A@YAHOO.COM', 'ADMIN', 'PASS');" //1
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,     'SOCCER');"
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL,   'FOOTBALL');"
             , "INSERT INTO sport (sport_id, sport_name) VALUES (NULL, 'BASKETBALL');"
@@ -32,10 +32,10 @@ public class DatabaseDummyLoader {
             , "INSERT INTO league VALUES (NULL, 1, 'STOVALL-SHAW COMPETITIVE SPITTERS' , 3, 13, 15, '15-MAR-2016', '15-JUN-2016');"
             , "INSERT INTO league VALUES (NULL, 1, 'SAINT MARY''S SCHOOL FOR THE BLIND', 4,  5, 65, '18-MAR-2016', '18-JUN-2016');"
             , "INSERT INTO league VALUES (NULL, 1, 'MADISON CHEESE LEAGUE'             , 4, 18, 65, '20-APR-2016', '20-JUL-2016');"
-            , "INSERT INTO users VALUES(NULL, 'COUNT', 'BASSY'   , 2548752145, 5326547852, 'BANGSOUNDTHORUGHD@WINDA.NET', 'COACH', 'PASS');"
-            , "INSERT INTO users VALUES(NULL, 'SAM'  , 'NEIL'    , 9191594896, 1548693584, 'JURASSIC@PARK.AAH'          , 'COACH', 'PASS');"
-            , "INSERT INTO users VALUES(NULL, 'PAT'  , 'COX'     , 9196934563, 7645378909, 'PAT.COX@MINEFIELDBIRD.NET'  , 'COACH', 'PASS');"
-            , "INSERT INTO users VALUES(NULL, 'MIKE' , 'KERTCHER', 9587463784, 9588867754, 'KERTCHDADDY@SKINSONTOP.COM' , 'COACH', 'PASS');"
+            , "INSERT INTO users VALUES(NULL, 'COUNT', 'BASSY'   , 2548752145, 5326547852, 'BANGSOUNDTHORUGHD@WINDA.NET', 'COACH', 'PASS');" //2
+            , "INSERT INTO users VALUES(NULL, 'SAM'  , 'NEIL'    , 9191594896, 1548693584, 'JURASSIC@PARK.AAH'          , 'COACH', 'PASS');" //3
+            , "INSERT INTO users VALUES(NULL, 'PAT'  , 'COX'     , 9196934563, 7645378909, 'PAT.COX@MINEFIELDBIRD.NET'  , 'COACH', 'PASS');" //4
+            , "INSERT INTO users VALUES(NULL, 'MIKE' , 'KERTCHER', 9587463784, 9588867754, 'KERTCHDADDY@SKINSONTOP.COM' , 'COACH', 'PASS');" //5
 
             //TEAM_ID AUTOINCREMENTED, LEAGUE_ID, TEAM_NAME, USER_ID(COACH USER_ID)
             , "INSERT INTO team VALUES(NULL, 1, 'YETIS', 1);"
@@ -82,38 +82,41 @@ public class DatabaseDummyLoader {
 
             // THE FIRST 5 USERS ARE AN ADMIN(1) AND 4 COACHES
             // PLAYER_ID AUTOINCREMENTED, FIRST, LAST, USER_ID (WHICH SHOULD BE THEIR PARENT OR GUARDIAN OR THEMSELVES)
-            , "INSERT INTO player VALUES(NULL, 'MARY',     'ORAZEM',      6);"
-            , "INSERT INTO player VALUES(NULL, 'JACK',     'KAROAK',      7);"
-            , "INSERT INTO player VALUES(NULL, 'PATRICK',  'KEARNEY',     8);"
-            , "INSERT INTO player VALUES(NULL, 'KATHERINE','CURRIN',      9);"
-            , "INSERT INTO player VALUES(NULL, 'MARY',     'ORAZEM',     10);"
-            , "INSERT INTO player VALUES(NULL, 'JACK',     'KAROAK',     11);"
-            , "INSERT INTO player VALUES(NULL, 'PATRICK',  'KEARNEY',    12);"
-            , "INSERT INTO player VALUES(NULL, 'DORA',     'CURRIN',     13);"
-            , "INSERT INTO player VALUES(NULL, 'MIKE',     'ORAZEM',     14);"
-            , "INSERT INTO player VALUES(NULL, 'JAKE',     'KAREOKE',    15);"
-            , "INSERT INTO player VALUES(NULL, 'PATRICIA', 'RANEY',      16);"
-            , "INSERT INTO player VALUES(NULL, 'LADY',     'DURIN',      17);"
-            , "INSERT INTO player VALUES(NULL, 'JAMES',    'DORAZ',      18);"
-            , "INSERT INTO player VALUES(NULL, 'JON',      'KAYAK',      19);"
-            , "INSERT INTO player VALUES(NULL, 'DICK',     'KEAN',       20);"
-            , "INSERT INTO player VALUES(NULL, 'MANNY',    'CURRIN',     21);"
-            , "INSERT INTO player VALUES(NULL, 'BARRY',    'LONGFELLOW', 22);"
-            , "INSERT INTO player VALUES(NULL, 'INPUT',    'M''DHATA',   23);"
-            , "INSERT INTO player VALUES(NULL, 'MESO',     'SAHOOP',     24);"
-            , "INSERT INTO player VALUES(NULL, 'GUY',      'CLARK',      25);"
-            , "INSERT INTO player VALUES(NULL, 'CHERRIE',  'BERRY',      26);"
-            , "INSERT INTO player VALUES(NULL, 'COUNT',    'CHOCULA',    27);"
-            , "INSERT INTO player VALUES(NULL, 'COOKIE',   'MONSTER',    28);"
-            , "INSERT INTO player VALUES(NULL, 'DA-DA',    'BAHAM',      29);"
-            , "INSERT INTO player VALUES(NULL, 'DAVID',    'JOHNSON',    30);"
-            , "INSERT INTO player VALUES(NULL, 'GRACE',    'MCGETTIGAN', 31);"
-            , "INSERT INTO player VALUES(NULL, 'SCOTT',    'YOUNG',      32);"
-            , "INSERT INTO player VALUES(NULL, 'LISA',     'CLARK',      33);"
-            , "INSERT INTO player VALUES(NULL, 'SILVANUS', 'SLAUGHTER',  34);"
-
+            , "INSERT INTO player VALUES(NULL, 'MARY',     'ORAZEM',      6);"//1
+            , "INSERT INTO player VALUES(NULL, 'JACK',     'KAROAK',      7);"//2
+            , "INSERT INTO player VALUES(NULL, 'PATRICK',  'KEARNEY',     8);"//3
+            , "INSERT INTO player VALUES(NULL, 'KATHERINE','CURRIN',      9);"//4
+            , "INSERT INTO player VALUES(NULL, 'MARY',     'ORAZEM',     10);"//5
+            , "INSERT INTO player VALUES(NULL, 'JACK',     'KAROAK',     11);"//6
+            , "INSERT INTO player VALUES(NULL, 'PATRICK',  'KEARNEY',    12);"//7
+            , "INSERT INTO player VALUES(NULL, 'DORA',     'CURRIN',     13);"//8
+            , "INSERT INTO player VALUES(NULL, 'MIKE',     'ORAZEM',     14);"//9
+            , "INSERT INTO player VALUES(NULL, 'JAKE',     'KAREOKE',    15);"//10
+            , "INSERT INTO player VALUES(NULL, 'PATRICIA', 'RANEY',      16);"//11
+            , "INSERT INTO player VALUES(NULL, 'LADY',     'DURIN',      17);"//12
+            , "INSERT INTO player VALUES(NULL, 'JAMES',    'DORAZ',      18);"//13
+            , "INSERT INTO player VALUES(NULL, 'JON',      'KAYAK',      19);"//14
+            , "INSERT INTO player VALUES(NULL, 'DICK',     'KEAN',       20);"//15
+            , "INSERT INTO player VALUES(NULL, 'MANNY',    'CURRIN',     21);"//16
+            , "INSERT INTO player VALUES(NULL, 'BARRY',    'LONGFELLOW', 22);"//17
+            , "INSERT INTO player VALUES(NULL, 'INPUT',    'M''DHATA',   23);"//18
+            , "INSERT INTO player VALUES(NULL, 'MESO',     'SAHOOP',     24);"//19
+            , "INSERT INTO player VALUES(NULL, 'GUY',      'CLARK',      25);"//20
+            , "INSERT INTO player VALUES(NULL, 'CHERRIE',  'BERRY',      26);"//21
+            , "INSERT INTO player VALUES(NULL, 'COUNT',    'CHOCULA',    27);"//22
+            , "INSERT INTO player VALUES(NULL, 'COOKIE',   'MONSTER',    28);"//23
+            , "INSERT INTO player VALUES(NULL, 'DA-DA',    'BAHAM',      29);"//24
+            , "INSERT INTO player VALUES(NULL, 'DAVID',    'JOHNSON',    30);"//25
+            , "INSERT INTO player VALUES(NULL, 'GRACE',    'MCGETTIGAN', 30);"//26
+            , "INSERT INTO player VALUES(NULL, 'SCOTT',    'YOUNG',      30);"//27
+            , "INSERT INTO player VALUES(NULL, 'LISA',     'CLARK',      30);"//28
+            , "INSERT INTO player VALUES(NULL, 'SILVANUS', 'SLAUGHTER',  30);"//29
             // ENROLLMENT_ID AUTOINCREMENTED,    UID,PID,T_ID, LEAGUE_ID, DATE_ADDED, FEE
 
+            , "INSERT INTO enrollment VALUES(NULL,  2,  0,  1,  1, '01-MAR-2016', 0.00);"
+            , "INSERT INTO enrollment VALUES(NULL,  3,  0,  2,  1, '01-MAR-2016', 0.00);"
+            , "INSERT INTO enrollment VALUES(NULL,  4,  0,  1,  2, '01-MAR-2016', 0.00);"
+            , "INSERT INTO enrollment VALUES(NULL,  5,  0,  2,  2, '01-MAR-2016', 0.00);"
             , "INSERT INTO enrollment VALUES(NULL,  6,  1,  1,  1, '12-APR-2015', 1.99);"
             , "INSERT INTO enrollment VALUES(NULL,  7,  2,  1,  1, '03-MAR-2016', 1.99);"
             , "INSERT INTO enrollment VALUES(NULL,  8,  3,  2,  1, '03-MAR-2016', 1.99);"
@@ -138,16 +141,13 @@ public class DatabaseDummyLoader {
             , "INSERT INTO enrollment VALUES(NULL, 27, 22, 12,  1, '03-MAR-2016', 1.99);"
             , "INSERT INTO enrollment VALUES(NULL, 28, 23, 13,  1, '03-MAR-2016', 1.99);"
             , "INSERT INTO enrollment VALUES(NULL, 29, 24, 13,  1, '03-MAR-2016', 1.99);"
-            , "INSERT INTO enrollment VALUES(NULL,  2,  0,  1,  1, '01-MAR-2016', 0.00);"
-            , "INSERT INTO enrollment VALUES(NULL,  3,  0,  2,  1, '01-MAR-2016', 0.00);"
-            , "INSERT INTO enrollment VALUES(NULL,  4,  0,  1,  2, '01-MAR-2016', 0.00);"
-            , "INSERT INTO enrollment VALUES(NULL,  5,  0,  2,  2, '01-MAR-2016', 0.00);"
+
             // ENROLLMENT_ID AUTOINCREMENTED,    UID,PID,T_ID, LEAGUE_ID, DATE_ADDED, FEE
-            , "INSERT INTO enrollment VALUES(NULL, 30, 30,  1,  1, '03-MAR-2016', 1.99);"
-            , "INSERT INTO enrollment VALUES(NULL, 30, 31,  1,  1, '03-MAR-2016', 1.99);"
-            , "INSERT INTO enrollment VALUES(NULL, 30, 32,  1,  1, '03-MAR-2016', 1.99);"
-            , "INSERT INTO enrollment VALUES(NULL, 30, 33,  2,  1, '03-MAR-2016', 1.99);"
-            , "INSERT INTO enrollment VALUES(NULL, 30, 34,  2,  1, '03-MAR-2016', 1.99);"
+            , "INSERT INTO enrollment VALUES(NULL, 30, 25,  1,  1, '03-MAR-2016', 1.99);"
+            , "INSERT INTO enrollment VALUES(NULL, 30, 26,  1,  1, '03-MAR-2016', 1.99);"
+            , "INSERT INTO enrollment VALUES(NULL, 30, 27,  1,  1, '03-MAR-2016', 1.99);"
+            , "INSERT INTO enrollment VALUES(NULL, 30, 28,  2,  1, '03-MAR-2016', 1.99);"
+            , "INSERT INTO enrollment VALUES(NULL, 30, 29,  2,  1, '03-MAR-2016', 1.99);"
 
             // PLACE_ID AUTOINCREMENT, PLACE_NAME, STREET_ADDRESS, CITY, STATE, ZIP
             , "INSERT INTO place VALUES(NULL, 'HIX COMPLEX', '313 E. SPRING STREET', 'OXFORD', 'NC', '27565' );"
