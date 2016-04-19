@@ -9,6 +9,7 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -39,6 +40,7 @@ import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
 import beaconsoft.sycorowlayouts.dbobjects.Place;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
+import beaconsoft.sycorowlayouts.dbobjects.Users;
 
 import static android.widget.AdapterView.*;
 
@@ -54,7 +56,6 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
     private Team currentHomeTeam;
     private Team currentAwayTeam;
     private Place currentPlace;
-    private Event currentEvent;
     private static final String   NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
     private static final String  ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
@@ -87,6 +88,8 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
     private int day = 0;
     private int hour;
     private int minute;
+    private Event currentEvent;
+    String[] months = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
     @Override
     protected void onPause(){
@@ -142,7 +145,63 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
         spinnerPlaces  .setOnItemSelectedListener(EditEventsActivity.this);
         listview = (ListView)findViewById(R.id.listViewLeagueEvents);
         listview.setLongClickable(true);
+        listview.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (parent == listview) {
+                    listview.setSelection(position);
+                    int i = listview.getPositionForView(view);
+                    currentEvent = (Event) listview.getItemAtPosition(i);
+                    Date date = currentEvent.getStartDateTime();
+                    Log.e("DATETIME", "...................." + date.toString());
+                    String[] dateStuff = date.toString().split(" ");
+
+                    for(int m = 0; m < months.length; m++){
+                        if(months[m].equals(dateStuff[1])){
+                            month = m;
+                            break;
+                        }
+                    }
+                    day = Integer.parseInt(dateStuff[2]);
+
+                    String[] timeStuff = dateStuff[3].split(":");
+                    hour = Integer.parseInt(timeStuff[0]);
+                    minute = Integer.parseInt(timeStuff[1]);
+
+                    year = Integer.parseInt(dateStuff[5]);
+                    onDateSet(null, year, month, day);
+                    onTimeSet(null, hour, minute);
+
+                    for(int t = 0; t < arrayListHomeTeamCandidates.size(); t++){
+                        if(arrayListHomeTeamCandidates.get(t).getTeamID() == currentEvent.getHomeTeamID()){
+                            spinnerHomeTeam.setSelection(t);
+                            break;
+                        }
+                    }
+                    isGame.setChecked(true);
+                    if(currentEvent.getEventType().equals("GAME")){
+                        for(int t = 0; t < arrayListAwayTeamCandidates.size(); t++){
+                            if(arrayListAwayTeamCandidates.get(t).getTeamID() == currentEvent.getAwayTeamID()){
+                                spinnerAwayTeam.setSelection(t);
+                                break;
+                            }
+                        }
+                    }else{
+                        isGame.setChecked(false);
+                    }
+
+                    for(int p = 0; p < arrayListPlaces.size(); p++){
+                        if(arrayListPlaces.get(p).getPlaceID() == currentEvent.getPlaceID()){
+                            spinnerPlaces.setSelection(p);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
         listview.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+            @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if (parent == listview) {
                     int placeID = eventList.get(position).getPlaceID();
@@ -202,7 +261,9 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
         date = new Date(0);
         Calendar calendar = Calendar.getInstance();
         date.setTime(calendar.getTimeInMillis());
-
+        listview.setChoiceMode(1);
+        listview.setItemsCanFocus(true);
+        listview.setSelectionAfterHeaderView();
     }
 
     private void initializeListView(Team team) {
@@ -256,6 +317,8 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
         if (parent == spinnerPlaces)   {
             onSpinnerPlacesChange();
         }
+
+
     }
 
     private void onSpinnerPlacesChange() {
@@ -362,4 +425,41 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
 
         textViewTime.setText(ts);
     }
+
+    public void updateEvent(View view){
+        if(currentEvent != null) {
+
+            Calendar cal = new GregorianCalendar(year, month, day, hour, minute);
+            date = new Date();
+            date = cal.getTime();
+
+            currentEvent = dataSource.updateEvent(currentEvent.getEventID(), eventType, date, currentPlace.getPlaceID(),
+                    currentHomeTeam.getTeamID(), currentAwayTeam.getTeamID());
+            ArrayList<Users> arrayListUsers = new ArrayList<>();
+            arrayListUsers.addAll(dataSource.getListOfUsersByTeam(currentHomeTeam.getTeamID()));
+            if(isGame.isChecked()){
+                arrayListUsers.addAll(dataSource.getListOfUsersByTeam(currentAwayTeam.getTeamID()));
+            }
+
+            for(Users u : arrayListUsers){
+                sendMessage(u.getPhone() + "",
+                        "The " + currentEvent.getEventType() + " has been changed to " +
+                        currentEvent.getStartDateTime().toString() + ", I hope this is okay...");
+            }
+        }
+        initializeListView(currentEvent.getEventID());
+    }
+
+    public void sendMessage(String phoneNumber, String message) {
+        Toast toast = Toast.makeText(this, " ", Toast.LENGTH_SHORT);
+        try {
+            SmsManager.getDefault().sendTextMessage("9198127701", null, message, null, null);
+        }catch(Exception e){
+            toast.setText(e.getMessage().toString());
+            toast.show();
+        }
+        toast.setText(phoneNumber + " " + message);
+        toast.show();
+    }
+
 }

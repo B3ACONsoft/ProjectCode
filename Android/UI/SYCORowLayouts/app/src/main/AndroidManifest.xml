@@ -20,7 +20,7 @@
     <uses-permission android:name="com.tp.lib.tp.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-
+    <uses-permission android:name="android.permission.SEND_SMS" />
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -152,6 +152,12 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="beaconsoft.sycorowlayouts.activities.LeaguesActivity" />
+        </activity>
+        <activity android:name=".activities.MessagingActivity"
+            android:parentActivityName=".activities.UserRosterActivity">
+            <meta-data android:name="android.support.ROSTER_ACTIVITY"
+                android:value="beaconsoft.sycorowlayouts.activities.MessagingActivity"
+                />
         </activity>
     </application>
 
