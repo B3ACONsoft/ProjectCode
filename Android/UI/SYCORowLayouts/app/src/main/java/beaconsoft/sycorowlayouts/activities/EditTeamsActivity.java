@@ -44,12 +44,12 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
     private EditText editTextCoachEmail;
     private EditText editTextTeamName;
     private Toast toastCoach;
-    private String fname;
-    private String lname;
-    private String teamName;
-    private long phone;
-    private long emerg;
-    private String email;
+    private String fname = "";
+    private String lname = "";
+    private String teamName = "";
+    private long phone = 0;
+    private long emerg = 0;
+    private String email = "";
     private TextView textViewTop;
 
     private Team currentTeam;
@@ -118,6 +118,8 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
         editTextPhone     = (EditText)findViewById(R.id.editTextEditTeamsCoachPhone);
         editTextEmergency = (EditText)findViewById(R.id.editTextEditTeamsCoachEmergency);
         editTextCoachEmail= (EditText)findViewById(R.id.editTextEditTeamsCoachEmail);
+        editTextCoachEmail.setEnabled(false);
+        editTextCoachEmail.setActivated(false);
         spinnerCoaches = (Spinner) findViewById(R.id.spinnerCoachesEditTeams);
         coachArrayList = new ArrayList<>();
 
@@ -228,41 +230,38 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
         try {
 
             email = editTextCoachEmail.getText().toString().toUpperCase();
+            fname = editTextFirst.getText().toString().toUpperCase();
+            lname = editTextLast.getText().toString().toUpperCase();
+            phone = Long.parseLong(editTextPhone.getText().toString());
+            emerg = Long.parseLong(editTextEmergency.getText().toString());
 
-            if(!dataSource.checkForDuplicateEmail(email)) {
-                fname = editTextFirst.getText().toString().toUpperCase();
-                lname = editTextLast.getText().toString().toUpperCase();
-                phone = Long.parseLong(editTextPhone.getText().toString());
-                emerg = Long.parseLong(editTextEmergency.getText().toString());
-
-                Users userToUpdate = dataSource.getUserByEmail(email);
-                if (userToUpdate != null && fname.length() > 1 && lname.length() > 1 &&
-                        phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
-                    Users user = dataSource.updateUser(userToUpdate.getUserID(), fname.toUpperCase(), lname.toUpperCase(),
-                            phone, email.toUpperCase(), emerg);
-                    textViewTop = (TextView) findViewById(R.id.textViewEditTeamsTop);
-                    textViewTop.setText(user.toString());
-                    editTextFirst.setText(user.getFname());
-                    editTextLast.setText(user.getLname());
-                    editTextPhone.setText(String.format("%d", user.getPhone()));
-                    editTextEmergency.setText(String.format("%d", user.getEmergency()));
-                    editTextCoachEmail.setText(user.getEmail());
-                    editTextTeamName.setText(currentTeam.getTeamName());
-                    coach = user;
-                    currentCoachUserId = coach.getUserID();
-                    int presentSpinnerPosition = spinnerCoaches.getSelectedItemPosition();
-                    coachArrayList.set(presentSpinnerPosition, coach);
-                    adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList);
-                    spinnerCoaches.setAdapter(adapterSpinnerCoaches);
-                    spinnerCoaches.setSelection(presentSpinnerPosition);
-                } else if (userToUpdate != null) {
-                    throw new Exception("Unable to update, check the email address and try again");
-                }
-            }else{
-                Toast toast = Toast.makeText(this, "This email is taken", Toast.LENGTH_LONG);
+            Users userToUpdate = dataSource.getUserByEmail(email);
+            if (userToUpdate != null && fname.length() > 1 && lname.length() > 1 &&
+                    phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
+                Users user = dataSource.updateUser(userToUpdate.getUserID(), fname.toUpperCase(), lname.toUpperCase(),
+                        phone, email.toUpperCase(), emerg);
+                textViewTop = (TextView) findViewById(R.id.textViewEditTeamsTop);
+                textViewTop.setText(user.toString());
+                editTextFirst.setText(user.getFname());
+                editTextLast.setText(user.getLname());
+                editTextPhone.setText(String.format("%d", user.getPhone()));
+                editTextEmergency.setText(String.format("%d", user.getEmergency()));
+                editTextCoachEmail.setText(user.getEmail());
+                editTextTeamName.setText(currentTeam.getTeamName());
+                coach = user;
+                currentCoachUserId = coach.getUserID();
+                int presentSpinnerPosition = spinnerCoaches.getSelectedItemPosition();
+                coachArrayList.set(presentSpinnerPosition, coach);
+                adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList);
+                spinnerCoaches.setAdapter(adapterSpinnerCoaches);
+                spinnerCoaches.setSelection(presentSpinnerPosition);
+            }
+            else{
+                Toast toast = Toast.makeText(this, "This is not the coach email", Toast.LENGTH_LONG);
                 toast.show();
             }
-        }catch(Exception e){
+        }
+        catch(Exception e){
 
             toastCoach = Toast.makeText(this, null, Toast.LENGTH_LONG);
             String msg = e.getMessage();

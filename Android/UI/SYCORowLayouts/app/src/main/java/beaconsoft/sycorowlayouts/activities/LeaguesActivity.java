@@ -577,7 +577,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra(USER_KEY, currentUser);
         intent.putExtra(PLAYER_KEY, currentPlayer);
 
-        startActivityForResult(intent, INTENT_REQUEST_CODE_EDIT_PLAYER);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_ADD_PLAYERS);
     }
 
     public void goToAddPlayerFromLeagues(View view){
