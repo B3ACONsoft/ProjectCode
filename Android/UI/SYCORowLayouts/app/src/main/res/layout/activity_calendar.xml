@@ -6,20 +6,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.androidfromhome.calendar.CalenderActivity"
-    android:background="#44ceea">
+    android:background="#ffffff">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:background="#44ceea"
+        android:background="#FFFFFF"
         android:orientation="vertical" >
 
         <LinearLayout
             android:id="@+id/header"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="#44ceea"
+            android:background="#FFFFFF"
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="10dp" >
@@ -80,7 +80,7 @@
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:paddingTop="6dp"
-            android:background="#44ceea">
+            android:background="#32a297">
 
             <TextView
                 android:id="@+id/TextView06"
@@ -158,7 +158,7 @@
             android:id="@+id/gv_calendar"
             android:layout_width="fill_parent"
             android:layout_height="225dp"
-            android:background="#66cdaa"
+            android:background="#68bccc"
             android:cacheColorHint="#80000000"
             android:gravity="center"
             android:listSelector="@android:color/transparent"
@@ -172,26 +172,42 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="10dp"
-            android:background="#44ceea"
+            android:background="#0833d1"
             android:orientation="vertical" >
 
         </LinearLayout>
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="DISPLAY ALL EVENTS"
+                android:id="@+id/button2"
+                android:onClick="displayAllEvents"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="EVENTS DASH"
+                android:id="@+id/button"
+                android:onClick="goToEditEvents"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/lv_android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:background="#ddfcff"
+            android:layout_weight="1">
+        </ListView>
+
     </LinearLayout>
-
-    <Button
-        android:layout_width="401dp"
-        android:layout_height="wrap_content"
-        android:text="ADD OR CHANGE EVENTS"
-        android:id="@+id/button"
-        android:onClick="goToEditEvents" />
-
-    <ListView
-        android:id="@+id/lv_android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-        android:background="#44ceea">
-    </ListView>
 
 </LinearLayout>

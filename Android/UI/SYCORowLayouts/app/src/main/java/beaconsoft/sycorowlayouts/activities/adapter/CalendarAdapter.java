@@ -5,15 +5,22 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.activities.CalendarActivity;
 import beaconsoft.sycorowlayouts.activities.util.CalendarCollection;
+import beaconsoft.sycorowlayouts.dbobjects.Event;
+import beaconsoft.sycorowlayouts.dbobjects.Team;
+import string.utils.MonthFormat;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,15 +52,41 @@ public class CalendarAdapter extends BaseAdapter {
     String itemvalue, curentDateString;
     DateFormat df;
 
+    private ArrayList<Event> arrayListEvents = new ArrayList<>();
     private ArrayList<String> items;
     public static List<String> day_string;
     private View previousView;
     public ArrayList<CalendarCollection> date_collection_arr;
+    private ArrayList<String> compDates = new ArrayList<>();
+    private String[] months = MonthFormat.months;
 
-    public CalendarAdapter(Context context, GregorianCalendar monthCalendar,ArrayList<CalendarCollection> date_collection_arr) {
+    public CalendarAdapter(Context context, GregorianCalendar monthCalendar, ArrayList<CalendarCollection> date_collection_arr,
+                           Team currentTeam, DataSource dataSource) {
 
+        /**
+         * Finds all events and makes a string for comparison (the other string is no better)
+         */
+        arrayListEvents.addAll(dataSource.getListOfEventsByTeam(currentTeam));
+        for(Event e: arrayListEvents){
+            String[] splitDate = e.getStartDateTime().toString().split(" ");
+            Log.e("SPLIT STRING", " ............." + e.getStartDateTime().toString() );
+            int monthInt = -1;
+            String monthIntString = "";
+            for(int i = 0 ; i < months.length; i++){
+                if(splitDate[1].equals(months[i])){
+                    monthInt = i + 1;
+                    if(monthInt < 10){
+                        monthIntString = "0" + monthInt;
+                    }else{
+                        monthIntString = monthInt + "";
+                    }
+                    break;
+                }
+            }
+            compDates.add("" + splitDate[5] + "-" + monthIntString + "-" + splitDate[2]);
+        }
         this.date_collection_arr=date_collection_arr;
-        CalendarAdapter.day_string = new ArrayList<String>();
+        CalendarAdapter.day_string = new ArrayList<>();
         Locale.setDefault(Locale.US);
         month = monthCalendar;
         selectedDate = (GregorianCalendar) monthCalendar.clone();
@@ -88,6 +121,7 @@ public class CalendarAdapter extends BaseAdapter {
         return 0 ;
     }
 
+
     // create a new view for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
@@ -103,7 +137,18 @@ public class CalendarAdapter extends BaseAdapter {
 
         dayView = (TextView) v.findViewById(R.id.date);
         String[] separatedTime = day_string.get(position).split("-");
-
+        //Log.e("SEPERATED TIME", "...............size" + separatedTime[0] + "-" + separatedTime[1] + "-" + separatedTime[2]);
+        String tempyear = separatedTime[0];
+        String tempmonth = separatedTime[1];
+        int monthInt = 0;
+        for(int i = 0 ; i < months.length; i++){
+            if(tempmonth.equals(months[i])){
+                monthInt = i;
+                break;
+            }
+        }
+        String tempday = separatedTime[2];
+        String itemDateString = tempyear + "-" + tempmonth + "-" + tempday;
 
         String gridvalue = separatedTime[2].replaceFirst("^0*", "");
         if ((Integer.parseInt(gridvalue) > 1) && (position < firstDay)) {
@@ -115,18 +160,24 @@ public class CalendarAdapter extends BaseAdapter {
             dayView.setClickable(false);
             dayView.setFocusable(false);
         } else {
-            // setting curent month's days in blue color.
-            dayView.setTextColor(Color.WHITE);
+            //TODO set days that correspond with events in LightBlue???
+            Log.e("ITEM DATE STRING", "......." + itemDateString);
+            for (String s : compDates) {
+                if (itemDateString.equals(s)) {
+                    dayView.setTextColor(Color.BLUE);
+                    break;
+                } else {
+                    dayView.setTextColor(Color.BLACK);
+                }
+            }
         }
 
-
         if (day_string.get(position).equals(curentDateString)) {
-            /*TODO: call the datasource, and find out if there is anything on this day, and if so,
-            then change the background color*/
 
-            v.setBackgroundColor(Color.CYAN);
+
+            v.setBackgroundColor(Color.parseColor("#32a297"));
         } else {
-            v.setBackgroundColor(Color.parseColor("#343434"));
+            v.setBackgroundColor(Color.WHITE);
         }
 
 
@@ -159,21 +210,18 @@ public class CalendarAdapter extends BaseAdapter {
 
     public View setSelected(View view,int pos) {
         if (previousView != null) {
-            previousView.setBackgroundColor(Color.parseColor("#343434"));
+            previousView.setBackgroundColor(Color.parseColor("#FFFFFF"));
         }
 
-        view.setBackgroundColor(Color.CYAN);
+        view.setBackgroundColor(Color.parseColor("#32a297"));
 
         int len=day_string.size();
         if (len>pos) {
             if (day_string.get(pos).equals(curentDateString)) {
 
             }else{
-
                 previousView = view;
-
             }
-
         }
 
 
@@ -233,12 +281,14 @@ public class CalendarAdapter extends BaseAdapter {
 
     public void setEventView(View v, int pos,TextView txt){
 
+
+
         int len = date_collection_arr.size();
         for (int i = 0; i < len; i++) {
             CalendarCollection cal_obj = date_collection_arr.get(i);
-            String date=cal_obj.date;
-            int len1=day_string.size();
-            if (len1>pos) {
+            String date = cal_obj.date;
+            int len1 = day_string.size();
+            if (len1 > pos) {
 
                 if (day_string.get(pos).equals(date)) {
                     v.setBackgroundColor(Color.parseColor("#343434"));
@@ -246,10 +296,10 @@ public class CalendarAdapter extends BaseAdapter {
 
                     txt.setTextColor(Color.WHITE);
                 }
-            }}
 
 
-
+            }
+        }
     }
 
 
@@ -278,11 +328,8 @@ public class CalendarAdapter extends BaseAdapter {
                 break;
             }else{
 
-
-            }}
-
-
-
+            }
+        }
     }
 
 }
