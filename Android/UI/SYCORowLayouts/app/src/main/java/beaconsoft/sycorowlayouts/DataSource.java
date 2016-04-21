@@ -551,9 +551,9 @@ public class DataSource {
         return newTeam;
     }
 
-    public Team getTeamById(int currentTeam) {
+    public Team getTeamById(int currentTeamId) {
         Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
-                MySQLiteHelper.COLUMN_TEAM_ID + " = " + currentTeam,
+                MySQLiteHelper.COLUMN_TEAM_ID + " = " + currentTeamId,
                 null, null, null, null);
         cursor.moveToFirst();
         if(cursor.getCount() == 1){

@@ -95,4 +95,6 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_edit_teams">EditTeamsActivity</string>
     <string name="numberText">number</string>
+    <string name="practice_game">Practice/Game</string>
+    <string name="choose_team">Choose Team for Schedule...</string>
 </resources>
