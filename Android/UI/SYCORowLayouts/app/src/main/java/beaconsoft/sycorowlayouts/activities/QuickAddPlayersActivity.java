@@ -281,14 +281,17 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
             Enrollment enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(cal.getTimeInMillis()), 1.99);
 
             if(enrollment != null){
+
+                currentPlayer = player.getPlayerID();
+                int newAttendances = dataSource.addUserToAttendance(currentPlayer, currentTeam);
                 Toast toast = Toast.makeText(this,
-                        "User:  (" + user.getFname() + " " + user.getLname()     + ") and\n" +
-                        "Player (" + player.getFname() + " " + player.getLname() + ")" +
-                        "enrolled as user#" + enrollment.getUserID() + " and player#" + enrollment.getPlayerID()
-                , Toast.LENGTH_LONG);
+                        "User:  (" + user.getFname() + " " + user.getLname() + ") and\n" +
+                                "Player (" + player.getFname() + " " + player.getLname() + ")" +
+                                "enrolled as user#" + enrollment.getUserID() + " and player#" + enrollment.getPlayerID() + "\n" +
+                                "Attendances Updated: " + newAttendances
+                        , Toast.LENGTH_LONG);
                 toast.show();
                 clearForm();
-                currentPlayer = player.getPlayerID();
             }
 
             /**
