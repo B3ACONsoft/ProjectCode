@@ -3,11 +3,15 @@ package beaconsoft.sycorowlayouts.activities;
 import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.SmsManager;
 import android.util.Log;
@@ -36,7 +40,9 @@ import java.util.Locale;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.EventListAdapter;
+import beaconsoft.sycorowlayouts.PlaceListAdapter;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
 import beaconsoft.sycorowlayouts.dbobjects.Place;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
@@ -61,7 +67,6 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
-    private DataSource dataSource;
     private ArrayList<Team>  arrayListHomeTeamCandidates  = new ArrayList<>();
     private ArrayList<Team>  arrayListAwayTeamCandidates  = new ArrayList<>();
     private ArrayList<Place> arrayListPlaces              = new ArrayList<>();
@@ -90,26 +95,71 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
     private int minute;
     private Event currentEvent;
     String[] months = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
+
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+        if(mBound) {
+
+
+        }
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+    @Override
     protected void onPause(){
-        dataSource.close();
+
         super.onPause();
     }
 
     @Override
     protected void onDestroy(){
-        dataSource.close();
+
         super.onDestroy();
     }
 
     @Override
     protected void onResume(){
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         super.onResume();
         initializePlaces();
     }
@@ -119,166 +169,166 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_events);
 
-        dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        Intent intent = getIntent();
-        currentAdminEmail = intent.getStringExtra(EMAIL_KEY);
-        currentAdminName  = intent.getStringExtra(NAME_KEY);
-        currentAdminId    = intent.getIntExtra(ADMIN_KEY, 0);
-        currentLeagueId   = intent.getIntExtra(LEAGUE_KEY, 0);
-        currentTeamId     = intent.getIntExtra(TEAM_KEY, 0);
-        textViewTime = (TextView)findViewById(R.id.textViewEditEventsTime);
-        textViewDate = (TextView)findViewById(R.id.textViewEditEventsDate);
-        testPlace = (TextView)findViewById(R.id.textViewEditEventsPlace);
-        isGame = (CheckBox)findViewById(R.id.checkBoxIsGame);
-        isGame.setChecked(false);
-        spinnerHomeTeam = (Spinner)findViewById(R.id.spinnerHomeTeam);
-        spinnerAwayTeam = (Spinner)findViewById(R.id.spinnerAwayTeam);
-        spinnerAwayTeam.setEnabled(false);
-        spinnerPlaces   = (Spinner)findViewById(R.id.spinnerPlaces);
-        spinnerHomeTeam.setOnItemSelectedListener(EditEventsActivity.this);
-        spinnerAwayTeam.setOnItemSelectedListener(EditEventsActivity.this);
-        spinnerPlaces  .setOnItemSelectedListener(EditEventsActivity.this);
-        listview = (ListView)findViewById(R.id.listViewLeagueEvents);
-        listview.setLongClickable(true);
-        listview.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (parent == listview) {
-                    listview.setSelection(position);
-                    int i = listview.getPositionForView(view);
-                    currentEvent = (Event) listview.getItemAtPosition(i);
-                    Date date = currentEvent.getStartDateTime();
-                    Log.e("DATETIME", "...................." + date.toString());
-                    String[] dateStuff = date.toString().split(" ");
 
-                    for(int m = 0; m < months.length; m++){
-                        if(months[m].equals(dateStuff[1])){
-                            month = m;
-                            break;
-                        }
-                    }
-                    day = Integer.parseInt(dateStuff[2]);
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+        if(mBound) {
 
-                    String[] timeStuff = dateStuff[3].split(":");
-                    hour = Integer.parseInt(timeStuff[0]);
-                    minute = Integer.parseInt(timeStuff[1]);
+            Intent intent = getIntent();
+            currentAdminEmail = intent.getStringExtra(EMAIL_KEY);
+            currentAdminName  = intent.getStringExtra(NAME_KEY);
+            currentAdminId    = intent.getIntExtra(ADMIN_KEY, 0);
+            currentLeagueId   = intent.getIntExtra(LEAGUE_KEY, 0);
+            currentTeamId     = intent.getIntExtra(TEAM_KEY, 0);
+            textViewTime = (TextView)findViewById(R.id.textViewEditEventsTime);
+            textViewDate = (TextView)findViewById(R.id.textViewEditEventsDate);
+            testPlace = (TextView)findViewById(R.id.textViewEditEventsPlace);
+            isGame = (CheckBox)findViewById(R.id.checkBoxIsGame);
+            isGame.setChecked(false);
+            spinnerHomeTeam = (Spinner)findViewById(R.id.spinnerHomeTeam);
+            spinnerAwayTeam = (Spinner)findViewById(R.id.spinnerAwayTeam);
+            spinnerAwayTeam.setEnabled(false);
+            spinnerPlaces   = (Spinner)findViewById(R.id.spinnerPlaces);
+            spinnerHomeTeam.setOnItemSelectedListener(EditEventsActivity.this);
+            spinnerAwayTeam.setOnItemSelectedListener(EditEventsActivity.this);
+            spinnerPlaces  .setOnItemSelectedListener(EditEventsActivity.this);
+            listview = (ListView)findViewById(R.id.listViewLeagueEvents);
+            listview.setLongClickable(true);
+            listview.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (parent == listview) {
+                        listview.setSelection(position);
+                        int i = listview.getPositionForView(view);
+                        currentEvent = (Event) listview.getItemAtPosition(i);
+                        Date date = currentEvent.getStartDateTime();
+                        Log.e("DATETIME", "...................." + date.toString());
+                        String[] dateStuff = date.toString().split(" ");
 
-                    year = Integer.parseInt(dateStuff[5]);
-                    onDateSet(null, year, month, day);
-                    onTimeSet(null, hour, minute);
-
-                    for(int t = 0; t < arrayListHomeTeamCandidates.size(); t++){
-                        if(arrayListHomeTeamCandidates.get(t).getTeamID() == currentEvent.getHomeTeamID()){
-                            spinnerHomeTeam.setSelection(t);
-                            break;
-                        }
-                    }
-                    isGame.setChecked(true);
-                    if(currentEvent.getEventType().equals("GAME")){
-                        for(int t = 0; t < arrayListAwayTeamCandidates.size(); t++){
-                            if(arrayListAwayTeamCandidates.get(t).getTeamID() == currentEvent.getAwayTeamID()){
-                                spinnerAwayTeam.setSelection(t);
+                        for(int m = 0; m < months.length; m++){
+                            if(months[m].equals(dateStuff[1])){
+                                month = m;
                                 break;
                             }
                         }
-                    }else{
-                        isGame.setChecked(false);
-                    }
+                        day = Integer.parseInt(dateStuff[2]);
 
-                    for(int p = 0; p < arrayListPlaces.size(); p++){
-                        if(arrayListPlaces.get(p).getPlaceID() == currentEvent.getPlaceID()){
-                            spinnerPlaces.setSelection(p);
-                            break;
+                        String[] timeStuff = dateStuff[3].split(":");
+                        hour = Integer.parseInt(timeStuff[0]);
+                        minute = Integer.parseInt(timeStuff[1]);
+
+                        year = Integer.parseInt(dateStuff[5]);
+                        onDateSet(null, year, month, day);
+                        onTimeSet(null, hour, minute);
+
+                        for(int t = 0; t < arrayListHomeTeamCandidates.size(); t++){
+                            if(arrayListHomeTeamCandidates.get(t).getTeamID() == currentEvent.getHomeTeamID()){
+                                spinnerHomeTeam.setSelection(t);
+                                break;
+                            }
+                        }
+                        isGame.setChecked(true);
+                        if(currentEvent.getEventType().equals("GAME")){
+                            for(int t = 0; t < arrayListAwayTeamCandidates.size(); t++){
+                                if(arrayListAwayTeamCandidates.get(t).getTeamID() == currentEvent.getAwayTeamID()){
+                                    spinnerAwayTeam.setSelection(t);
+                                    break;
+                                }
+                            }
+                        }else{
+                            isGame.setChecked(false);
+                        }
+
+                        for(int p = 0; p < arrayListPlaces.size(); p++){
+                            if(arrayListPlaces.get(p).getPlaceID() == currentEvent.getPlaceID()){
+                                spinnerPlaces.setSelection(p);
+                                break;
+                            }
                         }
                     }
                 }
-            }
-        });
-        listview.setOnItemLongClickListener(new OnItemLongClickListener() {
+            });
+            listview.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (parent == listview) {
-                    int placeID = eventList.get(position).getPlaceID();
-                    Place p = dataSource.getPlaceById(placeID);
-                    Geocoder geocoder = new Geocoder(getApplicationContext());
-                    try {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (parent == listview) {
+                        int placeID = eventList.get(position).getPlaceID();
+                        Place p = updateService.getPlaceById(placeID);
+                        Geocoder geocoder = new Geocoder(getApplicationContext());
+                        try {
 
-                        addresses.addAll(geocoder.getFromLocationName(
-                                String.format(Locale.ENGLISH, "%s %s, %s %d",
-                                        p.getStreetAddress(), p.getCity(), p.getState(),
-                                        p.getZip()), 1));
-                    } catch (IOException e) {
-                        Log.e("GEOLOCATION VARIABLES", "***");
-                    }
-                    if (addresses.size() > 0) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                                "google.navigation:q=" +
-                                        Uri.encode(p.getStreetAddress() + " " +
-                                                p.getCity() + ", " +
-                                                p.getState() + " " +
-                                                p.getZip()) + "&mode=d&avoid=tf"
-                        ));
+                            addresses.addAll(geocoder.getFromLocationName(
+                                    String.format(Locale.ENGLISH, "%s %s, %s %d",
+                                            p.getStreetAddress(), p.getCity(), p.getState(),
+                                            p.getZip()), 1));
+                        } catch (IOException e) {
+                            Log.e("GEOLOCATION VARIABLES", "***");
+                        }
+                        if (addresses.size() > 0) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                                    "google.navigation:q=" +
+                                            Uri.encode(p.getStreetAddress() + " " +
+                                                    p.getCity() + ", " +
+                                                    p.getState() + " " +
+                                                    p.getZip()) + "&mode=d&avoid=tf"
+                            ));
 //                        intent.putExtra("LATITUDE", addresses.get(0).getLatitude());
 //                        intent.putExtra("LONGITUDE", addresses.get(0).getLongitude());
 //                        intent.putExtra("LOCATION_NAME", p.getPlaceName());
-                        intent.setPackage("com.google.android.apps.maps");
+                            intent.setPackage("com.google.android.apps.maps");
 //                        intent.setClassName(getApplicationContext(), "beaconsoft.sycorowlayouts.activities.MapsActivity");
-                        startActivity(intent);
-                    } else {
-                        Toast toast = Toast.makeText(getApplicationContext(), "Perhaps you've typed the wrong address?", Toast.LENGTH_LONG);
-                        toast.setText(addresses.size() + " results from " + p.getStreetAddress() + " " +
-                                p.getCity() + " , " + p.getState() + " " + p.getZip());
-                        toast.show();
+                            startActivity(intent);
+                        } else {
+                            Toast toast = Toast.makeText(getApplicationContext(), "Perhaps you've typed the wrong address?", Toast.LENGTH_LONG);
+                            toast.setText(addresses.size() + " results from " + p.getStreetAddress() + " " +
+                                    p.getCity() + " , " + p.getState() + " " + p.getZip());
+                            toast.show();
+                        }
+                    }
+                    return true;
+                }
+            });
+            isGame.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isGame.isChecked()) {
+                        spinnerAwayTeam.setEnabled(true);
+                        eventType = "GAME";
+                    } else if (!isGame.isChecked()) {
+                        spinnerAwayTeam.setEnabled(false);
+                        eventType = "PRACTICE";
                     }
                 }
-                return true;
-            }
-        });
-        isGame.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isGame.isChecked()) {
-                    spinnerAwayTeam.setEnabled(true);
-                    eventType = "GAME";
-                } else if (!isGame.isChecked()) {
-                    spinnerAwayTeam.setEnabled(false);
-                    eventType = "PRACTICE";
-                }
-            }
-        });
-        initializeTeams();
-        initializePlaces();
-        if(currentHomeTeam != null)
-        initializeListView(currentHomeTeam);
-        spinnerHomeTeam.isInEditMode();
-        spinnerAwayTeam.isInEditMode();
-        spinnerPlaces.isInEditMode();
-        date = new Date(0);
-        Calendar calendar = Calendar.getInstance();
-        date.setTime(calendar.getTimeInMillis());
-        listview.setChoiceMode(1);
-        listview.setItemsCanFocus(true);
-        listview.setSelectionAfterHeaderView();
+            });
+            initializeTeams();
+            initializePlaces();
+            if(currentHomeTeam != null)
+                initializeListView(currentHomeTeam);
+            spinnerHomeTeam.isInEditMode();
+            spinnerAwayTeam.isInEditMode();
+            spinnerPlaces.isInEditMode();
+            date = new Date(0);
+            Calendar calendar = Calendar.getInstance();
+            date.setTime(calendar.getTimeInMillis());
+            listview.setChoiceMode(1);
+            listview.setItemsCanFocus(true);
+            listview.setSelectionAfterHeaderView();
+        }
     }
 
     private void initializeListView(Team team) {
         eventList.clear();
         if(team != null) {
-            eventList.addAll(dataSource.getListOfEventsByTeam(team));
+            eventList.addAll(updateService.getListOfEventsByTeam(team));
         }
-        ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, dataSource);
+        ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, updateService);
         listview = (ListView) findViewById(R.id.listViewLeagueEvents);
         listview.setAdapter(adapter);
     }
 
     private void initializePlaces() {
         arrayListPlaces.clear();
-        arrayListPlaces.addAll(dataSource.getListOfPlaces());
+        arrayListPlaces.addAll(updateService.getListOfPlaces());
         spinnerPlaces.setAdapter(new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item,
                 arrayListPlaces));
 
@@ -286,7 +336,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
 
     private void initializeTeams() {
         teamsList.clear();
-        teamsList.addAll(dataSource.getListOfTeamsByLeague(currentLeagueId));
+        teamsList.addAll(updateService.getListOfTeamsByLeague(currentLeagueId));
         arrayListHomeTeamCandidates.clear();
         arrayListAwayTeamCandidates.clear();
         arrayListHomeTeamCandidates.addAll(teamsList);
@@ -365,10 +415,10 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
         Event event = new Event();
 
         if (eventType.equals("GAME") && currentHomeTeam != currentAwayTeam) {
-            event = dataSource.createEvent(eventType, date, currentPlace.getPlaceID(),
+            event = updateService.createEvent(eventType, date, currentPlace.getPlaceID(),
                     currentHomeTeam.getTeamID(), currentAwayTeam.getTeamID());
         } else if (eventType.equals("PRACTICE")) {
-            event = dataSource.createEvent(eventType, date, currentPlace.getPlaceID(),
+            event = updateService.createEvent(eventType, date, currentPlace.getPlaceID(),
                     currentHomeTeam.getTeamID(), currentAwayTeam.getTeamID());
         }else{
             Toast toast = Toast.makeText(this, "A team cannot play itself. Please uncheck the 'game' box for a practice!",
@@ -380,8 +430,8 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
 
     private void initializeListView(int eventId) {
         eventList.clear();
-        eventList.addAll(dataSource.getListOfEventsById(eventId));
-        ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, dataSource);
+        eventList.addAll(updateService.getListOfEventsById(eventId));
+        ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, eventList, updateService);
         listview = (ListView) findViewById(R.id.listViewLeagueEvents);
         listview.setAdapter(adapter);
     }
@@ -433,12 +483,12 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
             date = new Date();
             date = cal.getTime();
 
-            currentEvent = dataSource.updateEvent(currentEvent.getEventID(), eventType, date, currentPlace.getPlaceID(),
+            currentEvent = updateService.updateEvent(currentEvent.getEventID(), eventType, date, currentPlace.getPlaceID(),
                     currentHomeTeam.getTeamID(), currentAwayTeam.getTeamID());
             ArrayList<Users> arrayListUsers = new ArrayList<>();
-            arrayListUsers.addAll(dataSource.getListOfUsersByTeam(currentHomeTeam.getTeamID()));
+            arrayListUsers.addAll(updateService.getListOfUsersByTeam(currentHomeTeam.getTeamID()));
             if(isGame.isChecked()){
-                arrayListUsers.addAll(dataSource.getListOfUsersByTeam(currentAwayTeam.getTeamID()));
+                arrayListUsers.addAll(updateService.getListOfUsersByTeam(currentAwayTeam.getTeamID()));
             }
 
             for(Users u : arrayListUsers){

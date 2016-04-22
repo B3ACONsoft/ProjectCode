@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -1700,6 +1701,54 @@ public class UpdateService extends Service {
             cursor.close();
             return eventsList;
         } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
+    }
+
+    public Event updateEvent(int eventId, String eventType, Date startDateTime, int placeId, int homeTeam, int awayTeam ){
+        try{
+            open_db();
+            ContentValues cv = new ContentValues();
+            cv.put(MySQLiteHelper.COLUMN_EVENT_ID, eventId);
+            cv.put(MySQLiteHelper.COLUMN_EVENT_TYPE, eventType);
+            cv.put(MySQLiteHelper.COLUMN_START_DATE_TIME, startDateTime.toString());
+            cv.put(MySQLiteHelper.COLUMN_FK_EVENT_PLACE_ID, placeId);
+            cv.put(MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID, homeTeam);
+            if(eventType.toString().equals("GAME")) {
+                cv.put(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID, awayTeam);
+            }else{
+                cv.putNull(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID);
+            }
+
+            try {
+                db.beginTransaction();
+                int recordsChanged = db.update(MySQLiteHelper.TABLE_EVENT, cv,
+                        MySQLiteHelper.COLUMN_EVENT_ID + " = ?", new String[]{eventId + ""});
+                if(recordsChanged == 1){
+                    db.setTransactionSuccessful();
+                }else if(recordsChanged < 1) {
+                    throw new Exception("No Records Changed");
+                }else{
+                    db.execSQL("ROLLBACK");
+                }
+                db.endTransaction();
+
+                ArrayList<Event> eventsList = new ArrayList<>();
+                eventsList.addAll(getListOfEventsById(eventId));
+                if(eventsList.size() == 1){
+                    return eventsList.get(0);
+                }else{
+                    throw new Exception("The Database is not atomic exception.");
+                }
+            } catch (Exception e) {
+                Log.e("UPDATE EVENTS EXCEPTION", "..........." + e.getMessage());
+            }
+            return null;
+        }catch(SQLException e) {
             e.printStackTrace();
             return null;
         } finally {
