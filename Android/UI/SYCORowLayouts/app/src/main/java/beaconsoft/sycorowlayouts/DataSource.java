@@ -296,14 +296,21 @@ public class DataSource {
         }
     }
 
-    public boolean checkForUserByEmail(String email){
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
-                MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase() + "';",
-                null,null,null,null);
-        cursor.moveToFirst();
-        if(cursor.getCount() == 1){
-            return true;
-        }else{
+    public boolean checkForUserByEmail(String email) {
+        try {
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
+                    MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase() + "';",
+                    null, null, null, null);
+            cursor.moveToFirst();
+            if (cursor.getCount() == 1) {
+                return true;
+            } else if (cursor.getCount() > 1) {
+                throw new Exception("Database is not atomic");
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            Log.e("Too many users", "........................" + e.getMessage());
             return false;
         }
     }
@@ -725,15 +732,15 @@ public class DataSource {
     }
 
     public Collection<? extends Player> getListOfPlayersByTeam(int currentTeam) {
-        Cursor cursor = db.rawQuery("SELECT p." + MySQLiteHelper.COLUMN_PLAYER_ID    + ", " +
-                           "p." + MySQLiteHelper.COLUMN_PLAYER_FIRST + ", " +
-                           "p." + MySQLiteHelper.COLUMN_PLAYER_LAST  + ", "  +
-                           "p." + MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " " +
-                        "FROM " + MySQLiteHelper.TABLE_PLAYER + " p, " +
-                                  MySQLiteHelper.TABLE_ENROLLMENT + " e " +
-                     "WHERE p." + MySQLiteHelper.COLUMN_PLAYER_ID + " = " +
-                           "e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_PLAYER_ID +
-                      " AND e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeam + ";"
+        Cursor cursor = db.rawQuery("SELECT p." + MySQLiteHelper.COLUMN_PLAYER_ID + ", " +
+                "p." + MySQLiteHelper.COLUMN_PLAYER_FIRST + ", " +
+                "p." + MySQLiteHelper.COLUMN_PLAYER_LAST + ", " +
+                "p." + MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " " +
+                "FROM " + MySQLiteHelper.TABLE_PLAYER + " p, " +
+                MySQLiteHelper.TABLE_ENROLLMENT + " e " +
+                "WHERE p." + MySQLiteHelper.COLUMN_PLAYER_ID + " = " +
+                "e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_PLAYER_ID +
+                " AND e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeam + ";"
                 , null);
         List<Player> players = new ArrayList<>();
 
@@ -760,14 +767,21 @@ public class DataSource {
     }
 
     public boolean checkForPlayerByFirstLastAndUserId(String first, String last, int userID){
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
-                MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " = " + userID + " AND " +
-                        MySQLiteHelper.COLUMN_FIRST + " = '" + first + "' AND " +
-                        MySQLiteHelper.COLUMN_LAST + " = '" + last + "';"
-        , null, null, null, null);
-        if(cursor.getCount() == 1){
-            return true;
-        }else{
+        try {
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
+                    MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " = " + userID + " AND " +
+                            MySQLiteHelper.COLUMN_FIRST + " = '" + first + "' AND " +
+                            MySQLiteHelper.COLUMN_LAST + " = '" + last + "';"
+                    , null, null, null, null);
+            if (cursor.getCount() == 1) {
+                return true;
+            } else if (cursor.getCount() > 1) {
+                throw new Exception("The database is not atomic...cursor count = " + cursor.getCount());
+            } else {
+                return false;
+            }
+        }catch(Exception e){
+            Log.e("Check For Player", ".............." + e.getMessage());
             return false;
         }
     }
