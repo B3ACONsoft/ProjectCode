@@ -29,7 +29,6 @@ import beaconsoft.sycorowlayouts.dbobjects.Place;
 
 public class AddPlaceActivity extends AppCompatActivity implements OnItemSelectedListener {
 
-    private DataSource dataSource = new DataSource(this);
     private Spinner spinnerStates;
     private ArrayList<String> states = new ArrayList<>();
     private List<Place>      places  = new ArrayList<>();
@@ -80,7 +79,24 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
         super.onStart();
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
-        Log.d("blah", "blah");
+
+        if(mBound) {
+            for(String s: arrayStates){
+                states.add(s);
+            }
+            spinnerStates = (Spinner) findViewById(R.id.spinnerStates);
+            spinnerStatesAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item,
+                    states);
+            spinnerStates.setOnItemSelectedListener(this);
+            spinnerStates.setAdapter(spinnerStatesAdapter);
+            placesAddPlacesListView = (ListView)findViewById(R.id.listViewAddPlaces);
+            places.addAll(updateService.getListOfPlaces());
+            if (places.size() > 0){
+                spinnerPlacesAdapter = new PlaceListAdapter(this, R.layout.custom_list_view_places, places, updateService);
+                placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
+            }
+
+        }
 
     }
 
@@ -95,23 +111,19 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
 
     @Override
     protected void onResume(){
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
         super.onResume();
     }
 
     @Override
     protected void onDestroy(){
-        dataSource.close();
+
         super.onDestroy();
     }
 
     @Override
     protected void onPause(){
-        dataSource.close();
+
         super.onPause();
     }
 
@@ -120,26 +132,6 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_place);
 
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        for(String s: arrayStates){
-            states.add(s);
-        }
-        spinnerStates = (Spinner) findViewById(R.id.spinnerStates);
-        spinnerStatesAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item,
-                states);
-        spinnerStates.setOnItemSelectedListener(this);
-        spinnerStates.setAdapter(spinnerStatesAdapter);
-        placesAddPlacesListView = (ListView)findViewById(R.id.listViewAddPlaces);
-        places.addAll(dataSource.getListOfPlaces());
-        if (places.size() > 0){
-            spinnerPlacesAdapter = new PlaceListAdapter(this, R.layout.custom_list_view_places, places, dataSource);
-            placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
-        }
     }
 
     @Override
@@ -159,19 +151,21 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
                   zip = (EditText)findViewById(R.id.editTextAddPlaceZip);
 
 
+        if(mBound) {
+            updateService.createPlace(name.getText().toString().toUpperCase(),
+                    streetAddress.getText().toString().toUpperCase(),
+                    city.getText().toString().toUpperCase(),
+                    spinnerStates.getSelectedItem().toString().toUpperCase(),
+                    Integer.parseInt(zip.getText().toString()));
 
-        dataSource.createPlace(name.getText().toString().toUpperCase(),
-                streetAddress.getText().toString().toUpperCase(),
-                city.getText().toString().toUpperCase(),
-                spinnerStates.getSelectedItem().toString().toUpperCase(),
-                Integer.parseInt(zip.getText().toString()));
-
-        places.clear();
-        places.addAll(dataSource.getListOfPlaces());
-        if (places.size() > 0){
-            spinnerPlacesAdapter = new PlaceListAdapter(this, R.layout.custom_list_view_places, places, dataSource);
-            placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
+            places.clear();
+            places.addAll(updateService.getListOfPlaces());
+            if (places.size() > 0){
+                spinnerPlacesAdapter = new PlaceListAdapter(this, R.layout.custom_list_view_places, places, updateService);
+                placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
+            }
         }
+
     }
 
     public void openGoogleMaps(View view){

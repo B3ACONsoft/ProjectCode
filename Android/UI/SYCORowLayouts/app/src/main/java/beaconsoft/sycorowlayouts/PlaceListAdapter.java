@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import beaconsoft.sycorowlayouts.SYCOServerAccess.*;
 import beaconsoft.sycorowlayouts.dbobjects.Place;
 
 /**
@@ -19,7 +20,7 @@ public class PlaceListAdapter extends ArrayAdapter<Place> {
     private List<Place> data = null;
     private static LayoutInflater inflater=null;
 
-    public PlaceListAdapter(Context context, int layoutResourceId, List<Place> data, DataSource dataSource) {
+    public PlaceListAdapter(Context context, int layoutResourceId, List<Place> data, beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService dataSource) {
         super(context, layoutResourceId, data);
         this.data = data;
         this.dataSource = dataSource;
