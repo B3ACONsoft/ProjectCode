@@ -1,7 +1,11 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +23,7 @@ import java.util.Date;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Enrollment;
 import beaconsoft.sycorowlayouts.dbobjects.League;
 import beaconsoft.sycorowlayouts.dbobjects.Sport;
@@ -30,7 +35,7 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
     private int currentLeagueId;
     private int currentCoachUserId;
     private int currentTeamId;
-    private DataSource dataSource;
+
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
     private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
@@ -55,26 +60,107 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
     private Team currentTeam;
     private Users coach;
     private Toast toastTeam;
+    UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
+
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+        if(mBound) {
+
+
+
+            editTextTeamName  = (EditText)findViewById(R.id.editTextEditTeamsTeamName);
+            editTextFirst     = (EditText)findViewById(R.id.editTextEditTeamsCoachFirst);
+            editTextLast      = (EditText)findViewById(R.id.editTextEditTeamsCoachLast );
+            editTextPhone     = (EditText)findViewById(R.id.editTextEditTeamsCoachPhone);
+            editTextEmergency = (EditText)findViewById(R.id.editTextEditTeamsCoachEmergency);
+            editTextCoachEmail= (EditText)findViewById(R.id.editTextEditTeamsCoachEmail);
+            editTextCoachEmail.setEnabled(false);
+            editTextCoachEmail.setActivated(false);
+            spinnerCoaches = (Spinner) findViewById(R.id.spinnerCoachesEditTeams);
+            coachArrayList = new ArrayList<>();
+
+            Intent intent = getIntent();
+            email = intent.getStringExtra(EMAIL_KEY);
+            currentLeagueId = intent.getIntExtra(LEAGUE_KEY, 0);
+            currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
+            currentTeam = updateService.getTeamById(currentTeamId);
+            currentCoachUserId = currentTeam.getUserID();
+            coach = updateService.getUserById(currentCoachUserId);
+
+            loadSpinner();
+
+            for(int i = 0; i < coachArrayList.size(); i++){
+                if(coachArrayList.get(i).getUserID() == currentCoachUserId){
+                    spinnerCoaches.setSelection(i);
+                }
+            }
+            editTextFirst        .setText(coach.getFname());
+            editTextLast.setText(coach.getLname());
+
+            editTextCoachEmail.setText(coach.getEmail());
+            editTextPhone.setText(String.format(coach.getPhone() + ""));
+            editTextEmergency.setText(String.format(coach.getEmergency() + ""));
+
+            editTextTeamName.setText(currentTeam.getTeamName());
+        }
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+    @Override
     public void onDestroy(){
-        dataSource.close();
+
         super.onDestroy();
     }
 
     @Override
     public void onResume(){
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
         super.onResume();
     }
 
     @Override
     public void onPause(){
-        dataSource.close();
+
         super.onPause();
     }
 
@@ -105,53 +191,13 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_teams);
 
-        dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e1) {
-            e1.printStackTrace();
-        }
 
-        editTextTeamName  = (EditText)findViewById(R.id.editTextEditTeamsTeamName);
-        editTextFirst     = (EditText)findViewById(R.id.editTextEditTeamsCoachFirst);
-        editTextLast      = (EditText)findViewById(R.id.editTextEditTeamsCoachLast );
-        editTextPhone     = (EditText)findViewById(R.id.editTextEditTeamsCoachPhone);
-        editTextEmergency = (EditText)findViewById(R.id.editTextEditTeamsCoachEmergency);
-        editTextCoachEmail= (EditText)findViewById(R.id.editTextEditTeamsCoachEmail);
-        editTextCoachEmail.setEnabled(false);
-        editTextCoachEmail.setActivated(false);
-        spinnerCoaches = (Spinner) findViewById(R.id.spinnerCoachesEditTeams);
-        coachArrayList = new ArrayList<>();
-
-        Intent intent = getIntent();
-        email = intent.getStringExtra(EMAIL_KEY);
-        currentLeagueId = intent.getIntExtra(LEAGUE_KEY, 0);
-        currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
-        currentTeam = dataSource.getTeamById(currentTeamId);
-        currentCoachUserId = currentTeam.getUserID();
-        coach = dataSource.getUserById(currentCoachUserId);
-
-        loadSpinner();
-
-        for(int i = 0; i < coachArrayList.size(); i++){
-            if(coachArrayList.get(i).getUserID() == currentCoachUserId){
-                spinnerCoaches.setSelection(i);
-            }
-        }
-        editTextFirst        .setText(coach.getFname());
-        editTextLast.setText(coach.getLname());
-
-        editTextCoachEmail.setText(coach.getEmail());
-        editTextPhone.setText(String.format(coach.getPhone() + ""));
-        editTextEmergency.setText(String.format(coach.getEmergency() + ""));
-
-        editTextTeamName.setText(currentTeam.getTeamName());
     }
 
     public void loadSpinner() {
 
         coachArrayList.clear();
-        coachArrayList.addAll(dataSource.getListOfUsersAvailableToCoach(currentLeagueId));
+        coachArrayList.addAll(updateService.getListOfUsersAvailableToCoach(currentLeagueId));
         coachArrayList.add(coach);
         adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList);
         adapterSpinnerCoaches.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -183,23 +229,23 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
         try {
 
             ArrayList<Team> allLeagueTeams = new ArrayList<>();
-            allLeagueTeams.addAll(dataSource.getListOfTeamsByLeague(currentLeagueId));
+            allLeagueTeams.addAll(updateService.getListOfTeamsByLeague(currentLeagueId));
             ArrayList<String> teamNames = new ArrayList<>();
             for(int i =0; i < allLeagueTeams.size(); i++){
                 teamNames.add(allLeagueTeams.get(i).getTeamName());
             }
 
             ArrayList<Users>tempAvailableCoaches = new ArrayList<>();
-            tempAvailableCoaches.addAll(dataSource.getListOfUsersAvailableToCoach(currentLeagueId));
+            tempAvailableCoaches.addAll(updateService.getListOfUsersAvailableToCoach(currentLeagueId));
 
             if(!teamNames.contains(teamName)) {
-                currentTeam = dataSource.updateTeamName(currentTeam, teamName.toUpperCase(), currentLeagueId, coach.getUserID());
+                currentTeam = updateService.updateTeamName(currentTeam, teamName.toUpperCase(), currentLeagueId, coach.getUserID());
                 editTextTeamName.setText(currentTeam.getTeamName());
             }
             if(tempAvailableCoaches.contains(coach)) {
 
-                currentTeam = dataSource.updateTeamCoach(currentTeamId, currentCoachUserId);
-                Users testCoach = dataSource.getUserById(currentTeam.getUserID());
+                currentTeam = updateService.updateTeamCoach(currentTeamId, currentCoachUserId);
+                Users testCoach = updateService.getUserById(currentTeam.getUserID());
 
                 toastTeam = Toast.makeText(this, null, Toast.LENGTH_LONG);
                 String msg = "TeamName: " + currentTeam.getTeamName() + "\n" +
@@ -235,10 +281,10 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
             phone = Long.parseLong(editTextPhone.getText().toString());
             emerg = Long.parseLong(editTextEmergency.getText().toString());
 
-            Users userToUpdate = dataSource.getUserByEmail(email);
+            Users userToUpdate = updateService.getUserByEmail(email);
             if (userToUpdate != null && fname.length() > 1 && lname.length() > 1 &&
                     phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
-                Users user = dataSource.updateUser(userToUpdate.getUserID(), fname.toUpperCase(), lname.toUpperCase(),
+                Users user = updateService.updateUser(userToUpdate.getUserID(), fname.toUpperCase(), lname.toUpperCase(),
                         phone, email.toUpperCase(), emerg);
                 textViewTop = (TextView) findViewById(R.id.textViewEditTeamsTop);
                 textViewTop.setText(user.toString());

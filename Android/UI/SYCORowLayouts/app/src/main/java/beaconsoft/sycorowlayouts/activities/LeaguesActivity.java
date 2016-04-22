@@ -1,8 +1,12 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -66,30 +70,76 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     private Button buttonAddPlayers;
     private Button buttonEditTeam;
     private Button buttonEditPlayer;
-    private DataSource dataSource;
+    beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
+
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+        if(mBound) {
+
+
+        }
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
 
     @Override
     public void onResume() {
         Log.e("ON_RESUME", ".....................................................ON_RESUME_BEGIN");
 
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
         super.onResume();
     }
 
     @Override
     public void onPause() {
         Log.e("ON_PAUSE", ".....................................................ON_PAUSE");
-        dataSource.close();
+
         super.onPause();
     }
     @Override
     public void onDestroy(){
         Log.e("ON_DESTROY", ".....................................................ON_DESTROY");
-        dataSource.close();
+
         super.onDestroy();
     }
 
@@ -130,12 +180,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         buttonAddPlayers  = (Button)findViewById(R.id.buttonMyLeaguesAddPlayer);
         buttonEditTeam    = (Button)findViewById(R.id.buttonMyLeaguesEditTeam);
         buttonEditPlayer  = (Button)findViewById(R.id.buttonMyLeaguesEditPlayer);
-        dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
         /*Set text in the headers for the administrator */
         textViewLeaguesEmail = (TextView) findViewById(R.id.textViewLeagueEmail);
         TextView textViewLeaguesAdmin = (TextView) findViewById(R.id.textViewPromptChooseSport);
@@ -148,11 +193,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
 
         if(requestCode == INTENT_REQUEST_CODE_EDIT_LEAGUES && data != null){
             if(resultCode == Activity.RESULT_OK) {
@@ -191,7 +232,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 int resultTeam = data.getIntExtra("team_id", 0);
 
                 teamsArrayList.clear();
-                teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
+                teamsArrayList.addAll(updateService.getListOfTeamsByLeague(currentLeague));
                 adapterSpinnerTeams = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, teamsArrayList);
                 spinnerTeams.setAdapter(adapterSpinnerTeams);
                 if(!teamsArrayList.isEmpty()){
@@ -229,7 +270,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 int resultTeam = data.getIntExtra("team_id", 0);
 
                 teamsArrayList.clear();
-                teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
+                teamsArrayList.addAll(updateService.getListOfTeamsByLeague(currentLeague));
                 adapterSpinnerTeams = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, teamsArrayList);
                 spinnerTeams.setAdapter(adapterSpinnerTeams);
 
@@ -246,7 +287,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 int resultPlayer = data.getIntExtra("player_id", 0);
 
                 playersArrayList.clear();
-                playersArrayList.addAll(dataSource.getListOfPlayersByTeam(currentTeam));
+                playersArrayList.addAll(updateService.getListOfPlayersByTeam(currentTeam));
                 adapterSpinnerPlayers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, playersArrayList);
                 spinnerPlayers.setAdapter(adapterSpinnerPlayers);
 
@@ -299,7 +340,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         /*LOAD THE SPORTS SPINNER AND ADAPTER*/
         sportsArrayList = new ArrayList<>();
         sportsArrayList.clear();
-        sportsArrayList.addAll(dataSource.getListOfSports());
+        sportsArrayList.addAll(updateService.getListOfSports());
         if(sportsArrayList.isEmpty()){
             deactivateView(spinnerSports);
             deactivateView(spinnerLeagues);
@@ -336,7 +377,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
         leaguesArrayList = new ArrayList<>();
         leaguesArrayList.clear();
-        leaguesArrayList.addAll(dataSource.getListOfLeaguesBySport(currentSport));
+        leaguesArrayList.addAll(updateService.getListOfLeaguesBySport(currentSport));
         if (leaguesArrayList.isEmpty()) {
             deactivateView(spinnerLeagues);
             deactivateView(spinnerTeams);
@@ -368,7 +409,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
         teamsArrayList = new ArrayList<>();
         teamsArrayList.clear();
-        teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
+        teamsArrayList.addAll(updateService.getListOfTeamsByLeague(currentLeague));
         if(teamsArrayList.isEmpty()){
             deactivateView(spinnerTeams);
             deactivateView( spinnerPlayers);
@@ -388,7 +429,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
         playersArrayList = new ArrayList<>();
         playersArrayList.clear();
-        playersArrayList.addAll(dataSource.getListOfPlayersByTeam(currentTeam));
+        playersArrayList.addAll(updateService.getListOfPlayersByTeam(currentTeam));
         if(playersArrayList.isEmpty()){
             deactivateView( spinnerPlayers);
             deactivateView(buttonEditPlayer);
@@ -432,7 +473,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         currentSport = tempSport.getSportID();
 
         leaguesArrayList.clear();
-        leaguesArrayList.addAll(dataSource.getListOfLeaguesBySport(currentSport));
+        leaguesArrayList.addAll(updateService.getListOfLeaguesBySport(currentSport));
 
         if(!leaguesArrayList.isEmpty()){
 
@@ -486,7 +527,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         currentLeague = tempLeague.getLeagueID();
 
         teamsArrayList.clear();
-        teamsArrayList.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
+        teamsArrayList.addAll(updateService.getListOfTeamsByLeague(currentLeague));
 
         if(!teamsArrayList.isEmpty()){
 
@@ -524,7 +565,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         currentTeam = tempTeam.getTeamID();
         activateView(spinnerPlayers);
         playersArrayList.clear();
-        playersArrayList.addAll(dataSource.getListOfPlayersByTeam(currentTeam));
+        playersArrayList.addAll(updateService.getListOfPlayersByTeam(currentTeam));
 
         if(playersArrayList.isEmpty()){
             deactivateView(spinnerPlayers);

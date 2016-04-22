@@ -1,8 +1,12 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,7 +28,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import beaconsoft.sycorowlayouts.DataSource;
+import beaconsoft.sycorowlayouts.PlaceListAdapter;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.League;
 import beaconsoft.sycorowlayouts.dbobjects.Sport;
 
@@ -52,7 +59,57 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
     private final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
     private final String ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
     Toast toast;
-    private DataSource dataSource;
+    UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
+
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+        if(mBound) {
+
+
+        }
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -88,12 +145,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toast = Toast.makeText(this, null, Toast.LENGTH_LONG);
 
-        dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
         intentIncoming = getIntent();
         currentAdminEmail = intentIncoming.getStringExtra(EMAIL_KEY);
         currentAdminId = intentIncoming.getIntExtra(ADMIN_KEY, 0);
@@ -130,7 +182,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
             activateView(buttonDeleteSport);
             activateView(buttonCreateSport);
             arrayListSports.clear();
-            arrayListSports.addAll(dataSource.getListOfSports());
+            arrayListSports.addAll(updateService.getListOfSports());
             if (arrayListSports.size() > 0) {
                 arrayAdapterSpinnerSports = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, arrayListSports);
                 spinnerEditLeaguesChooseSport.setAdapter(arrayAdapterSpinnerSports);
@@ -167,7 +219,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
     private void loadLeagueSpinner(){
         try {
             arrayListLeagues.clear();
-            arrayListLeagues.addAll(dataSource.getListOfLeaguesByAdminIdAndSport(currentAdminId, currentSport));
+            arrayListLeagues.addAll(updateService.getListOfLeaguesByAdminIdAndSport(currentAdminId, currentSport));
             activateView(spinnerEditLeaguesChooseLeague);
             activateView(buttonDeleteLeague);
             activateView(buttonCreateLeague);
@@ -219,7 +271,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
             if(name.length() < 2){
                 throw new Exception("Please Enter the Full Sport Name");
             }
-            League league = dataSource.createLeague(currentAdminId, currentSport, name, 0, 0,
+            League league = updateService.createLeague(currentAdminId, currentSport, name, 0, 0,
                     startDate, endDate);
             int tempLeagueId = league.getLeagueID();
             loadLeagueSpinner();
@@ -250,9 +302,9 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
                 throw new Exception("Please Enter the Full Sport Name");
             }
 
-            if(!dataSource.checkForDuplicateSports(tempName)) {
+            if(!updateService.checkForDuplicateSports(tempName)) {
 
-                sport = dataSource.createSport(tempName);
+                sport = updateService.createSport(tempName);
 
             }else{
                 throw new Exception("There is already a sport named " + tempName);

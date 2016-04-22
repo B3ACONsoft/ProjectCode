@@ -1033,6 +1033,43 @@ public class UpdateService extends Service {
 
     }
 
+    public List<Team> getListOfTeamsByUser(String email) {
+        try
+        {
+            open_db();
+            List<Team> teamsList = new ArrayList<>();
+            Cursor cursor = db.rawQuery(
+                    "SELECT t." + MySQLiteHelper.COLUMN_TEAM_ID           + ", " +
+                            "t." + MySQLiteHelper.COLUMN_TEAM_NAME         + ", " +
+                            "t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + ", " +
+                            "t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID   + " " +
+                            "FROM " + MySQLiteHelper.TABLE_TEAM         + " t, "
+                            + MySQLiteHelper.TABLE_USERS        + " u, "
+                            + MySQLiteHelper.TABLE_ENROLLMENT   + " e  " +
+                            "WHERE e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " +
+                            "t." + MySQLiteHelper.COLUMN_TEAM_ID               + " AND " +
+                            "e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID + " = " +
+                            "u." + MySQLiteHelper.COLUMN_USER_ID               + " AND " +
+                            "u." + MySQLiteHelper.COLUMN_EMAIL
+                            + " = '" + email.toUpperCase() + "'"
+                    , null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Team tempTeam = cursorToTeam(cursor);
+                teamsList.add(tempTeam);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return teamsList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
+    }
+
     public List<Team> getListOfTeamsCoachedByUser(int currentUser, int currentLeague){
         try{
             open_db();
@@ -1824,5 +1861,17 @@ public class UpdateService extends Service {
         } finally {
             close_db();
         }
+    }
+
+    public int addUserToAttendance(int currentUser, int currentTeam) {
+        Team team = getTeamById(currentTeam);
+        ArrayList<Event> eventList = new ArrayList<>();
+        eventList.addAll(getListOfEventsByTeam(team));
+        int counter = 0;
+        for(Event e : eventList){
+            createAttendance(e.getEventID(), currentUser, "GOING", "");
+            counter++;
+        }
+        return counter;
     }
 }

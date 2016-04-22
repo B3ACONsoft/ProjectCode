@@ -1,8 +1,12 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +26,7 @@ import java.util.HashMap;
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.MySQLiteHelper;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Enrollment;
 import beaconsoft.sycorowlayouts.dbobjects.League;
 import beaconsoft.sycorowlayouts.dbobjects.Player;
@@ -47,7 +52,7 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
     private static final String   USER_KEY = "beaconsoft.sycorowlayouts.USER"  ;
     private static final String PLAYER_KEY = "beaconsoft.sycorowlayouts.PLAYER";
-    private DataSource dataSource;
+
     private String currentAdminEmail;
     private String currentAdminName;
     private int currentLeague;
@@ -58,7 +63,85 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
     private Player player;
     private Users user;
     private TextView textViewLeagueName;
+    UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
 
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+        if(mBound) {
+
+
+            Team team = updateService.getTeamById(currentTeam);
+            textViewTeamName.setText("League: " + team.getTeamName());
+            League league = updateService.getLeagueById(currentLeague);
+            textViewLeagueName.setText("Team: " + league.getLeagueName());
+
+
+
+            user = updateService.getUserById(currentUser);
+            player = updateService.getPlayerById(currentPlayer);
+
+            if(user != null && player != null)
+            {
+                if(player.getFname().equals(user.getFname()) && player.getLname().equals(user.getLname())){
+                    kidBox.setChecked(false);
+                    et3.setEnabled(false);
+                    et4.setEnabled(false);
+                }else{
+                    kidBox.setChecked(true);
+                }
+
+                et1.setText(user.getFname());
+                et2.setText(user.getLname());
+                et3.setText(player.getFname());
+                et4.setText(player.getLname());
+                et5.setText(user.getPhone() + "");
+                et6.setText(user.getEmail());
+                et7.setText(user.getEmergency() + "");
+            }
+        }
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
@@ -89,12 +172,7 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_edit_player);
-        dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
         TextView textViewAdminEmail = (TextView)findViewById(R.id.textViewQEAdminEmail);
         kidBox = (CheckBox)findViewById(R.id.checkBoxPlayerIsKid);
 
@@ -121,34 +199,6 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
         et8.setText(currentAdminName);
         textViewAdminEmail.setText(currentAdminEmail);
 
-        Team team = dataSource.getTeamById(currentTeam);
-        textViewTeamName.setText("League: " + team.getTeamName());
-        League league = dataSource.getLeagueById(currentLeague);
-        textViewLeagueName.setText("Team: " + league.getLeagueName());
-
-
-
-        user = dataSource.getUserById(currentUser);
-        player = dataSource.getPlayerById(currentPlayer);
-
-        if(user != null && player != null)
-        {
-            if(player.getFname().equals(user.getFname()) && player.getLname().equals(user.getLname())){
-                kidBox.setChecked(false);
-                et3.setEnabled(false);
-                et4.setEnabled(false);
-            }else{
-                kidBox.setChecked(true);
-            }
-
-            et1.setText(user.getFname());
-            et2.setText(user.getLname());
-            et3.setText(player.getFname());
-            et4.setText(player.getLname());
-            et5.setText(user.getPhone() + "");
-            et6.setText(user.getEmail());
-            et7.setText(user.getEmergency() + "");
-        }
     }
 
     public void onClickCheckBox(View view){
@@ -227,11 +277,11 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
             /***
              * update the player and user tables. There should be no change to enrollment since only personal information changes
              */
-            player = dataSource.updatePlayer(currentPlayer, childFirst, childLast, currentUser);
+            player = updateService.updatePlayer(currentPlayer, childFirst, childLast, currentUser);
             if(player != null){
-                user = dataSource.updateUser(currentUser, first, last, phone, email, emergency);
-                user = dataSource.getUserById(currentUser);
-                player = dataSource.getPlayerById(currentPlayer);
+                user = updateService.updateUser(currentUser, first, last, phone, email, emergency);
+                user = updateService.getUserById(currentUser);
+                player = updateService.getPlayerById(currentPlayer);
 
                 if(user != null && player != null)
                 {
