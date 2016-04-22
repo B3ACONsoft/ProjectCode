@@ -38,7 +38,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".UpdateService"
+            android:name=".SYCOServerAccess.UpdateService"
             android:exported="false" />
 
         <activity android:name=".activities.MainActivity" />
