@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -200,7 +201,8 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
         /**
          * taking in strings from edittexts
          */
-
+        Button button = (Button)findViewById(R.id.buttonQuickAddPlayerAddPlayer);
+            button.setEnabled(false);
         String  first      =                  et1.getText().toString().toUpperCase();
         String  last       =                  et2.getText().toString().toUpperCase();
         String  childFirst =                  et3.getText().toString().toUpperCase();
@@ -294,6 +296,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
                 clearForm();
             }
 
+            button.setEnabled(false);
             /**
              * All Exceptions are caught and displayed here, with a toast, and inside of the catch
              * block, every entry point is tested for minumum input first.

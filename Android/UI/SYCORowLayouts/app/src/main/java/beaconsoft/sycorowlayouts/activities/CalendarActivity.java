@@ -150,7 +150,7 @@ public class CalendarActivity extends AppCompatActivity {
                     } else {
                         Toast toast = Toast.makeText(getApplicationContext(), "Perhaps you've typed the wrong address?", Toast.LENGTH_LONG);
                         toast.setText(addresses.size() + " results from " + p.getStreetAddress() + " " +
-                                p.getCity() + " , " + p.getState() + " " + p.getZip());
+                                p.getCity() + " , " + p.getState() + " " + p.getZip() + "\n" + "Make sure you are connected to the internet.");
                         toast.show();
                     }
                 }
