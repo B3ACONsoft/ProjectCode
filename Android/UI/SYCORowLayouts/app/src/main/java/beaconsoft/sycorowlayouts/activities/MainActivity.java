@@ -1,20 +1,23 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.MySQLiteHelper;
-import beaconsoft.sycorowlayouts.UpdateService;
+
 import beaconsoft.sycorowlayouts.dbobjects.Users;
 import string.utils.ProperCase;
 
-import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +32,35 @@ public class MainActivity extends AppCompatActivity {
     private static final String ADMIN = "ADMIN";
     private static final String COACH = "COACH";
     private DataSource dataSource;
+    UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
+
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -49,6 +81,29 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        //Intent intent = new Intent();
+        //intent.setClassName("beaconsoft.sycorowlayouts.SYCOServerAccess", "beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService");
+        //startService(new Intent(this,
+          //      UpdateService.class));
+        //bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+        Log.d("blah", "blah");
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -60,19 +115,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        Intent intent = new Intent();
-        intent.setClassName("SYCOServerAccess", "SYCOServerAccess.UpdateService");
-        startService(intent);
-
-
-
-
         int x = 0;
 
 
 
 
-//        CustomFlag outFlag = new CustomFlag();
+//        TaskControl outFlag = new TaskControl();
 //        TestConnectionThread connInstance = new TestConnectionThread(outFlag);
 //        Thread t = new Thread(connInstance);
 //        t.start();
@@ -82,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //        int i = 0;
 
-
+        /*
         Intent intentLogin = getIntent();
         email = intentLogin.getStringExtra(EMAIL_KEY);
         permission = intentLogin.getStringExtra(LEVEL_KEY);
@@ -97,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 sendToUserHomeActivity(email);
                 break;
         }
+        */
     }
 
     public void sendToUserHomeActivity(String name) {

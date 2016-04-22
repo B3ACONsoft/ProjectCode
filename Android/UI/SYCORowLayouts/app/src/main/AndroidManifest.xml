@@ -38,7 +38,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".UpdateService"
+            android:name=".SYCOServerAccess.UpdateService"
             android:exported="false" />
 
         <activity android:name=".activities.MainActivity" />
@@ -153,6 +153,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="beaconsoft.sycorowlayouts.activities.LeaguesActivity" />
         </activity>
+
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package SYCOServerAccess;
+package beaconsoft.sycorowlayouts.SYCOServerAccess;
 
 import java.util.HashMap;
 

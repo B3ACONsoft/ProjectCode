@@ -1,14 +1,14 @@
-package beaconsoft.sycorowlayouts.activities;
+package beaconsoft.sycorowlayouts.SYCOServerAccess;
 
 /**
  * Created by Patrick on 3/15/2016.
  */
-public class CustomFlag {
+public class TaskControl {
     private String result;
 
     private boolean running;
 
-    public CustomFlag() {
+    public TaskControl() {
         this.result = "";
         this.running = false;
     }

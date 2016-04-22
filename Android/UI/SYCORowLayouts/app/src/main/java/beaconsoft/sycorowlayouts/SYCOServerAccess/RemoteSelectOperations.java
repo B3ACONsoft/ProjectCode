@@ -1,4 +1,4 @@
-package SYCOServerAccess;
+package beaconsoft.sycorowlayouts.SYCOServerAccess;
 
 
 public class RemoteSelectOperations extends RemoteOperations {
