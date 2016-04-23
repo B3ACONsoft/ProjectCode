@@ -174,7 +174,13 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
     @Override
     protected void onResume(){
         super.onResume();
-        initializePlaces();
+        if(!mBound){
+            bindService(new Intent(this,
+                    UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            initializePlaces();
+        }
+
     }
 
     @Override
