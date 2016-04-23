@@ -49,7 +49,10 @@ import beaconsoft.sycorowlayouts.dbobjects.Team;
 import beaconsoft.sycorowlayouts.dbobjects.Users;
 
 import static android.widget.AdapterView.*;
-
+/*
+    very important.
+    http://worldartsme.com/images/balloon-fart-clipart-1.jpg
+ */
 public class EditEventsActivity extends FragmentActivity implements OnItemSelectedListener,
        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
