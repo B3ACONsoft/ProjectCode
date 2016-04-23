@@ -94,6 +94,15 @@
             android:name=".activities.CoachHomeActivity"
             android:label="Coach&apos;s Panel" />
         <activity
+            android:name=".activities.CalendarActivity"
+            android:label="@string/title_activity_calendar"
+            android:launchMode="singleTop"
+            android:parentActivityName=".activities.LeaguesActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.LeaguesActivity" />
+        </activity>
+        <activity
             android:name=".activities.EditLeaguesActivity"
             android:label="@string/title_activity_edit_leagues"
             android:launchMode="singleTop"
