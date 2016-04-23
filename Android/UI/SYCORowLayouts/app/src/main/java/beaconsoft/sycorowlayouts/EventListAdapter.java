@@ -16,7 +16,7 @@ import beaconsoft.sycorowlayouts.dbobjects.Place;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
 
 public class EventListAdapter extends ArrayAdapter<Event>{
-	private DataSource dataSource;
+	private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService dataSource;
 	private List<Event> data = null;
 	private static LayoutInflater inflater=null;
 

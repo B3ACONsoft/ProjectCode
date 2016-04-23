@@ -16,7 +16,7 @@ import beaconsoft.sycorowlayouts.dbobjects.Place;
  * Created by Patrick on 3/23/2016.
  */
 public class PlaceListAdapter extends ArrayAdapter<Place> {
-    private DataSource dataSource;
+    private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService dataSource;
     private List<Place> data = null;
     private static LayoutInflater inflater=null;
 
