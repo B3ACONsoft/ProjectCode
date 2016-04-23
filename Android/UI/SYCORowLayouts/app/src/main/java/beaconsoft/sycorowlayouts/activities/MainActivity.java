@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String NAME_KEY  = "beaconsoft.sycorowlayouts.NAME";
     private static final String ADMIN = "ADMIN";
     private static final String COACH = "COACH";
-    beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
-    boolean mBound = false;             //to bind or not to bind...
+    private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
+    boolean mBound = false;                                                                //to bind or not to bind...
 
     /**
      *
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
         */
 
-        int x = 0;
+
 
 
 

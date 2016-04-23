@@ -88,6 +88,11 @@ public class CalendarActivity extends AppCompatActivity {
 
             mBound = true;
 
+            currentTeam = updateService.getTeamById(currentTeamId);
+            arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
+            cal_adapter = new CalendarAdapter(getApplicationContext(), cal_month, /* What is this? */ CalendarCollection.date_collection_arr,
+                    currentTeam, updateService);
+
         }
 
         @Override
@@ -101,157 +106,6 @@ public class CalendarActivity extends AppCompatActivity {
         super.onStart();
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
-
-        if(mBound) {
-            arrayListEvents = new ArrayList<>();
-            listView = (ListView)findViewById(R.id.lv_android);
-
-            Intent intent = getIntent();
-            currentLeagueId = intent.getIntExtra(LEAGUE_KEY, 0);
-            currentAdminId = intent.getIntExtra(ADMIN_KEY, 0);
-            currentAdminEmail = intent.getStringExtra(EMAIL_KEY);
-            name = intent.getStringExtra(NAME_KEY);
-            currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
-
-            currentTeam = updateService.getTeamById(currentTeamId);
-            arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
-
-            cal_month = (GregorianCalendar) GregorianCalendar.getInstance();
-            cal_month_copy = (GregorianCalendar) cal_month.clone();
-            cal_adapter = new CalendarAdapter(this, cal_month, /* What is this? */ CalendarCollection.date_collection_arr,
-                    currentTeam, updateService);
-
-            tv_month = (TextView) findViewById(R.id.tv_month);
-            tv_month.setText(android.text.format.DateFormat.format("MMMM yyyy", cal_month));
-
-            ImageButton previous = (ImageButton) findViewById(R.id.ib_prev);
-
-            previous.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    setPreviousMonth();
-                    refreshCalendar();
-                }
-            });
-
-            ImageButton next = (ImageButton) findViewById(R.id.Ib_next);
-            next.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    setNextMonth();
-                    refreshCalendar();
-
-                }
-            });
-            final ListView listView = (ListView)findViewById(R.id.lv_android);
-            GridView gridview = (GridView) findViewById(R.id.gv_calendar);
-            gridview.setAdapter(cal_adapter);
-
-            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    if (parent == listView) {
-                        int placeID = arrayListEvents.get(position).getPlaceID();
-                        Place p = updateService.getPlaceById(placeID);
-                        Geocoder geocoder = new Geocoder(getApplicationContext());
-                        try {
-
-                            addresses.addAll(geocoder.getFromLocationName(
-                                    String.format(Locale.ENGLISH, "%s %s, %s %d",
-                                            p.getStreetAddress(), p.getCity(), p.getState(),
-                                            p.getZip()), 1));
-                        } catch (IOException e) {
-                            Log.e("GEOLOCATION VARIABLES", "***");
-                        }
-                        if (addresses.size() > 0) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                                    "google.navigation:q=" +
-                                            Uri.encode(p.getStreetAddress() + " " +
-                                                    p.getCity() + ", " +
-                                                    p.getState() + " " +
-                                                    p.getZip()) + "&mode=d&avoid=tf"
-                            ));
-//                        intent.putExtra("LATITUDE", addresses.get(0).getLatitude());
-//                        intent.putExtra("LONGITUDE", addresses.get(0).getLongitude());
-//                        intent.putExtra("LOCATION_NAME", p.getPlaceName());
-                            intent.setPackage("com.google.android.apps.maps");
-//                        intent.setClassName(getApplicationContext(), "beaconsoft.sycorowlayouts.activities.MapsActivity");
-                            startActivity(intent);
-                        } else {
-                            Toast toast = Toast.makeText(getApplicationContext(), "Perhaps you've typed the wrong address?", Toast.LENGTH_LONG);
-                            toast.setText(addresses.size() + " results from " + p.getStreetAddress() + " " +
-                                    p.getCity() + " , " + p.getState() + " " + p.getZip());
-                            toast.show();
-                        }
-                    }
-                    return true;
-                }
-            });
-
-            gridview.setOnItemClickListener(new OnItemClickListener() {
-
-                public void onItemClick(AdapterView<?> parent, View v,
-                                        int position, long id) {
-
-                    ((CalendarAdapter) parent.getAdapter()).setSelected(v,position);
-                    String selectedGridDate = CalendarAdapter.day_string
-                            .get(position);
-
-                    String[] separatedTime = selectedGridDate.split("-");
-                    String gridvalueString = separatedTime[2].replaceFirst("^0*","");
-                    int gridvalue = Integer.parseInt(gridvalueString);
-
-                    if ((gridvalue > 10) && (position < 8)) {
-                        setPreviousMonth();
-                        refreshCalendar();
-                    } else if ((gridvalue < 7) && (position > 28)) {
-                        setNextMonth();
-                        refreshCalendar();
-                    }
-                    ((CalendarAdapter) parent.getAdapter()).setSelected(v, position);
-                    ((CalendarAdapter) parent.getAdapter()).getPositionList(selectedGridDate, CalendarActivity.this);
-                    arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
-                    ArrayList<String> compDates = new ArrayList<String>();
-                    for(int i = 0; i < arrayListEvents.size(); i++) {
-                        String[] splitDate = arrayListEvents.get(i).getStartDateTime().toString().split(" ");
-                        Log.e("SPLIT STRING", " ............." + arrayListEvents.get(i).getStartDateTime().toString());
-                        int monthInt = -1;
-                        String monthIntString = "";
-                        for (int j = 0; j < MonthFormat.months.length; j++) {
-                            if (splitDate[1].equals(MonthFormat.months[j])) {
-                                monthInt = j + 1;
-                                if (monthInt < 10) {
-                                    monthIntString = "0" + monthInt;
-                                } else {
-                                    monthIntString = monthInt + "";
-                                }
-                                break;
-                            }
-                        }
-                        compDates.add("" + splitDate[5] + "-" + monthIntString + "-" + splitDate[2]);
-                    }
-                    listView.clearChoices();
-                    ArrayList<Event> tempArrayListEvents = (ArrayList<Event>) arrayListEvents.clone();
-                    arrayListEvents.clear();
-                    for(int i = 0; i < compDates.size(); i++) {
-
-                        if (compDates.get(i).equals(selectedGridDate)){
-                            Event event = tempArrayListEvents.get(i);
-                            if(!arrayListEvents.contains(event)) {
-                                arrayListEvents.add(event);
-                            }
-                        }
-                    }
-
-                    populateListView();
-                }
-            });
-
-        }
-
     }
 
     protected void onStop() {
@@ -266,6 +120,152 @@ public class CalendarActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
+
+        arrayListEvents = new ArrayList<>();
+        listView = (ListView)findViewById(R.id.lv_android);
+
+        Intent intent = getIntent();
+        currentLeagueId = intent.getIntExtra(LEAGUE_KEY, 0);
+        currentAdminId = intent.getIntExtra(ADMIN_KEY, 0);
+        currentAdminEmail = intent.getStringExtra(EMAIL_KEY);
+        name = intent.getStringExtra(NAME_KEY);
+        currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
+
+
+
+        cal_month = (GregorianCalendar) GregorianCalendar.getInstance();
+        cal_month_copy = (GregorianCalendar) cal_month.clone();
+
+
+        tv_month = (TextView) findViewById(R.id.tv_month);
+        tv_month.setText(android.text.format.DateFormat.format("MMMM yyyy", cal_month));
+
+        ImageButton previous = (ImageButton) findViewById(R.id.ib_prev);
+
+        previous.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                setPreviousMonth();
+                refreshCalendar();
+            }
+        });
+
+        ImageButton next = (ImageButton) findViewById(R.id.Ib_next);
+        next.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                setNextMonth();
+                refreshCalendar();
+
+            }
+        });
+        final ListView listView = (ListView)findViewById(R.id.lv_android);
+        GridView gridview = (GridView) findViewById(R.id.gv_calendar);
+        gridview.setAdapter(cal_adapter);
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (parent == listView) {
+                    int placeID = arrayListEvents.get(position).getPlaceID();
+                    Place p = updateService.getPlaceById(placeID);
+                    Geocoder geocoder = new Geocoder(getApplicationContext());
+                    try {
+
+                        addresses.addAll(geocoder.getFromLocationName(
+                                String.format(Locale.ENGLISH, "%s %s, %s %d",
+                                        p.getStreetAddress(), p.getCity(), p.getState(),
+                                        p.getZip()), 1));
+                    } catch (IOException e) {
+                        Log.e("GEOLOCATION VARIABLES", "***");
+                    }
+                    if (addresses.size() > 0) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "google.navigation:q=" +
+                                        Uri.encode(p.getStreetAddress() + " " +
+                                                p.getCity() + ", " +
+                                                p.getState() + " " +
+                                                p.getZip()) + "&mode=d&avoid=tf"
+                        ));
+//                        intent.putExtra("LATITUDE", addresses.get(0).getLatitude());
+//                        intent.putExtra("LONGITUDE", addresses.get(0).getLongitude());
+//                        intent.putExtra("LOCATION_NAME", p.getPlaceName());
+                        intent.setPackage("com.google.android.apps.maps");
+//                        intent.setClassName(getApplicationContext(), "beaconsoft.sycorowlayouts.activities.MapsActivity");
+                        startActivity(intent);
+                    } else {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Perhaps you've typed the wrong address?", Toast.LENGTH_LONG);
+                        toast.setText(addresses.size() + " results from " + p.getStreetAddress() + " " +
+                                p.getCity() + " , " + p.getState() + " " + p.getZip());
+                        toast.show();
+                    }
+                }
+                return true;
+            }
+        });
+
+        gridview.setOnItemClickListener(new OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+
+                ((CalendarAdapter) parent.getAdapter()).setSelected(v,position);
+                String selectedGridDate = CalendarAdapter.day_string
+                        .get(position);
+
+                String[] separatedTime = selectedGridDate.split("-");
+                String gridvalueString = separatedTime[2].replaceFirst("^0*","");
+                int gridvalue = Integer.parseInt(gridvalueString);
+
+                if ((gridvalue > 10) && (position < 8)) {
+                    setPreviousMonth();
+                    refreshCalendar();
+                } else if ((gridvalue < 7) && (position > 28)) {
+                    setNextMonth();
+                    refreshCalendar();
+                }
+                ((CalendarAdapter) parent.getAdapter()).setSelected(v, position);
+                ((CalendarAdapter) parent.getAdapter()).getPositionList(selectedGridDate, CalendarActivity.this);
+                arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
+                ArrayList<String> compDates = new ArrayList<String>();
+                for(int i = 0; i < arrayListEvents.size(); i++) {
+                    String[] splitDate = arrayListEvents.get(i).getStartDateTime().toString().split(" ");
+                    Log.e("SPLIT STRING", " ............." + arrayListEvents.get(i).getStartDateTime().toString());
+                    int monthInt = -1;
+                    String monthIntString = "";
+                    for (int j = 0; j < MonthFormat.months.length; j++) {
+                        if (splitDate[1].equals(MonthFormat.months[j])) {
+                            monthInt = j + 1;
+                            if (monthInt < 10) {
+                                monthIntString = "0" + monthInt;
+                            } else {
+                                monthIntString = monthInt + "";
+                            }
+                            break;
+                        }
+                    }
+                    compDates.add("" + splitDate[5] + "-" + monthIntString + "-" + splitDate[2]);
+                }
+                listView.clearChoices();
+                ArrayList<Event> tempArrayListEvents = (ArrayList<Event>) arrayListEvents.clone();
+                arrayListEvents.clear();
+                for(int i = 0; i < compDates.size(); i++) {
+
+                    if (compDates.get(i).equals(selectedGridDate)){
+                        Event event = tempArrayListEvents.get(i);
+                        if(!arrayListEvents.contains(event)) {
+                            arrayListEvents.add(event);
+                        }
+                    }
+                }
+
+                populateListView();
+            }
+        });
+
     }
 
     //TODO: --> This stuff first - Put in updateService, and replace your listview adapter with mine, which is really

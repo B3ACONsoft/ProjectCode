@@ -92,6 +92,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
 
             mBound = true;
 
+            loadSpinners();
         }
 
         @Override
@@ -105,11 +106,6 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         super.onStart();
         bindService(new Intent(this,
                 beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
-
-        if(mBound) {
-
-
-        }
 
     }
 
@@ -187,7 +183,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
         textViewLeaguesEmail.setText(email);
         textViewLeaguesAdmin.setText(name + ", please choose a sport...");
 
-        loadSpinners();
+
     }
 
     @Override

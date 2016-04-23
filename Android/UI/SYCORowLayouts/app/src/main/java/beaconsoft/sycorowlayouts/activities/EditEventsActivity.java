@@ -172,7 +172,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
 
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
-        if(mBound) {
+
 
             Intent intent = getIntent();
             currentAdminEmail = intent.getStringExtra(EMAIL_KEY);
@@ -313,7 +313,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
             listview.setChoiceMode(1);
             listview.setItemsCanFocus(true);
             listview.setSelectionAfterHeaderView();
-        }
+
     }
 
     private void initializeListView(Team team) {
