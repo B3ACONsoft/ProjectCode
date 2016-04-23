@@ -10,16 +10,17 @@ import android.widget.TextView;
 import java.util.List;
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.*;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
 import beaconsoft.sycorowlayouts.dbobjects.Place;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
 
 public class EventListAdapter extends ArrayAdapter<Event>{
-	private DataSource dataSource;
+	private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService dataSource;
 	private List<Event> data = null;
 	private static LayoutInflater inflater=null;
 
-	public EventListAdapter(Context context, int layoutResourceId, List<Event> data, DataSource dataSource) {
+	public EventListAdapter(Context context, int layoutResourceId, List<Event> data, beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService dataSource) {
 		super(context, layoutResourceId, data);
 		this.data = data;
 		this.dataSource = dataSource;

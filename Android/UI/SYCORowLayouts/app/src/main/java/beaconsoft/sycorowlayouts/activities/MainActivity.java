@@ -7,8 +7,12 @@ import beaconsoft.sycorowlayouts.dbobjects.Users;
 import string.utils.ProperCase;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -28,7 +32,68 @@ public class MainActivity extends AppCompatActivity {
     private static final String NAME_KEY  = "beaconsoft.sycorowlayouts.NAME";
     private static final String ADMIN = "ADMIN";
     private static final String COACH = "COACH";
-    private DataSource dataSource;
+    beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+            Intent intentLogin = getIntent();
+            email = intentLogin.getStringExtra(EMAIL_KEY);
+            permission = intentLogin.getStringExtra(LEVEL_KEY);
+            switch (permission) {
+                case ADMIN:
+                    sendToLeaguesActivity(email);
+                    break;
+                case COACH:
+                    sendToCoachHomeActivity(email);
+                    break;
+                default:
+                    sendToUserHomeActivity(email);
+                    break;
+            }
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -52,20 +117,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            Log.w(MySQLiteHelper.class.getName(), e.getMessage());
-        }
-
+        /*
 
         Intent intent = new Intent();
         intent.setClassName("SYCOServerAccess", "SYCOServerAccess.UpdateService");
         startService(intent);
 
 
-
+        */
 
         int x = 0;
 
@@ -83,32 +142,19 @@ public class MainActivity extends AppCompatActivity {
 //        int i = 0;
 
 
-        Intent intentLogin = getIntent();
-        email = intentLogin.getStringExtra(EMAIL_KEY);
-        permission = intentLogin.getStringExtra(LEVEL_KEY);
-        switch (permission) {
-            case ADMIN:
-                sendToLeaguesActivity(email);
-                break;
-            case COACH:
-                sendToCoachHomeActivity(email);
-                break;
-            default:
-                sendToUserHomeActivity(email);
-                break;
-        }
+
     }
 
     public void sendToUserHomeActivity(String name) {
         Intent intent = new Intent(this, UserHomeActivity.class);
         intent.putExtra(EMAIL_KEY, name);
         startActivity(intent);
-        dataSource.close();
+
     }
 
     public void sendToLeaguesActivity(String email){
 
-        Users tempUser = dataSource.getUserByEmail(email.toUpperCase());
+        Users tempUser = updateService.getUserByEmail(email.toUpperCase());
                 int adminId  = tempUser.getUserID();
                 String fname = tempUser.getFname();
                 fname = ProperCase.toProperCase(fname);
@@ -122,12 +168,12 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(ADMIN_KEY, adminId);
         intent.putExtra(NAME_KEY, name);
         startActivity(intent);
-        dataSource.close();
+
     }
 
     public void sendToCoachHomeActivity(String email){
 
-        Users coach = dataSource.getUserByEmail(email.toUpperCase());
+        Users coach = updateService.getUserByEmail(email.toUpperCase());
         int coachId  = coach.getUserID();
 
         Intent intent = new Intent(this, CoachHomeActivity.class);
@@ -135,6 +181,6 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(COACH_KEY, coachId);
         intent.putExtra(NAME_KEY, coach.getFname() + " " + coach.getLname());
         startActivity(intent);
-        dataSource.close();
+
     }
 }

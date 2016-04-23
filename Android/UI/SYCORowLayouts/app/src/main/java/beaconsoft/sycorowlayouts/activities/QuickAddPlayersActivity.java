@@ -1,11 +1,15 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -22,6 +26,7 @@ import java.sql.Date;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Enrollment;
 import beaconsoft.sycorowlayouts.dbobjects.Player;
 import beaconsoft.sycorowlayouts.dbobjects.Users;
@@ -43,14 +48,64 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
-    private DataSource dataSource;
+
     private String email;
     private String name;
     private int currentLeague;
     private int currentTeam;
     private int currentAdmin;
     private int currentPlayer;
+    UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
 
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+        if(mBound) {
+
+
+        }
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
@@ -81,12 +136,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_players);
-        dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
 
         /**
          * After setting the XML file in it's place as UI, get the intent and empty its contents into
@@ -241,35 +291,35 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
         /**
          * Check and see if the user exists
          */
-        if(dataSource.checkForUserByEmail(email)){
+        if(updateService.checkForUserByEmail(email)){
 
             /**
              * if the user DOES exist, get the user
              */
-            user = dataSource.getUserByEmail(email.toUpperCase());
+            user = updateService.getUserByEmail(email.toUpperCase());
 
             /**
              * check to see if the player exists, and is attached to the user
              */
-            if(dataSource.checkForPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID())){
+            if(updateService.checkForPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID())){
                 /**
                  * if the player exists, get the player
                  */
-                player = dataSource.getPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID());
+                player = updateService.getPlayerByFirstLastAndUserId(childFirst, childLast, user.getUserID());
 
             }else{
                 /**
                  * if the player does not exist, then make a new one
                  */
-                player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
+                player = updateService.createPlayer(childFirst, childLast, user.getUserID());
             }
 
         }else{
             /**
              * if the user does not exist, then we must make a user and a player
               */
-            user = dataSource.createUsers(first, last, phone, email, emergency, "USER", "PASS");
-            player = dataSource.createPlayer(childFirst, childLast, user.getUserID());
+            user = updateService.createUsers(first, last, phone, email, emergency, "USER", "PASS");
+            player = updateService.createPlayer(childFirst, childLast, user.getUserID());
         }
 
 
@@ -278,12 +328,12 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
              * beneathe the last buttons that will show the last record inserted.
              */
         Calendar cal = Calendar.getInstance();
-            Enrollment enrollment = dataSource.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(cal.getTimeInMillis()), 1.99);
+            Enrollment enrollment = updateService.createEnrollment(user.getUserID(), player.getPlayerID(), currentLeague, currentTeam, new Date(cal.getTimeInMillis()), 1.99);
 
             if(enrollment != null){
 
                 currentPlayer = player.getPlayerID();
-                int newAttendances = dataSource.addUserToAttendance(currentPlayer, currentTeam);
+                int newAttendances = updateService.addUserToAttendance(currentPlayer, currentTeam);
                 Toast toast = Toast.makeText(this,
                         "User:  (" + user.getFname() + " " + user.getLname() + ") and\n" +
                                 "Player (" + player.getFname() + " " + player.getLname() + ")" +

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.activities.CalendarActivity;
 import beaconsoft.sycorowlayouts.activities.util.CalendarCollection;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
@@ -61,7 +62,7 @@ public class CalendarAdapter extends BaseAdapter {
     private String[] months = MonthFormat.months;
 
     public CalendarAdapter(Context context, GregorianCalendar monthCalendar, ArrayList<CalendarCollection> date_collection_arr,
-                           Team currentTeam, DataSource dataSource) {
+                           Team currentTeam, UpdateService dataSource) {
 
         /**
          * Finds all events and makes a string for comparison (the other string is no better)

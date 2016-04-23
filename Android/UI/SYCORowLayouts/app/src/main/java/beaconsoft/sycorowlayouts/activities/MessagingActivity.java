@@ -1,6 +1,10 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
@@ -13,36 +17,83 @@ import java.sql.SQLException;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 
 public class MessagingActivity extends AppCompatActivity {
 
-    DataSource dataSource = new DataSource(this);
+
     private static final String PHONE_KEY = "beaconsoft.sycorowlayouts.PHONE";
     private static final String NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
     private String phoneNumber = "";
     private String name = "";
     private EditText editTextMessage;
+    UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
+
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+        if(mBound) {
+
+
+        }
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+    @Override
     protected void onPause(){
-        dataSource.close();
+
         super.onPause();
     }
 
     @Override
     protected void onDestroy(){
-        dataSource.close();
+
         super.onDestroy();
     }
 
     @Override
     protected void onResume()
     {
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
         super.onResume();
     }
 

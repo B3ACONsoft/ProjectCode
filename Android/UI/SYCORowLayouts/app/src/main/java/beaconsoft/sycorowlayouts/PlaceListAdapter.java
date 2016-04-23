@@ -9,17 +9,18 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import beaconsoft.sycorowlayouts.SYCOServerAccess.*;
 import beaconsoft.sycorowlayouts.dbobjects.Place;
 
 /**
  * Created by Patrick on 3/23/2016.
  */
 public class PlaceListAdapter extends ArrayAdapter<Place> {
-    private DataSource dataSource;
+    private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService dataSource;
     private List<Place> data = null;
     private static LayoutInflater inflater=null;
 
-    public PlaceListAdapter(Context context, int layoutResourceId, List<Place> data, DataSource dataSource) {
+    public PlaceListAdapter(Context context, int layoutResourceId, List<Place> data, beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService dataSource) {
         super(context, layoutResourceId, data);
         this.data = data;
         this.dataSource = dataSource;

@@ -1,8 +1,12 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -21,6 +25,7 @@ import java.util.Calendar;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
 import beaconsoft.sycorowlayouts.dbobjects.Users;
 
@@ -29,7 +34,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
     private int currentLeague;
     private int currentUser;
     private int currentTeam;
-    private DataSource dataSource;
+
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
     private ArrayList<Users> coachArrayList;
@@ -49,26 +54,72 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
     private long emerg;
     private String email;
     private TextView textViewTop;
+    UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
+
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+        if(mBound) {
+
+
+        }
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+    @Override
     public void onDestroy(){
-        dataSource.close();
+
         super.onDestroy();
     }
 
     @Override
     public void onResume(){
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
         super.onResume();
     }
 
     @Override
     public void onPause(){
-        dataSource.close();
+
         super.onPause();
     }
 
@@ -103,12 +154,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_teams);
 
-        dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e1) {
-            e1.printStackTrace();
-        }
+
 
         Intent intent = getIntent();
         email = intent.getStringExtra(EMAIL_KEY);
@@ -126,7 +172,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
     public void loadSpinner() {
 
         coachArrayList.clear();
-        coachArrayList.addAll(dataSource.getListOfUsersAvailableToCoach(currentLeague));
+        coachArrayList.addAll(updateService.getListOfUsersAvailableToCoach(currentLeague));
         spinnerCoaches = (Spinner) findViewById(R.id.spinnerCoachesQuickAddTeams);
         adapterSpinnerCoaches = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, coachArrayList.toArray());
         adapterSpinnerCoaches.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -163,17 +209,17 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
             Users coach = (Users)spinnerCoaches.getSelectedItem();
             if(coach != null) {
                 ArrayList<Team> allLeagueTeams = new ArrayList<>();
-                allLeagueTeams.addAll(dataSource.getListOfTeamsByLeague(currentLeague));
+                allLeagueTeams.addAll(updateService.getListOfTeamsByLeague(currentLeague));
                 ArrayList<String> teamNames = new ArrayList<>();
                 for (int i = 0; i < allLeagueTeams.size(); i++) {
                     teamNames.add(allLeagueTeams.get(i).getTeamName());
                 }
                 ArrayList<Team> tempList = new ArrayList<>();
-                tempList.addAll(dataSource.getListOfTeamsCoachedByUser(currentUser, currentLeague));
+                tempList.addAll(updateService.getListOfTeamsCoachedByUser(currentUser, currentLeague));
                 if (tempList.isEmpty() && !teamNames.contains(teamName)) {
-                    Team team = dataSource.createTeam(teamName, currentLeague, coach.getUserID());
+                    Team team = updateService.createTeam(teamName, currentLeague, coach.getUserID());
                     Calendar cal = Calendar.getInstance();
-                    dataSource.createEnrollment(coach.getUserID(), 0, currentLeague, team.getTeamID(),
+                    updateService.createEnrollment(coach.getUserID(), 0, currentLeague, team.getTeamID(),
                             new Date(cal.getTimeInMillis()), 1.99);
                     editTeamName.setText("");
                     currentTeam = team.getTeamID();
@@ -211,10 +257,10 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
             phone = Long.parseLong(editTextPhone.getText().toString());
             emerg = Long.parseLong(editTextEmergency.getText().toString());
             email = editTextCoachEmail.getText().toString().toUpperCase();
-            Users testUser = dataSource.getUserByEmail(email);
+            Users testUser = updateService.getUserByEmail(email);
             if(testUser == null && fname.length() > 1 && lname.length() > 1 &&
                     phone > 1000000000 && email.length() > 5 && emerg > 1000000000) {
-                Users user = dataSource.createUsers(fname.toUpperCase(), lname.toUpperCase(),
+                Users user = updateService.createUsers(fname.toUpperCase(), lname.toUpperCase(),
                         phone, email.toUpperCase(), emerg, "COACH", "PASS");
                 loadSpinner();
                 Toast toast = Toast.makeText(this,

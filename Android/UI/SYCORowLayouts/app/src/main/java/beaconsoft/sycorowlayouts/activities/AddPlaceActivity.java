@@ -1,7 +1,13 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -18,11 +24,11 @@ import java.util.List;
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.PlaceListAdapter;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Place;
 
 public class AddPlaceActivity extends AppCompatActivity implements OnItemSelectedListener {
 
-    private DataSource dataSource = new DataSource(this);
     private Spinner spinnerStates;
     private ArrayList<String> states = new ArrayList<>();
     private List<Place>      places  = new ArrayList<>();
@@ -38,26 +44,86 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
     private EditText streetAddress;
     private EditText          city;
     private EditText           zip;
+    UpdateService updateService;        //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
+
+
+    /**
+     *
+     * Defines callbacks for service binding, passed to bindService()
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
+        if(mBound) {
+            for(String s: arrayStates){
+                states.add(s);
+            }
+            spinnerStates = (Spinner) findViewById(R.id.spinnerStates);
+            spinnerStatesAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item,
+                    states);
+            spinnerStates.setOnItemSelectedListener(this);
+            spinnerStates.setAdapter(spinnerStatesAdapter);
+            placesAddPlacesListView = (ListView)findViewById(R.id.listViewAddPlaces);
+            places.addAll(updateService.getListOfPlaces());
+            if (places.size() > 0){
+                spinnerPlacesAdapter = new PlaceListAdapter(this, R.layout.custom_list_view_places, places, updateService);
+                placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
+            }
+
+        }
+
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
 
     @Override
     protected void onResume(){
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
         super.onResume();
     }
 
     @Override
     protected void onDestroy(){
-        dataSource.close();
+
         super.onDestroy();
     }
 
     @Override
     protected void onPause(){
-        dataSource.close();
+
         super.onPause();
     }
 
@@ -66,26 +132,6 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_place);
 
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        for(String s: arrayStates){
-            states.add(s);
-        }
-        spinnerStates = (Spinner) findViewById(R.id.spinnerStates);
-        spinnerStatesAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item,
-                states);
-        spinnerStates.setOnItemSelectedListener(this);
-        spinnerStates.setAdapter(spinnerStatesAdapter);
-        placesAddPlacesListView = (ListView)findViewById(R.id.listViewAddPlaces);
-        places.addAll(dataSource.getListOfPlaces());
-        if (places.size() > 0){
-            spinnerPlacesAdapter = new PlaceListAdapter(this, R.layout.custom_list_view_places, places, dataSource);
-            placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
-        }
     }
 
     @Override
@@ -105,19 +151,21 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
                   zip = (EditText)findViewById(R.id.editTextAddPlaceZip);
 
 
+        if(mBound) {
+            updateService.createPlace(name.getText().toString().toUpperCase(),
+                    streetAddress.getText().toString().toUpperCase(),
+                    city.getText().toString().toUpperCase(),
+                    spinnerStates.getSelectedItem().toString().toUpperCase(),
+                    Integer.parseInt(zip.getText().toString()));
 
-        dataSource.createPlace(name.getText().toString().toUpperCase(),
-                streetAddress.getText().toString().toUpperCase(),
-                city.getText().toString().toUpperCase(),
-                spinnerStates.getSelectedItem().toString().toUpperCase(),
-                Integer.parseInt(zip.getText().toString()));
-
-        places.clear();
-        places.addAll(dataSource.getListOfPlaces());
-        if (places.size() > 0){
-            spinnerPlacesAdapter = new PlaceListAdapter(this, R.layout.custom_list_view_places, places, dataSource);
-            placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
+            places.clear();
+            places.addAll(updateService.getListOfPlaces());
+            if (places.size() > 0){
+                spinnerPlacesAdapter = new PlaceListAdapter(this, R.layout.custom_list_view_places, places, updateService);
+                placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
+            }
         }
+
     }
 
     public void openGoogleMaps(View view){

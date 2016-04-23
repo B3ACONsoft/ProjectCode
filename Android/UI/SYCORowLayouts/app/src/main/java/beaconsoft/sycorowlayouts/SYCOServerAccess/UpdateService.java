@@ -5,9 +5,11 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -281,11 +283,11 @@ public class UpdateService extends Service {
         this.serverConnectionInterface.deleteQueue.add(delete);
     }
 
-    public void open_db() throws SQLException {
+    private void open_db() throws SQLException {
         db = dbHelper.getWritableDatabase();
     }
 
-    public void close_db(){
+    private void close_db(){
         dbHelper.close();
     }
 
@@ -304,15 +306,24 @@ public class UpdateService extends Service {
     * */
 
     public Sport createSport(String sportName){
-        ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.COLUMN_SPORT_NAME, sportName);
-        long insertID = db.insert(MySQLiteHelper.TABLE_SPORT, null, values);
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_SPORT, columnsSport,
-                MySQLiteHelper.COLUMN_SPORT_ID + " = " + insertID, null, null, null, null);
-        cursor.moveToFirst();
-        Sport newSport = cursorToSport(cursor);
-        queueInsert(newSport);
-        return newSport;
+        try{
+            open_db();
+            ContentValues values = new ContentValues();
+            values.put(MySQLiteHelper.COLUMN_SPORT_NAME, sportName);
+            long insertID = db.insert(MySQLiteHelper.TABLE_SPORT, null, values);
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_SPORT, columnsSport,
+                    MySQLiteHelper.COLUMN_SPORT_ID + " = " + insertID, null, null, null, null);
+            cursor.moveToFirst();
+            Sport newSport = cursorToSport(cursor);
+            queueInsert(newSport);
+            return newSport;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     private Sport cursorToSport(Cursor cursor) {
@@ -323,64 +334,100 @@ public class UpdateService extends Service {
     }
 
     public Collection<? extends Sport> getListOfSportsByCoach(int coachId) {
-        List<Sport> sportsList = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT s.sport_id, s.sport_name " +
-                "FROM sport s, league l, team t " +
-                "WHERE t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID + " = " + coachId + " AND " +
-                "t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + " = " + "l." + MySQLiteHelper.COLUMN_LEAGUE_ID + " AND " +
-                "l." + MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + "s." + MySQLiteHelper.COLUMN_SPORT_ID
+        try{
+            open_db();
+            List<Sport> sportsList = new ArrayList<>();
+            Cursor cursor = db.rawQuery("SELECT s.sport_id, s.sport_name " +
+                    "FROM sport s, league l, team t " +
+                    "WHERE t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID + " = " + coachId + " AND " +
+                    "t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + " = " + "l." + MySQLiteHelper.COLUMN_LEAGUE_ID + " AND " +
+                    "l." + MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + "s." + MySQLiteHelper.COLUMN_SPORT_ID
 
-                , null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Sport tempSport = cursorToSport(cursor);
-            sportsList.add(tempSport);
-            cursor.moveToNext();
+                    , null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Sport tempSport = cursorToSport(cursor);
+                sportsList.add(tempSport);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return sportsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return sportsList;
+
     }
 
     public Collection<? extends Sport> getListOfSportsByAdmin(int currentAdminId) {
-        List<Sport> sportsList = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT s.sport_id, s.sport_name FROM sport s, league l " +
-                " WHERE s.sport_id = l.sport_id AND l.user_id = " + currentAdminId, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Sport tempSport = cursorToSport(cursor);
-            sportsList.add(tempSport);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Sport> sportsList = new ArrayList<>();
+            Cursor cursor = db.rawQuery("SELECT DISTINCT s.sport_id, s.sport_name FROM sport s, league l " +
+                    " WHERE s.sport_id = l.sport_id AND l.user_id = " + currentAdminId, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Sport tempSport = cursorToSport(cursor);
+                sportsList.add(tempSport);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return sportsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return sportsList;
+
     }
 
     public boolean checkForDuplicateSports(String tempName) {
-        List<Sport> sportsList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_SPORT, columnsSport,
-                MySQLiteHelper.COLUMN_SPORT_NAME + " = '" + tempName + "';", null, null, null, null);
-        cursor.moveToFirst();
-        if(cursor.getCount() > 0){
-            return true;
-        }else{
+        try{
+            open_db();
+            List<Sport> sportsList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_SPORT, columnsSport,
+                    MySQLiteHelper.COLUMN_SPORT_NAME + " = '" + tempName + "';", null, null, null, null);
+            cursor.moveToFirst();
+            if(cursor.getCount() > 0){
+                return true;
+            }else{
+                return false;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return false;
+        } finally {
+            close_db();
         }
+
     }
 
 
 
     public List<Sport> getListOfSports(){
-        List<Sport> sportsList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_SPORT, columnsSport,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Sport tempSport = cursorToSport(cursor);
-            sportsList.add(tempSport);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Sport> sportsList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_SPORT, columnsSport,
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Sport tempSport = cursorToSport(cursor);
+                sportsList.add(tempSport);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return sportsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return sportsList;
+
     }
 
     /*                                'USERS' OBJECT SECTION                                */
@@ -397,22 +444,31 @@ public class UpdateService extends Service {
 
     public Users createUsers(String first, String last, long phone, String email,
                              long emergency, String userType, String password){
-        ContentValues values = new ContentValues();
-        values.putNull(MySQLiteHelper.COLUMN_USER_ID);
-        values.put(MySQLiteHelper.COLUMN_FIRST, first);
-        values.put(MySQLiteHelper.COLUMN_LAST, last);
-        values.put(MySQLiteHelper.COLUMN_PHONE, phone);
-        values.put(MySQLiteHelper.COLUMN_EMERGENCY, emergency);
-        values.put(MySQLiteHelper.COLUMN_EMAIL, email);
-        values.put(MySQLiteHelper.COLUMN_USER_TYPE, userType);
-        values.put(MySQLiteHelper.COLUMN_PASSWORD, password);
-        long insertID = db.insert(MySQLiteHelper.TABLE_USERS, null, values);
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
-                MySQLiteHelper.COLUMN_USER_ID + " = " + insertID, null, null, null, null);
-        cursor.moveToFirst();
-        Users newUser = cursorToUser(cursor);
-        queueInsert(newUser);
-        return newUser;
+        try{
+            open_db();
+            ContentValues values = new ContentValues();
+            values.putNull(MySQLiteHelper.COLUMN_USER_ID);
+            values.put(MySQLiteHelper.COLUMN_FIRST, first);
+            values.put(MySQLiteHelper.COLUMN_LAST, last);
+            values.put(MySQLiteHelper.COLUMN_PHONE, phone);
+            values.put(MySQLiteHelper.COLUMN_EMERGENCY, emergency);
+            values.put(MySQLiteHelper.COLUMN_EMAIL, email);
+            values.put(MySQLiteHelper.COLUMN_USER_TYPE, userType);
+            values.put(MySQLiteHelper.COLUMN_PASSWORD, password);
+            long insertID = db.insert(MySQLiteHelper.TABLE_USERS, null, values);
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
+                    MySQLiteHelper.COLUMN_USER_ID + " = " + insertID, null, null, null, null);
+            cursor.moveToFirst();
+            Users newUser = cursorToUser(cursor);
+            queueInsert(newUser);
+            return newUser;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     private Users cursorToUser(Cursor cursor){
@@ -429,148 +485,221 @@ public class UpdateService extends Service {
     }
 
     public boolean checkForDuplicateEmail(String email) {
-        Cursor cursor = db.query(
-                MySQLiteHelper.TABLE_USERS, columnsUsers,
-                MySQLiteHelper.COLUMN_EMAIL + " = " + email,
-                null, null, null, null);
-        cursor.moveToFirst();
-        if(cursor.getCount() >= 1){
-            return true;
-        }else{
+        try{
+            open_db();
+            Cursor cursor = db.query(
+                    MySQLiteHelper.TABLE_USERS, columnsUsers,
+                    MySQLiteHelper.COLUMN_EMAIL + " = " + email,
+                    null, null, null, null);
+            cursor.moveToFirst();
+            if(cursor.getCount() >= 1){
+                return true;
+            }else{
+                return false;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return false;
+        } finally {
+            close_db();
         }
+
     }
 
     public Users updateUser(int currentUser, String first, String last, Long phone, String email, Long emergency) {
-        ContentValues cv = new ContentValues();
-        cv.put("fname", first);
-        cv.put("lname", last);
-        cv.put("phone", phone);
-        cv.put("email", email);
-        cv.put("emergency", emergency);
-        db.beginTransaction();
-        int rowsAltered = db.update(MySQLiteHelper.TABLE_USERS, cv,
-                MySQLiteHelper.COLUMN_USER_ID + " = ?",
-                new String[] { currentUser + "" });
-        if(rowsAltered == 1) {
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            Users returVal = getUserById(currentUser);
-            queueUpdate(returVal);
-            return returVal;
-        }else{
-            db.execSQL("ROLLBACK");
-            db.endTransaction();
+        try{
+            open_db();
+            ContentValues cv = new ContentValues();
+            cv.put("fname", first);
+            cv.put("lname", last);
+            cv.put("phone", phone);
+            cv.put("email", email);
+            cv.put("emergency", emergency);
+            db.beginTransaction();
+            int rowsAltered = db.update(MySQLiteHelper.TABLE_USERS, cv,
+                    MySQLiteHelper.COLUMN_USER_ID + " = ?",
+                    new String[] { currentUser + "" });
+            if(rowsAltered == 1) {
+                db.setTransactionSuccessful();
+                db.endTransaction();
+                Users returVal = getUserById(currentUser);
+                queueUpdate(returVal);
+                return returVal;
+            }else{
+                db.execSQL("ROLLBACK");
+                db.endTransaction();
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
     }
 
     public Users getUserById(int currentUser) {
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
-                MySQLiteHelper.COLUMN_USER_ID + " = " + currentUser,
-                null, null, null, null);
-        cursor.moveToFirst();
-        if(cursor.getCount() == 1) {
-            return cursorToUser(cursor);
-        }else {
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
+                    MySQLiteHelper.COLUMN_USER_ID + " = " + currentUser,
+                    null, null, null, null);
+            cursor.moveToFirst();
+            if(cursor.getCount() == 1) {
+                return cursorToUser(cursor);
+            }else {
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
     }
 
     public boolean checkForUserByEmail(String email){
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
-                MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase() + "';",
-                null,null,null,null);
-        cursor.moveToFirst();
-        if(cursor.getCount() == 1){
-            return true;
-        }else{
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
+                    MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase() + "';",
+                    null,null,null,null);
+            cursor.moveToFirst();
+            if(cursor.getCount() == 1){
+                return true;
+            }else{
+                return false;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return false;
+            //TODO this is probably a bad thing to return i dunnooooo
+        } finally {
+            close_db();
         }
+
     }
 
     public List<Users> getListOfUsers(){
-        List<Users> usersList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Users tempUser = cursorToUser(cursor);
-            usersList.add(tempUser);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Users> usersList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Users tempUser = cursorToUser(cursor);
+                usersList.add(tempUser);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return usersList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return usersList;
+
     }
 
     public Users getUserByEmail(String email){
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
-                MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase() + "'", null, null, null, null);
-        cursor.moveToNext();
-        if(cursor.getCount() == 1) {
-            return cursorToUser(cursor);
-        }else if(cursor.getCount() == 0){
-            return null;
-        }else{
-            try {
-                throw new Exception("There is more than one user with that email. The database is not atomic...");
-            } catch (Exception e) {
-                e.printStackTrace();
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_USERS, columnsUsers,
+                    MySQLiteHelper.COLUMN_EMAIL + " = '" + email.toUpperCase() + "'", null, null, null, null);
+            cursor.moveToNext();
+            if(cursor.getCount() == 1) {
+                return cursorToUser(cursor);
+            }else if(cursor.getCount() == 0){
+                return null;
+            }else{
+                try {
+                    throw new Exception("There is more than one user with that email. The database is not atomic...");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+            return new Users();
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        return new Users();
+
     }
 
     public List<Users> getListOfUsersAvailableToCoach(int currentLeague){
-        List<Users> usersList = new ArrayList<>();
-        Cursor cursor = db.rawQuery(
-                "SELECT " +
-                        " u." + MySQLiteHelper.COLUMN_USER_ID     + ", " +
-                        " u." + MySQLiteHelper.COLUMN_FIRST       + ", " +
-                        " u." + MySQLiteHelper.COLUMN_LAST        + ", " +
-                        " u." + MySQLiteHelper.COLUMN_PHONE       + ", " +
-                        " u." + MySQLiteHelper.COLUMN_EMERGENCY   + ", " +
-                        " u." + MySQLiteHelper.COLUMN_EMAIL       + ", " +
-                        " u." + MySQLiteHelper.COLUMN_USER_TYPE   + ", " +
-                        " u." + MySQLiteHelper.COLUMN_PASSWORD    +
-                        " FROM users u WHERE " + MySQLiteHelper.COLUMN_USER_TYPE + " = 'COACH'" +
-                        " EXCEPT SELECT " +
-                        " u." + MySQLiteHelper.COLUMN_USER_ID     + ", " +
-                        " u." + MySQLiteHelper.COLUMN_FIRST       + ", " +
-                        " u." + MySQLiteHelper.COLUMN_LAST        + ", " +
-                        " u." + MySQLiteHelper.COLUMN_PHONE       + ", " +
-                        " u." + MySQLiteHelper.COLUMN_EMERGENCY   + ", " +
-                        " u." + MySQLiteHelper.COLUMN_EMAIL       + ", " +
-                        " u." + MySQLiteHelper.COLUMN_USER_TYPE   + ", " +
-                        " u." + MySQLiteHelper.COLUMN_PASSWORD    +
-                        " FROM " + MySQLiteHelper.TABLE_USERS + " u, " + MySQLiteHelper.TABLE_TEAM + " t " +
-                        " WHERE u." + MySQLiteHelper.COLUMN_USER_ID + " = t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID +
-                        " AND t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + " = " + currentLeague + ";"
-                , null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Users tempUser = cursorToUser(cursor);
-            usersList.add(tempUser);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Users> usersList = new ArrayList<>();
+            Cursor cursor = db.rawQuery(
+                    "SELECT " +
+                            " u." + MySQLiteHelper.COLUMN_USER_ID     + ", " +
+                            " u." + MySQLiteHelper.COLUMN_FIRST       + ", " +
+                            " u." + MySQLiteHelper.COLUMN_LAST        + ", " +
+                            " u." + MySQLiteHelper.COLUMN_PHONE       + ", " +
+                            " u." + MySQLiteHelper.COLUMN_EMERGENCY   + ", " +
+                            " u." + MySQLiteHelper.COLUMN_EMAIL       + ", " +
+                            " u." + MySQLiteHelper.COLUMN_USER_TYPE   + ", " +
+                            " u." + MySQLiteHelper.COLUMN_PASSWORD    +
+                            " FROM users u WHERE " + MySQLiteHelper.COLUMN_USER_TYPE + " = 'COACH'" +
+                            " EXCEPT SELECT " +
+                            " u." + MySQLiteHelper.COLUMN_USER_ID     + ", " +
+                            " u." + MySQLiteHelper.COLUMN_FIRST       + ", " +
+                            " u." + MySQLiteHelper.COLUMN_LAST        + ", " +
+                            " u." + MySQLiteHelper.COLUMN_PHONE       + ", " +
+                            " u." + MySQLiteHelper.COLUMN_EMERGENCY   + ", " +
+                            " u." + MySQLiteHelper.COLUMN_EMAIL       + ", " +
+                            " u." + MySQLiteHelper.COLUMN_USER_TYPE   + ", " +
+                            " u." + MySQLiteHelper.COLUMN_PASSWORD    +
+                            " FROM " + MySQLiteHelper.TABLE_USERS + " u, " + MySQLiteHelper.TABLE_TEAM + " t " +
+                            " WHERE u." + MySQLiteHelper.COLUMN_USER_ID + " = t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID +
+                            " AND t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + " = " + currentLeague + ";"
+                    , null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Users tempUser = cursorToUser(cursor);
+                usersList.add(tempUser);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return usersList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return usersList;
+
     }
 
     public List<Users> getListOfUsersByTeam(int teamID){
-        List<Users> usersList = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT u.user_id, u.fname, u.lname, u.phone, u.emergency, u.email, u.user_type, u.pass " +
-                " FROM users u, enrollment e " +
-                " WHERE u.user_id = e.user_id " +
-                "  AND e.team_id = " + teamID, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Users tempUser = cursorToUser(cursor);
-            usersList.add(tempUser);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Users> usersList = new ArrayList<>();
+            Cursor cursor = db.rawQuery("SELECT u.user_id, u.fname, u.lname, u.phone, u.emergency, u.email, u.user_type, u.pass " +
+                    " FROM users u, enrollment e " +
+                    " WHERE u.user_id = e.user_id " +
+                    "  AND e.team_id = " + teamID, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Users tempUser = cursorToUser(cursor);
+                usersList.add(tempUser);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return usersList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return usersList;
+
     }
 
 
@@ -588,22 +717,31 @@ public class UpdateService extends Service {
 
     public League createLeague(int userID, int sportID, String leagueName,
                                int minAge, int maxAge, Date startDate, Date endDate){
-        ContentValues values = new ContentValues();
-        values.putNull(MySQLiteHelper.COLUMN_LEAGUE_ID);
-        values.put(MySQLiteHelper.COLUMN_FK_LEAGUE_USER_ID, userID);
-        values.put(MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID, sportID);
-        values.put(MySQLiteHelper.COLUMN_LEAGUE_NAME, leagueName);
-        values.put(MySQLiteHelper.COLUMN_MIN_AGE, minAge);
-        values.put(MySQLiteHelper.COLUMN_MAX_AGE, maxAge);
-        values.put(MySQLiteHelper.COLUMN_START_DATE, startDate.toString());
-        values.put(MySQLiteHelper.COLUMN_END_DATE, endDate.toString());
-        long insertID = db.insert(MySQLiteHelper.TABLE_LEAGUE, null, values);
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
-                MySQLiteHelper.COLUMN_LEAGUE_ID + " = " + insertID, null, null, null, null);
-        cursor.moveToFirst();
-        League newLeague = cursorToLeague(cursor);
-        queueInsert(newLeague);
-        return newLeague;
+        try{
+            open_db();
+            ContentValues values = new ContentValues();
+            values.putNull(MySQLiteHelper.COLUMN_LEAGUE_ID);
+            values.put(MySQLiteHelper.COLUMN_FK_LEAGUE_USER_ID, userID);
+            values.put(MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID, sportID);
+            values.put(MySQLiteHelper.COLUMN_LEAGUE_NAME, leagueName);
+            values.put(MySQLiteHelper.COLUMN_MIN_AGE, minAge);
+            values.put(MySQLiteHelper.COLUMN_MAX_AGE, maxAge);
+            values.put(MySQLiteHelper.COLUMN_START_DATE, startDate.toString());
+            values.put(MySQLiteHelper.COLUMN_END_DATE, endDate.toString());
+            long insertID = db.insert(MySQLiteHelper.TABLE_LEAGUE, null, values);
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
+                    MySQLiteHelper.COLUMN_LEAGUE_ID + " = " + insertID, null, null, null, null);
+            cursor.moveToFirst();
+            League newLeague = cursorToLeague(cursor);
+            queueInsert(newLeague);
+            return newLeague;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     private League cursorToLeague(Cursor cursor) {
@@ -620,90 +758,135 @@ public class UpdateService extends Service {
     }
 
     public Collection<? extends League> getListOfLeaguesByCoachAndSport(int coachId, int sportId) {
-        List<League> leaguesList = new ArrayList<>();
-        Cursor cursor = db.rawQuery(
-                "SELECT l." + MySQLiteHelper.COLUMN_LEAGUE_ID           + ", " +
-                        "l." + MySQLiteHelper.COLUMN_FK_LEAGUE_USER_ID   + ", " +
-                        "l." + MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID  + ", " +
-                        "l." + MySQLiteHelper.COLUMN_LEAGUE_NAME         + ", " +
-                        "l." + MySQLiteHelper.COLUMN_MIN_AGE             + ", " +
-                        "l." + MySQLiteHelper.COLUMN_MAX_AGE             + ", " +
-                        "l." + MySQLiteHelper.COLUMN_START_DATE          + ", " +
-                        "l." + MySQLiteHelper.COLUMN_END_DATE            + " " +
-                        "FROM " +
-                        MySQLiteHelper.TABLE_LEAGUE + " l, " +
-                        MySQLiteHelper.TABLE_TEAM   + " t " +
-                        "WHERE " +
-                        " t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID    + " = " + coachId   + " AND " +
-                        " t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID  + " = " +
-                        " l." + MySQLiteHelper.COLUMN_LEAGUE_ID                              + " AND " +
-                        " l." + MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + sportId
-                , null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            League tempLeague = cursorToLeague(cursor);
-            leaguesList.add(tempLeague);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<League> leaguesList = new ArrayList<>();
+            Cursor cursor = db.rawQuery(
+                    "SELECT l." + MySQLiteHelper.COLUMN_LEAGUE_ID           + ", " +
+                            "l." + MySQLiteHelper.COLUMN_FK_LEAGUE_USER_ID   + ", " +
+                            "l." + MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID  + ", " +
+                            "l." + MySQLiteHelper.COLUMN_LEAGUE_NAME         + ", " +
+                            "l." + MySQLiteHelper.COLUMN_MIN_AGE             + ", " +
+                            "l." + MySQLiteHelper.COLUMN_MAX_AGE             + ", " +
+                            "l." + MySQLiteHelper.COLUMN_START_DATE          + ", " +
+                            "l." + MySQLiteHelper.COLUMN_END_DATE            + " " +
+                            "FROM " +
+                            MySQLiteHelper.TABLE_LEAGUE + " l, " +
+                            MySQLiteHelper.TABLE_TEAM   + " t " +
+                            "WHERE " +
+                            " t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID    + " = " + coachId   + " AND " +
+                            " t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID  + " = " +
+                            " l." + MySQLiteHelper.COLUMN_LEAGUE_ID                              + " AND " +
+                            " l." + MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + sportId
+                    , null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                League tempLeague = cursorToLeague(cursor);
+                leaguesList.add(tempLeague);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return leaguesList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return leaguesList;
+
     }
 
     public League getLeagueById(int currentLeague) {
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
-                MySQLiteHelper.COLUMN_LEAGUE_ID + " = " + currentLeague,
-                null, null, null, null);
-        cursor.moveToFirst();
-        if(cursor.getCount() > 0){
-            return cursorToLeague(cursor);
-        }else{
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
+                    MySQLiteHelper.COLUMN_LEAGUE_ID + " = " + currentLeague,
+                    null, null, null, null);
+            cursor.moveToFirst();
+            if(cursor.getCount() > 0){
+                return cursorToLeague(cursor);
+            }else{
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
     }
 
     public Collection<? extends League> getListOfLeaguesByAdminIdAndSport(int currentAdminId, int currentSport) {
-        List<League> leaguesList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
-                MySQLiteHelper.COLUMN_FK_LEAGUE_USER_ID + " = " + currentAdminId + " AND " +
-                        MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + currentSport + ";",
-                null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            League tempLeague = cursorToLeague(cursor);
-            leaguesList.add(tempLeague);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<League> leaguesList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
+                    MySQLiteHelper.COLUMN_FK_LEAGUE_USER_ID + " = " + currentAdminId + " AND " +
+                            MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + currentSport + ";",
+                    null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                League tempLeague = cursorToLeague(cursor);
+                leaguesList.add(tempLeague);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return leaguesList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return leaguesList;
+
     }
 
     public List<League> getListOfLeagues(){
-        List<League> leaguesList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            League tempLeague = cursorToLeague(cursor);
-            leaguesList.add(tempLeague);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<League> leaguesList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                League tempLeague = cursorToLeague(cursor);
+                leaguesList.add(tempLeague);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return leaguesList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return leaguesList;
+
     }
 
     public List<League> getListOfLeaguesBySport(int currentSport){
-        List<League> leaguesList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
-                MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + currentSport,
-                null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            League tempLeague = cursorToLeague(cursor);
-            leaguesList.add(tempLeague);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<League> leaguesList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_LEAGUE, columnsLeague,
+                    MySQLiteHelper.COLUMN_FK_LEAGUE_SPORT_ID + " = " + currentSport,
+                    null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                League tempLeague = cursorToLeague(cursor);
+                leaguesList.add(tempLeague);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return leaguesList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return leaguesList;
+
     }
 
  /*                                'TEAM' OBJECT SECTION                                */
@@ -719,31 +902,49 @@ public class UpdateService extends Service {
     * */
 
     public Team createTeam(String teamName, int leagueID, int userID){
-        ContentValues values = new ContentValues();
-        values.putNull(MySQLiteHelper.COLUMN_TEAM_ID);
-        values.put(MySQLiteHelper.COLUMN_TEAM_NAME, teamName);
-        values.put(MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID, leagueID);
-        values.put(MySQLiteHelper.COLUMN_FK_TEAM_USER_ID, userID);
+        try{
+            open_db();
+            ContentValues values = new ContentValues();
+            values.putNull(MySQLiteHelper.COLUMN_TEAM_ID);
+            values.put(MySQLiteHelper.COLUMN_TEAM_NAME, teamName);
+            values.put(MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID, leagueID);
+            values.put(MySQLiteHelper.COLUMN_FK_TEAM_USER_ID, userID);
 
-        long insertID = db.insert(MySQLiteHelper.TABLE_TEAM, null, values);
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
-                MySQLiteHelper.COLUMN_TEAM_ID + " = " + insertID, null, null, null, null);
-        cursor.moveToFirst();
-        Team newTeam = cursorToTeam(cursor);
-        queueInsert(newTeam);
-        return newTeam;
+            long insertID = db.insert(MySQLiteHelper.TABLE_TEAM, null, values);
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
+                    MySQLiteHelper.COLUMN_TEAM_ID + " = " + insertID, null, null, null, null);
+            cursor.moveToFirst();
+            Team newTeam = cursorToTeam(cursor);
+            queueInsert(newTeam);
+            return newTeam;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     public Team getTeamById(int currentTeam) {
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
-                MySQLiteHelper.COLUMN_TEAM_ID + " = " + currentTeam,
-                null, null, null, null);
-        cursor.moveToFirst();
-        if(cursor.getCount() == 1){
-            return cursorToTeam(cursor);
-        }else{
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
+                    MySQLiteHelper.COLUMN_TEAM_ID + " = " + currentTeam,
+                    null, null, null, null);
+            cursor.moveToFirst();
+            if(cursor.getCount() == 1){
+                return cursorToTeam(cursor);
+            }else{
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
     }
 
     private Team cursorToTeam(Cursor cursor) {
@@ -756,83 +957,165 @@ public class UpdateService extends Service {
     }
 
     public Team updateTeamCoach(int currentTeamId, int currentCoachId){
-        ContentValues cv = new ContentValues();
-        cv.put(MySQLiteHelper.COLUMN_FK_TEAM_USER_ID, currentCoachId);
-        db.beginTransaction();
-        int rowsAltered = db.update(MySQLiteHelper.TABLE_TEAM, cv,
-                MySQLiteHelper.COLUMN_TEAM_ID + " = ?", new String[] { String.format("%d", currentTeamId) });
-        if(rowsAltered == 1) {
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            return getTeamById(currentTeamId);
-        }else{
-            db.execSQL("ROLLBACK");
-            db.endTransaction();
+        try{
+            open_db();
+            ContentValues cv = new ContentValues();
+            cv.put(MySQLiteHelper.COLUMN_FK_TEAM_USER_ID, currentCoachId);
+            db.beginTransaction();
+            int rowsAltered = db.update(MySQLiteHelper.TABLE_TEAM, cv,
+                    MySQLiteHelper.COLUMN_TEAM_ID + " = ?", new String[] { String.format("%d", currentTeamId) });
+            if(rowsAltered == 1) {
+                db.setTransactionSuccessful();
+                db.endTransaction();
+                return getTeamById(currentTeamId);
+            }else{
+                db.execSQL("ROLLBACK");
+                db.endTransaction();
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
     }
 
     public Team updateTeamName(Team team, String teamName, int leagueId, int coachUserId){
-        ContentValues cv = new ContentValues();
-        cv.put("team_name", teamName);
-        cv.put("league_id", leagueId);
-        cv.put("user_id", coachUserId);
-        db.beginTransaction();
-        int rowsAltered = db.update(MySQLiteHelper.TABLE_TEAM, cv,
-                MySQLiteHelper.COLUMN_TEAM_ID + " = ?", new String[] { team.getTeamID() + "" });
-        if(rowsAltered == 1) {
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            return getTeamById(team.getTeamID());
-        }else{
-            db.execSQL("ROLLBACK");
-            db.endTransaction();
+        try{
+            open_db();
+            ContentValues cv = new ContentValues();
+            cv.put("team_name", teamName);
+            cv.put("league_id", leagueId);
+            cv.put("user_id", coachUserId);
+            db.beginTransaction();
+            int rowsAltered = db.update(MySQLiteHelper.TABLE_TEAM, cv,
+                    MySQLiteHelper.COLUMN_TEAM_ID + " = ?", new String[] { team.getTeamID() + "" });
+            if(rowsAltered == 1) {
+                db.setTransactionSuccessful();
+                db.endTransaction();
+                return getTeamById(team.getTeamID());
+            }else{
+                db.execSQL("ROLLBACK");
+                db.endTransaction();
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
     }
 
     public List<Team> getListOfTeams(){
-        List<Team> teamsList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Team tempTeam = cursorToTeam(cursor);
-            teamsList.add(tempTeam);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Team> teamsList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Team tempTeam = cursorToTeam(cursor);
+                teamsList.add(tempTeam);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return teamsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return teamsList;
+
+    }
+
+    public List<Team> getListOfTeamsByUser(String email) {
+        try
+        {
+            open_db();
+            List<Team> teamsList = new ArrayList<>();
+            Cursor cursor = db.rawQuery(
+                    "SELECT t." + MySQLiteHelper.COLUMN_TEAM_ID           + ", " +
+                            "t." + MySQLiteHelper.COLUMN_TEAM_NAME         + ", " +
+                            "t." + MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + ", " +
+                            "t." + MySQLiteHelper.COLUMN_FK_TEAM_USER_ID   + " " +
+                            "FROM " + MySQLiteHelper.TABLE_TEAM         + " t, "
+                            + MySQLiteHelper.TABLE_USERS        + " u, "
+                            + MySQLiteHelper.TABLE_ENROLLMENT   + " e  " +
+                            "WHERE e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " +
+                            "t." + MySQLiteHelper.COLUMN_TEAM_ID               + " AND " +
+                            "e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID + " = " +
+                            "u." + MySQLiteHelper.COLUMN_USER_ID               + " AND " +
+                            "u." + MySQLiteHelper.COLUMN_EMAIL
+                            + " = '" + email.toUpperCase() + "'"
+                    , null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Team tempTeam = cursorToTeam(cursor);
+                teamsList.add(tempTeam);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return teamsList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     public List<Team> getListOfTeamsCoachedByUser(int currentUser, int currentLeague){
-        List<Team> teamsList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
-                MySQLiteHelper.COLUMN_FK_TEAM_USER_ID + " = " + currentUser + " AND " +
-                        MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + " = " + currentLeague + ";",
-                null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Team tempTeam = cursorToTeam(cursor);
-            teamsList.add(tempTeam);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Team> teamsList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
+                    MySQLiteHelper.COLUMN_FK_TEAM_USER_ID + " = " + currentUser + " AND " +
+                            MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + " = " + currentLeague + ";",
+                    null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Team tempTeam = cursorToTeam(cursor);
+                teamsList.add(tempTeam);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return teamsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return teamsList;
+
     }
 
     public List<Team> getListOfTeamsByLeague(int currentLeague){
-        List<Team> teamsList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
-                MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + " = " + currentLeague, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Team tempTeam = cursorToTeam(cursor);
-            teamsList.add(tempTeam);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Team> teamsList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_TEAM, columnsTeam,
+                    MySQLiteHelper.COLUMN_FK_TEAM_LEAGUE_ID + " = " + currentLeague, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Team tempTeam = cursorToTeam(cursor);
+                teamsList.add(tempTeam);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return teamsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return teamsList;
+
     }
 
 /*                                'PLAYER' OBJECT SECTION                                */
@@ -848,111 +1131,167 @@ public class UpdateService extends Service {
     * */
 
     public Player createPlayer(String playerFirst, String playerLast, int userID){
-        ContentValues values = new ContentValues();
-        values.putNull(MySQLiteHelper.COLUMN_PLAYER_ID);
-        values.put(MySQLiteHelper.COLUMN_PLAYER_FIRST, playerFirst);
-        values.put(MySQLiteHelper.COLUMN_PLAYER_LAST, playerLast);
-        values.put(MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID, userID);
+        try{
+            open_db();
+            ContentValues values = new ContentValues();
+            values.putNull(MySQLiteHelper.COLUMN_PLAYER_ID);
+            values.put(MySQLiteHelper.COLUMN_PLAYER_FIRST, playerFirst);
+            values.put(MySQLiteHelper.COLUMN_PLAYER_LAST, playerLast);
+            values.put(MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID, userID);
 
-        long insertID = db.insert(MySQLiteHelper.TABLE_PLAYER, null, values);
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
-                MySQLiteHelper.COLUMN_PLAYER_ID + " = " + insertID, null, null, null, null);
-        cursor.moveToFirst();
-        Player newPlayer = cursorToPlayer(cursor);
+            long insertID = db.insert(MySQLiteHelper.TABLE_PLAYER, null, values);
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
+                    MySQLiteHelper.COLUMN_PLAYER_ID + " = " + insertID, null, null, null, null);
+            cursor.moveToFirst();
+            Player newPlayer = cursorToPlayer(cursor);
 
-        //TODO: Make sure new players are added to attendance rolls
-        queueInsert(newPlayer);
-        return newPlayer;
+            //TODO: Make sure new players are added to attendance rolls
+            queueInsert(newPlayer);
+            return newPlayer;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     public Player updatePlayer(int currentPlayerId, String fname, String lname, int currentUserId){
-        ContentValues cv = new ContentValues();
-        cv.put("player_id", currentPlayerId);
-        cv.put("fname", fname);
-        cv.put("lname", lname);
-        cv.put("user_id", currentUserId);
+        try{
+            open_db();
+            ContentValues cv = new ContentValues();
+            cv.put("player_id", currentPlayerId);
+            cv.put("fname", fname);
+            cv.put("lname", lname);
+            cv.put("user_id", currentUserId);
 
-        int rowsAltered = db.update(MySQLiteHelper.TABLE_PLAYER, cv,
-                MySQLiteHelper.COLUMN_PLAYER_ID + " = " + currentPlayerId, null);
-        if(rowsAltered == 1) {
-            Player returnVal = getPlayerById(currentPlayerId);
-            queueUpdate(returnVal);
-            return returnVal;
-        }else
-        {
+            int rowsAltered = db.update(MySQLiteHelper.TABLE_PLAYER, cv,
+                    MySQLiteHelper.COLUMN_PLAYER_ID + " = " + currentPlayerId, null);
+            if(rowsAltered == 1) {
+                Player returnVal = getPlayerById(currentPlayerId);
+                queueUpdate(returnVal);
+                return returnVal;
+            }else
+            {
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
     }
 
     public Collection<? extends Player> getListOfPlayersByTeam(int currentTeam) {
-        Cursor cursor = db.rawQuery("SELECT p." + MySQLiteHelper.COLUMN_PLAYER_ID    + ", " +
-                "p." + MySQLiteHelper.COLUMN_PLAYER_FIRST + ", " +
-                "p." + MySQLiteHelper.COLUMN_PLAYER_LAST  + ", "  +
-                "p." + MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " " +
-                "FROM " + MySQLiteHelper.TABLE_PLAYER + " p, " +
-                MySQLiteHelper.TABLE_ENROLLMENT + " e " +
-                "WHERE p." + MySQLiteHelper.COLUMN_PLAYER_ID + " = " +
-                "e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_PLAYER_ID +
-                " AND e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeam + ";"
-                , null);
-        List<Player> players = new ArrayList<>();
+        try{
+            open_db();
+            Cursor cursor = db.rawQuery("SELECT p." + MySQLiteHelper.COLUMN_PLAYER_ID    + ", " +
+                    "p." + MySQLiteHelper.COLUMN_PLAYER_FIRST + ", " +
+                    "p." + MySQLiteHelper.COLUMN_PLAYER_LAST  + ", "  +
+                    "p." + MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " " +
+                    "FROM " + MySQLiteHelper.TABLE_PLAYER + " p, " +
+                    MySQLiteHelper.TABLE_ENROLLMENT + " e " +
+                    "WHERE p." + MySQLiteHelper.COLUMN_PLAYER_ID + " = " +
+                    "e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_PLAYER_ID +
+                    " AND e." + MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeam + ";"
+                    , null);
+            List<Player> players = new ArrayList<>();
 
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Player tempPlayer = cursorToPlayer(cursor);
-            players.add(tempPlayer);
-            cursor.moveToNext();
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Player tempPlayer = cursorToPlayer(cursor);
+                players.add(tempPlayer);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return players;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return players;
+
     }
 
     public Player getPlayerById(int currentPlayer) {
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
-                MySQLiteHelper.COLUMN_PLAYER_ID + " = " + currentPlayer,
-                null, null, null, null);
-        cursor.moveToFirst();
-        if(cursor.getCount() == 1){
-            return cursorToPlayer(cursor);
-        }else{
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
+                    MySQLiteHelper.COLUMN_PLAYER_ID + " = " + currentPlayer,
+                    null, null, null, null);
+            cursor.moveToFirst();
+            if(cursor.getCount() == 1){
+                return cursorToPlayer(cursor);
+            }else{
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
     }
 
     public boolean checkForPlayerByFirstLastAndUserId(String first, String last, int userID){
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
-                MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " = " + userID + " AND " +
-                        MySQLiteHelper.COLUMN_FIRST + " = '" + first + "' AND " +
-                        MySQLiteHelper.COLUMN_LAST + " = '" + last + "';"
-                , null, null, null, null);
-        if(cursor.getCount() == 1){
-            return true;
-        }else{
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
+                    MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " = " + userID + " AND " +
+                            MySQLiteHelper.COLUMN_FIRST + " = '" + first + "' AND " +
+                            MySQLiteHelper.COLUMN_LAST + " = '" + last + "';"
+                    , null, null, null, null);
+            if(cursor.getCount() == 1){
+                return true;
+            }else{
+                return false;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return false;
+            //TODO does this break shit if things go wrong????
+            //scary but whatever....
+        } finally {
+            close_db();
         }
+
     }
 
     public Player getPlayerByFirstLastAndUserId(String first, String last, int userID) {
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
-                MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " = " + userID + " AND " +
-                        MySQLiteHelper.COLUMN_FIRST + " = '" + first + "' AND " +
-                        MySQLiteHelper.COLUMN_LAST + " = '" + last + "';"
-                , null, null, null, null);
-        if(cursor.getCount() == 1){
-            return cursorToPlayer(cursor);
-        }else {
-            if (cursor.getCount() == 0) {
-                return null;
-            } else {
-                try {
-                    throw new Exception("More than one record matches your search... that means the database is out of order...");
-                } catch (Exception e) {
-                    e.printStackTrace();
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
+                    MySQLiteHelper.COLUMN_FK_PLAYER_USER_ID + " = " + userID + " AND " +
+                            MySQLiteHelper.COLUMN_FIRST + " = '" + first + "' AND " +
+                            MySQLiteHelper.COLUMN_LAST + " = '" + last + "';"
+                    , null, null, null, null);
+            if(cursor.getCount() == 1){
+                return cursorToPlayer(cursor);
+            }else {
+                if (cursor.getCount() == 0) {
+                    return null;
+                } else {
+                    try {
+                        throw new Exception("More than one record matches your search... that means the database is out of order...");
+                    } catch (Exception e) {
+                        e.printStackTrace();
 
+                    }
                 }
             }
+            return new Player();
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        return new Player();
+
     }
 
     private Player cursorToPlayer(Cursor cursor) {
@@ -965,17 +1304,26 @@ public class UpdateService extends Service {
     }
 
     public List<Player> getListOfPlayers(){
-        List<Player> playersList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Player tempPlayer = cursorToPlayer(cursor);
-            playersList.add(tempPlayer);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Player> playersList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_PLAYER, columnsPlayer,
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Player tempPlayer = cursorToPlayer(cursor);
+                playersList.add(tempPlayer);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return playersList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return playersList;
+
     }
 
 /*                                'ENROLLMENT' OBJECT SECTION                                */
@@ -992,22 +1340,31 @@ public class UpdateService extends Service {
 
     public Enrollment createEnrollment(int userID, int playerID, int leagueID, int teamID,
                                        Date enrollmentDate, Double fee){
-        ContentValues values = new ContentValues();
-        values.putNull(MySQLiteHelper.COLUMN_ENROLLMENT_ID);
-        values.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID, userID);
-        values.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_PLAYER_ID, playerID);
-        values.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID, leagueID);
-        values.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID, teamID);
-        values.put(MySQLiteHelper.COLUMN_ENROLLMENT_DATE, enrollmentDate.toString());
-        values.put(MySQLiteHelper.COLUMN_FEE, fee);
+        try{
+            open_db();
+            ContentValues values = new ContentValues();
+            values.putNull(MySQLiteHelper.COLUMN_ENROLLMENT_ID);
+            values.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID, userID);
+            values.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_PLAYER_ID, playerID);
+            values.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID, leagueID);
+            values.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID, teamID);
+            values.put(MySQLiteHelper.COLUMN_ENROLLMENT_DATE, enrollmentDate.toString());
+            values.put(MySQLiteHelper.COLUMN_FEE, fee);
 
-        long insertID = db.insert(MySQLiteHelper.TABLE_ENROLLMENT, null, values);
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
-                MySQLiteHelper.COLUMN_ENROLLMENT_ID + " = " + insertID, null, null, null, null);
-        cursor.moveToFirst();
-        Enrollment newEnrollment = cursorToEnrollment(cursor);
-        queueInsert(newEnrollment);
-        return newEnrollment;
+            long insertID = db.insert(MySQLiteHelper.TABLE_ENROLLMENT, null, values);
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
+                    MySQLiteHelper.COLUMN_ENROLLMENT_ID + " = " + insertID, null, null, null, null);
+            cursor.moveToFirst();
+            Enrollment newEnrollment = cursorToEnrollment(cursor);
+            queueInsert(newEnrollment);
+            return newEnrollment;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     private Enrollment cursorToEnrollment(Cursor cursor) {
@@ -1023,90 +1380,135 @@ public class UpdateService extends Service {
     }
 
     public Enrollment updateCoachEnrollmentWithTeamIdAndLeagueId(int currentTeamId, int currentCoachUserId, int currentLeagueId) {
+        try{
+            open_db();
+            ContentValues cv = new ContentValues();
+            cv.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID, currentCoachUserId);
 
-        ContentValues cv = new ContentValues();
-        cv.put(MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID, currentCoachUserId);
-
-        int rowsAltered = db.update(MySQLiteHelper.TABLE_ENROLLMENT, cv,
-                MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = ?" + " AND " +
-                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = ?", new String[] {
-                        "" + currentTeamId, "" + currentLeagueId
-                });
-        if(rowsAltered == 1) {
-            Enrollment returnVal = getEnrollmentByUserLeagueAndTeam(currentCoachUserId, currentTeamId, currentLeagueId);
-            queueUpdate(returnVal);
-            return returnVal;
-        }else
-        {
+            int rowsAltered = db.update(MySQLiteHelper.TABLE_ENROLLMENT, cv,
+                    MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = ?" + " AND " +
+                            MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = ?", new String[] {
+                            "" + currentTeamId, "" + currentLeagueId
+                    });
+            if(rowsAltered == 1) {
+                Enrollment returnVal = getEnrollmentByUserLeagueAndTeam(currentCoachUserId, currentTeamId, currentLeagueId);
+                queueUpdate(returnVal);
+                return returnVal;
+            }else
+            {
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
+
     }
 
     private Enrollment getEnrollmentByTeamIdAndLeagueId(int currentTeamId, int currentLeagueId) {
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
-                MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeamId + " AND " +
-                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " + currentLeagueId, null,
-                null, null, null
-        );
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
+                    MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeamId + " AND " +
+                            MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " + currentLeagueId, null,
+                    null, null, null
+            );
 
-        return null;
+            return null;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     public Enrollment getEnrollmentByUserLeagueAndTeam(int coachUserId, int leagueId, int teamId) {
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
-                MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID   + " = " + coachUserId + " AND " +
-                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " +    leagueId + " AND " +
-                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID   + " = " +      teamId,
-                null, null, null, null);
-        if(cursor.getCount() == 0){
-            return null;
-        }else if(cursor.getCount() == 1){
-            return cursorToEnrollment(cursor);
-        }else
-        {
-            try {
-                throw new Exception("There is more than one record with these parameters. The database is not atomic...");
-            } catch (Exception e) {
-                e.printStackTrace();
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
+                    MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID   + " = " + coachUserId + " AND " +
+                            MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " +    leagueId + " AND " +
+                            MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID   + " = " +      teamId,
+                    null, null, null, null);
+            if(cursor.getCount() == 0){
+                return null;
+            }else if(cursor.getCount() == 1){
+                return cursorToEnrollment(cursor);
+            }else
+            {
+                try {
+                    throw new Exception("There is more than one record with these parameters. The database is not atomic...");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+            return new Enrollment();
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        return new Enrollment();
+
     }
 
     public Enrollment getEnrollmentByPlayerUserLeagueAndTeam(int playerID, int userID, int currentLeague, int currentTeam) {
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
-                MySQLiteHelper.COLUMN_PLAYER_ID + " = " + playerID + " AND " +
-                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID + " = " + userID + " AND " +
-                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " + currentLeague + " AND " +
-                        MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeam +";",
-                null, null, null, null);
-        if(cursor.getCount() == 0){
-            return null;
-        }else if(cursor.getCount() == 1){
-            return cursorToEnrollment(cursor);
-        }else
-        {
-            try {
-                throw new Exception("There is more than one record with these parameters. The database is not atomic...");
-            } catch (Exception e) {
-                e.printStackTrace();
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
+                    MySQLiteHelper.COLUMN_PLAYER_ID + " = " + playerID + " AND " +
+                            MySQLiteHelper.COLUMN_FK_ENROLLMENT_USER_ID + " = " + userID + " AND " +
+                            MySQLiteHelper.COLUMN_FK_ENROLLMENT_LEAGUE_ID + " = " + currentLeague + " AND " +
+                            MySQLiteHelper.COLUMN_FK_ENROLLMENT_TEAM_ID + " = " + currentTeam +";",
+                    null, null, null, null);
+            if(cursor.getCount() == 0){
+                return null;
+            }else if(cursor.getCount() == 1){
+                return cursorToEnrollment(cursor);
+            }else
+            {
+                try {
+                    throw new Exception("There is more than one record with these parameters. The database is not atomic...");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+            return new Enrollment();
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        return new Enrollment();
+
     }
 
     public List<Enrollment> getListOfEnrollments(){
-        List<Enrollment> enrollmentsList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Enrollment tempEnrollment = cursorToEnrollment(cursor);
-            enrollmentsList.add(tempEnrollment);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Enrollment> enrollmentsList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_ENROLLMENT, columnsEnrollment,
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Enrollment tempEnrollment = cursorToEnrollment(cursor);
+                enrollmentsList.add(tempEnrollment);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return enrollmentsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return enrollmentsList;
+
     }
 
 /*                                'PLACE' OBJECT SECTION                                */
@@ -1122,21 +1524,30 @@ public class UpdateService extends Service {
     * */
 
     public Place createPlace(String placeName, String streetAddress, String city, String state, int zip){
-        ContentValues values = new ContentValues();
-        values.putNull(MySQLiteHelper.COLUMN_PLACE_ID);
-        values.put(MySQLiteHelper.COLUMN_PLACE_NAME, placeName);
-        values.put(MySQLiteHelper.COLUMN_STREET_ADDRESS, streetAddress);
-        values.put(MySQLiteHelper.COLUMN_CITY, city);
-        values.put(MySQLiteHelper.COLUMN_STATE, state);
-        values.put(MySQLiteHelper.COLUMN_ZIP, zip);
+        try{
+            open_db();
+            ContentValues values = new ContentValues();
+            values.putNull(MySQLiteHelper.COLUMN_PLACE_ID);
+            values.put(MySQLiteHelper.COLUMN_PLACE_NAME, placeName);
+            values.put(MySQLiteHelper.COLUMN_STREET_ADDRESS, streetAddress);
+            values.put(MySQLiteHelper.COLUMN_CITY, city);
+            values.put(MySQLiteHelper.COLUMN_STATE, state);
+            values.put(MySQLiteHelper.COLUMN_ZIP, zip);
 
-        long insertID = db.insert(MySQLiteHelper.TABLE_PLACE, null, values);
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLACE, columnsPlace,
-                MySQLiteHelper.COLUMN_PLACE_ID + " = " + insertID, null, null, null, null);
-        cursor.moveToFirst();
-        Place newPlace = cursorToPlace(cursor);
-        queueInsert(newPlace);
-        return newPlace;
+            long insertID = db.insert(MySQLiteHelper.TABLE_PLACE, null, values);
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_PLACE, columnsPlace,
+                    MySQLiteHelper.COLUMN_PLACE_ID + " = " + insertID, null, null, null, null);
+            cursor.moveToFirst();
+            Place newPlace = cursorToPlace(cursor);
+            queueInsert(newPlace);
+            return newPlace;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     private Place cursorToPlace(Cursor cursor) {
@@ -1151,28 +1562,46 @@ public class UpdateService extends Service {
     }
 
     public Place getPlaceById(int placeID) {
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLACE, columnsPlace,
-                MySQLiteHelper.COLUMN_PLACE_ID + " = " + placeID, null, null, null, null);
-        cursor.moveToFirst();
-        if(cursor.getCount() == 1){
-            return cursorToPlace(cursor);
-        }else{
+        try{
+            open_db();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_PLACE, columnsPlace,
+                    MySQLiteHelper.COLUMN_PLACE_ID + " = " + placeID, null, null, null, null);
+            cursor.moveToFirst();
+            if(cursor.getCount() == 1){
+                return cursorToPlace(cursor);
+            }else{
+                return null;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
             return null;
+        } finally {
+            close_db();
         }
+
     }
 
     public List<Place> getListOfPlaces(){
-        List<Place> placesList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_PLACE, columnsPlace,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Place tempPlace = cursorToPlace(cursor);
-            placesList.add(tempPlace);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Place> placesList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_PLACE, columnsPlace,
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Place tempPlace = cursorToPlace(cursor);
+                placesList.add(tempPlace);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return placesList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return placesList;
+
     }
 
 /*                                'EVENT' OBJECT SECTION                                */
@@ -1189,38 +1618,46 @@ public class UpdateService extends Service {
 
     public Event createEvent(String eventType, Date startDateTime, int placeID, int homeTeamID, int awayTeamID){
 
-        ContentValues values = new ContentValues();
-        values.putNull(MySQLiteHelper.COLUMN_EVENT_ID);
-        values.put(MySQLiteHelper.COLUMN_EVENT_TYPE, eventType);
-        values.put(MySQLiteHelper.COLUMN_START_DATE_TIME, startDateTime.toString());
-        values.put(MySQLiteHelper.COLUMN_FK_EVENT_PLACE_ID, placeID);
-        values.put(MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID, homeTeamID);
+        try{
+            open_db();
+            ContentValues values = new ContentValues();
+            values.putNull(MySQLiteHelper.COLUMN_EVENT_ID);
+            values.put(MySQLiteHelper.COLUMN_EVENT_TYPE, eventType);
+            values.put(MySQLiteHelper.COLUMN_START_DATE_TIME, startDateTime.toString());
+            values.put(MySQLiteHelper.COLUMN_FK_EVENT_PLACE_ID, placeID);
+            values.put(MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID, homeTeamID);
 
-        if(eventType.equals("GAME")) {
-            values.put(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID, awayTeamID);
-
-        } else {
-            values.putNull(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID);
-        }
-
-        long insertID = db.insert(MySQLiteHelper.TABLE_EVENT, null, values);
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
-                MySQLiteHelper.COLUMN_EVENT_ID + " = " + insertID, null, null, null, null);
-        cursor.moveToFirst();
-        Event newEvent = cursorToEvent(cursor);
-
-        if(newEvent != null) {
-            ArrayList<Users> attendanceMakingList = new ArrayList<>();
-            attendanceMakingList.addAll(getListOfUsersByTeam(homeTeamID));
             if(eventType.equals("GAME")) {
-                attendanceMakingList.addAll(getListOfUsersByTeam(awayTeamID));
+                values.put(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID, awayTeamID);
+
+            } else {
+                values.putNull(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID);
             }
-            for (Users u : attendanceMakingList) {
-                createAttendance(newEvent.getEventID(), u.getUserID(), "GOING", "");
+
+            long insertID = db.insert(MySQLiteHelper.TABLE_EVENT, null, values);
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
+                    MySQLiteHelper.COLUMN_EVENT_ID + " = " + insertID, null, null, null, null);
+            cursor.moveToFirst();
+            Event newEvent = cursorToEvent(cursor);
+
+            if(newEvent != null) {
+                ArrayList<Users> attendanceMakingList = new ArrayList<>();
+                attendanceMakingList.addAll(getListOfUsersByTeam(homeTeamID));
+                if(eventType.equals("GAME")) {
+                    attendanceMakingList.addAll(getListOfUsersByTeam(awayTeamID));
+                }
+                for (Users u : attendanceMakingList) {
+                    createAttendance(newEvent.getEventID(), u.getUserID(), "GOING", "");
+                }
             }
+            queueInsert(newEvent);
+            return newEvent;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        queueInsert(newEvent);
-        return newEvent;
     }
 
     private Event cursorToEvent(Cursor cursor) {
@@ -1238,49 +1675,123 @@ public class UpdateService extends Service {
     }
 
     public Collection<? extends Event> getListOfEventsByTeam(Team currentTeam) {
-        List<Event> eventsList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
-                MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID + " = " + currentTeam.getTeamID() + " OR " +
-                        MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID + " = " + currentTeam.getTeamID(),
-                null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Event tempEvent = cursorToEvent(cursor);
-            eventsList.add(tempEvent);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Event> eventsList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
+                    MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID + " = " + currentTeam.getTeamID() + " OR " +
+                            MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID + " = " + currentTeam.getTeamID(),
+                    null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Event tempEvent = cursorToEvent(cursor);
+                eventsList.add(tempEvent);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return eventsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return eventsList;
+
     }
 
 
 
     public List<Event> getListOfEventsById(int eventId){
-        List<Event> eventsList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
-                MySQLiteHelper.COLUMN_EVENT_ID + " = " + eventId, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Event tempEvent = cursorToEvent(cursor);
-            eventsList.add(tempEvent);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Event> eventsList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
+                    MySQLiteHelper.COLUMN_EVENT_ID + " = " + eventId, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Event tempEvent = cursorToEvent(cursor);
+                eventsList.add(tempEvent);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return eventsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return eventsList;
     }
 
     public List<Event> getListOfEvents(){
-        List<Event> eventsList = new ArrayList<>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Event tempEvent = cursorToEvent(cursor);
-            eventsList.add(tempEvent);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Event> eventsList = new ArrayList<>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_EVENT, columnsEvent,
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Event tempEvent = cursorToEvent(cursor);
+                eventsList.add(tempEvent);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return eventsList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return eventsList;
+
+    }
+
+    public Event updateEvent(int eventId, String eventType, Date startDateTime, int placeId, int homeTeam, int awayTeam ){
+        try{
+            open_db();
+            ContentValues cv = new ContentValues();
+            cv.put(MySQLiteHelper.COLUMN_EVENT_ID, eventId);
+            cv.put(MySQLiteHelper.COLUMN_EVENT_TYPE, eventType);
+            cv.put(MySQLiteHelper.COLUMN_START_DATE_TIME, startDateTime.toString());
+            cv.put(MySQLiteHelper.COLUMN_FK_EVENT_PLACE_ID, placeId);
+            cv.put(MySQLiteHelper.COLUMN_FK_EVENT_HOME_TEAM_ID, homeTeam);
+            if(eventType.toString().equals("GAME")) {
+                cv.put(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID, awayTeam);
+            }else{
+                cv.putNull(MySQLiteHelper.COLUMN_FK_EVENT_AWAY_TEAM_ID);
+            }
+
+            try {
+                db.beginTransaction();
+                int recordsChanged = db.update(MySQLiteHelper.TABLE_EVENT, cv,
+                        MySQLiteHelper.COLUMN_EVENT_ID + " = ?", new String[]{eventId + ""});
+                if(recordsChanged == 1){
+                    db.setTransactionSuccessful();
+                }else if(recordsChanged < 1) {
+                    throw new Exception("No Records Changed");
+                }else{
+                    db.execSQL("ROLLBACK");
+                }
+                db.endTransaction();
+
+                ArrayList<Event> eventsList = new ArrayList<>();
+                eventsList.addAll(getListOfEventsById(eventId));
+                if(eventsList.size() == 1){
+                    return eventsList.get(0);
+                }else{
+                    throw new Exception("The Database is not atomic exception.");
+                }
+            } catch (Exception e) {
+                Log.e("UPDATE EVENTS EXCEPTION", "..........." + e.getMessage());
+            }
+            return null;
+        }catch(SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
  /*ALL METHODS HEREIN DEAL WITH THE SELECTION, CREATING, UPDATE OR DELETION OF A 'PLACE'*/
@@ -1295,20 +1806,29 @@ public class UpdateService extends Service {
     * */
 
     public Attendance createAttendance(int eventID, int userID, String status, String message){
-        ContentValues values = new ContentValues();
-        values.putNull(MySQLiteHelper.COLUMN_ATTENDANCE_ID);
-        values.put(MySQLiteHelper.COLUMN_FK_ATTENDANCE_EVENT_ID, eventID);
-        values.put(MySQLiteHelper.COLUMN_FK_ATTENDANCE_USER_ID, userID);
-        values.put(MySQLiteHelper.COLUMN_STATUS, status);
-        values.put(MySQLiteHelper.COLUMN_MESSAGE, message);
+        try{
+            open_db();
+            ContentValues values = new ContentValues();
+            values.putNull(MySQLiteHelper.COLUMN_ATTENDANCE_ID);
+            values.put(MySQLiteHelper.COLUMN_FK_ATTENDANCE_EVENT_ID, eventID);
+            values.put(MySQLiteHelper.COLUMN_FK_ATTENDANCE_USER_ID, userID);
+            values.put(MySQLiteHelper.COLUMN_STATUS, status);
+            values.put(MySQLiteHelper.COLUMN_MESSAGE, message);
 
-        long insertID = db.insert(MySQLiteHelper.TABLE_ATTENDANCE, null, values);
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_ATTENDANCE, columnsAttendance,
-                MySQLiteHelper.COLUMN_ATTENDANCE_ID + " = " + insertID, null, null, null, null);
-        cursor.moveToFirst();
-        Attendance newAttendance = cursorToAttendance(cursor);
-        queueInsert(newAttendance);
-        return newAttendance;
+            long insertID = db.insert(MySQLiteHelper.TABLE_ATTENDANCE, null, values);
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_ATTENDANCE, columnsAttendance,
+                    MySQLiteHelper.COLUMN_ATTENDANCE_ID + " = " + insertID, null, null, null, null);
+            cursor.moveToFirst();
+            Attendance newAttendance = cursorToAttendance(cursor);
+            queueInsert(newAttendance);
+            return newAttendance;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
+        }
+
     }
 
     private Attendance cursorToAttendance(Cursor cursor) {
@@ -1322,16 +1842,36 @@ public class UpdateService extends Service {
     }
 
     public List<Attendance> getListOfAttendances(){
-        List<Attendance> attendanceList = new ArrayList<Attendance>();
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_ATTENDANCE, columnsAttendance,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            Attendance tempAttendance = cursorToAttendance(cursor);
-            attendanceList.add(tempAttendance);
-            cursor.moveToNext();
+        try{
+            open_db();
+            List<Attendance> attendanceList = new ArrayList<Attendance>();
+            Cursor cursor = db.query(MySQLiteHelper.TABLE_ATTENDANCE, columnsAttendance,
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Attendance tempAttendance = cursorToAttendance(cursor);
+                attendanceList.add(tempAttendance);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return attendanceList;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            close_db();
         }
-        cursor.close();
-        return attendanceList;
+    }
+
+    public int addUserToAttendance(int currentUser, int currentTeam) {
+        Team team = getTeamById(currentTeam);
+        ArrayList<Event> eventList = new ArrayList<>();
+        eventList.addAll(getListOfEventsByTeam(team));
+        int counter = 0;
+        for(Event e : eventList){
+            createAttendance(e.getEventID(), currentUser, "GOING", "");
+            counter++;
+        }
+        return counter;
     }
 }
