@@ -117,6 +117,19 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
 
             mBound = true;
 
+            initializeTeams();
+            initializePlaces();
+            if(currentHomeTeam != null)
+                initializeListView(currentHomeTeam);
+            spinnerHomeTeam.isInEditMode();
+            spinnerAwayTeam.isInEditMode();
+            spinnerPlaces.isInEditMode();
+            date = new Date(0);
+            Calendar calendar = Calendar.getInstance();
+            date.setTime(calendar.getTimeInMillis());
+            listview.setChoiceMode(1);
+            listview.setItemsCanFocus(true);
+            listview.setSelectionAfterHeaderView();
         }
 
         @Override
@@ -131,10 +144,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 
-        if(mBound) {
 
-
-        }
 
     }
 
@@ -300,19 +310,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
                     }
                 }
             });
-            initializeTeams();
-            initializePlaces();
-            if(currentHomeTeam != null)
-                initializeListView(currentHomeTeam);
-            spinnerHomeTeam.isInEditMode();
-            spinnerAwayTeam.isInEditMode();
-            spinnerPlaces.isInEditMode();
-            date = new Date(0);
-            Calendar calendar = Calendar.getInstance();
-            date.setTime(calendar.getTimeInMillis());
-            listview.setChoiceMode(1);
-            listview.setItemsCanFocus(true);
-            listview.setSelectionAfterHeaderView();
+
 
     }
 
