@@ -88,11 +88,53 @@ public class CalendarActivity extends AppCompatActivity {
 
             mBound = true;
 
+<<<<<<< HEAD
             currentTeam = updateService.getTeamById(currentTeamId);
             arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
             cal_adapter = new CalendarAdapter(getApplicationContext(), cal_month, /* What is this? */ CalendarCollection.date_collection_arr,
                     currentTeam, updateService);
 
+=======
+<<<<<<< HEAD
+    @Override
+    protected void onDestroy(){
+        dataSource.close();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause(){
+        dataSource.close();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume(){
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        super.onResume();
+        refreshCalendar();
+        listView.clearChoices();
+        populateListView();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_calendar);
+        dataSource = new DataSource(this);
+        arrayListEvents = new ArrayList<>();
+        listView = (ListView)findViewById(R.id.lv_android);
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+=======
+>>>>>>> origin/No-More-Changes-to-Datasource
+>>>>>>> 5f5c9ca028eab4b901588306ba9a54b7f502064c
         }
 
         @Override
@@ -277,7 +319,12 @@ public class CalendarActivity extends AppCompatActivity {
 
     //TODO: --> maybe not at all (MAYBE) long-click, make a new intent and pass the date
     public void displayAllEvents(View view){
+<<<<<<< HEAD
+        arrayListEvents.clear();
+        arrayListEvents.addAll(dataSource.getListOfEventsByTeam(currentTeam));
+=======
         arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
+>>>>>>> origin/No-More-Changes-to-Datasource
         populateListView();
     }
 
@@ -326,6 +373,7 @@ public class CalendarActivity extends AppCompatActivity {
         intent.putExtra(TEAM_KEY, currentTeamId);
         startActivity(intent);
     }
+
 
 }
 
