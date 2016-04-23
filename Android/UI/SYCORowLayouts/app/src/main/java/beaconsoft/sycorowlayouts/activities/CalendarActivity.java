@@ -61,6 +61,31 @@ public class CalendarActivity extends AppCompatActivity {
     private List<Address> addresses = new ArrayList<>();
 
     @Override
+    protected void onDestroy(){
+        dataSource.close();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause(){
+        dataSource.close();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume(){
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        super.onResume();
+        refreshCalendar();
+        listView.clearChoices();
+        populateListView();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
@@ -227,6 +252,7 @@ public class CalendarActivity extends AppCompatActivity {
 
     //TODO: --> maybe not at all (MAYBE) long-click, make a new intent and pass the date
     public void displayAllEvents(View view){
+        arrayListEvents.clear();
         arrayListEvents.addAll(dataSource.getListOfEventsByTeam(currentTeam));
         populateListView();
     }
@@ -276,6 +302,7 @@ public class CalendarActivity extends AppCompatActivity {
         intent.putExtra(TEAM_KEY, currentTeamId);
         startActivity(intent);
     }
+
 
 }
 
