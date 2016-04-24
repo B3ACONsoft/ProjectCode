@@ -62,7 +62,7 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
     private Toast toastTeam;
     UpdateService updateService;        //reference to the update service
     boolean mBound = false;             //to bind or not to bind...
-
+    private boolean hasStarted = false;
 
     /**
      *
@@ -82,39 +82,6 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
 
             mBound = true;
 
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        bindService(new Intent(this,
-                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
-
-        if(mBound) {
-
-
-
-            editTextTeamName  = (EditText)findViewById(R.id.editTextEditTeamsTeamName);
-            editTextFirst     = (EditText)findViewById(R.id.editTextEditTeamsCoachFirst);
-            editTextLast      = (EditText)findViewById(R.id.editTextEditTeamsCoachLast );
-            editTextPhone     = (EditText)findViewById(R.id.editTextEditTeamsCoachPhone);
-            editTextEmergency = (EditText)findViewById(R.id.editTextEditTeamsCoachEmergency);
-            editTextCoachEmail= (EditText)findViewById(R.id.editTextEditTeamsCoachEmail);
-            editTextCoachEmail.setEnabled(false);
-            editTextCoachEmail.setActivated(false);
-            spinnerCoaches = (Spinner) findViewById(R.id.spinnerCoachesEditTeams);
-            coachArrayList = new ArrayList<>();
-
-            Intent intent = getIntent();
-            email = intent.getStringExtra(EMAIL_KEY);
-            currentLeagueId = intent.getIntExtra(LEAGUE_KEY, 0);
-            currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
             currentTeam = updateService.getTeamById(currentTeamId);
             currentCoachUserId = currentTeam.getUserID();
             coach = updateService.getUserById(currentCoachUserId);
@@ -135,6 +102,19 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
 
             editTextTeamName.setText(currentTeam.getTeamName());
         }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+
 
     }
 
@@ -191,6 +171,21 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_teams);
 
+        editTextTeamName  = (EditText)findViewById(R.id.editTextEditTeamsTeamName);
+        editTextFirst     = (EditText)findViewById(R.id.editTextEditTeamsCoachFirst);
+        editTextLast      = (EditText)findViewById(R.id.editTextEditTeamsCoachLast );
+        editTextPhone     = (EditText)findViewById(R.id.editTextEditTeamsCoachPhone);
+        editTextEmergency = (EditText)findViewById(R.id.editTextEditTeamsCoachEmergency);
+        editTextCoachEmail= (EditText)findViewById(R.id.editTextEditTeamsCoachEmail);
+        editTextCoachEmail.setEnabled(false);
+        editTextCoachEmail.setActivated(false);
+        spinnerCoaches = (Spinner) findViewById(R.id.spinnerCoachesEditTeams);
+        coachArrayList = new ArrayList<>();
+
+        Intent intent = getIntent();
+        email = intent.getStringExtra(EMAIL_KEY);
+        currentLeagueId = intent.getIntExtra(LEAGUE_KEY, 0);
+        currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
 
     }
 

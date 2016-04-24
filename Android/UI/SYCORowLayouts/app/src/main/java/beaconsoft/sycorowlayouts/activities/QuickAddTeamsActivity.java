@@ -18,12 +18,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.Date;
-import java.sql.SQLException;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
@@ -54,9 +52,9 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
     private long emerg;
     private String email;
     private TextView textViewTop;
-    UpdateService updateService;        //reference to the update service
-    boolean mBound = false;             //to bind or not to bind...
-
+    private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
+    private boolean mBound = false;             //to bind or not to bind...
+    private boolean hasStarted = false;
 
     /**
      *
@@ -75,7 +73,10 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
             updateService = binder.getService();
 
             mBound = true;
-
+            if(!hasStarted) {
+                loadSpinner();
+            }
+            hasStarted = true;
         }
 
         @Override
@@ -89,11 +90,6 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         super.onStart();
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
-
-        if(mBound) {
-
-
-        }
 
     }
 
@@ -166,7 +162,7 @@ public class QuickAddTeamsActivity extends AppCompatActivity implements AdapterV
         editTextCoachEmail= (EditText)findViewById(R.id.editTextCoachEmail);
         currentTeam = 0;
         coachArrayList = new ArrayList<>();
-        loadSpinner();
+
     }
 
     public void loadSpinner() {

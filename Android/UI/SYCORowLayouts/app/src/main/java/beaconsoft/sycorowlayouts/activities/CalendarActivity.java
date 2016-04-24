@@ -1,5 +1,6 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -45,6 +46,7 @@ import java.util.Locale;
 
 public class CalendarActivity extends AppCompatActivity {
 
+    private static final int INTENT_REQUEST_CODE_EDIT_EVENTS = 1;
     public GregorianCalendar cal_month, cal_month_copy;
     private CalendarAdapter cal_adapter;
     private TextView tv_month;
@@ -68,7 +70,7 @@ public class CalendarActivity extends AppCompatActivity {
     private List<Address> addresses = new ArrayList<>();
     UpdateService updateService;        //reference to the update service
     boolean mBound = false;             //to bind or not to bind...
-
+    boolean hasStarted = false;
 
     /**
      *
@@ -87,20 +89,36 @@ public class CalendarActivity extends AppCompatActivity {
             updateService = binder.getService();
 
             mBound = true;
-
-
-            currentTeam = updateService.getTeamById(currentTeamId);
-            arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
-            cal_adapter = new CalendarAdapter(getApplicationContext(), cal_month, /* What is this? */ CalendarCollection.date_collection_arr,
-                    currentTeam, updateService);
-            gridview.setAdapter(cal_adapter);
+            if(!hasStarted) {
+                initializeViews();
+            }
+            hasStarted = true;
         }
+
+
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             mBound = false;
         }
     };
+
+    private void initializeViews() {
+        cal_month = (GregorianCalendar) GregorianCalendar.getInstance();
+        cal_month_copy = (GregorianCalendar) cal_month.clone();
+
+
+        tv_month = (TextView) findViewById(R.id.tv_month);
+        tv_month.setText(android.text.format.DateFormat.format("MMMM yyyy", cal_month));
+        currentTeam = updateService.getTeamById(currentTeamId);
+        arrayListEvents.clear();
+        arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
+        cal_adapter = new CalendarAdapter(getApplicationContext(), cal_month, CalendarCollection.date_collection_arr,
+                currentTeam, updateService);
+        gridview.clearChoices();
+        gridview.setAdapter(cal_adapter);
+
+    }
 
     @Override
     protected void onStart() {
@@ -134,12 +152,7 @@ public class CalendarActivity extends AppCompatActivity {
 
 
 
-        cal_month = (GregorianCalendar) GregorianCalendar.getInstance();
-        cal_month_copy = (GregorianCalendar) cal_month.clone();
 
-
-        tv_month = (TextView) findViewById(R.id.tv_month);
-        tv_month.setText(android.text.format.DateFormat.format("MMMM yyyy", cal_month));
 
         ImageButton previous = (ImageButton) findViewById(R.id.ib_prev);
 
@@ -330,10 +343,23 @@ public class CalendarActivity extends AppCompatActivity {
         intent.putExtra(ADMIN_KEY, currentAdminId);
         intent.putExtra(EMAIL_KEY, currentAdminEmail);
         intent.putExtra(TEAM_KEY, currentTeamId);
-        startActivity(intent);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_EDIT_EVENTS);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == INTENT_REQUEST_CODE_EDIT_EVENTS
+                && data != null) {
+            if (resultCode == Activity.RESULT_OK) {
+                currentTeamId = data.getIntExtra(TEAM_KEY, 0);
+                initializeViews();
+                refreshCalendar();
+                populateListView();
+            }
+        }
+    }
 }
 
 

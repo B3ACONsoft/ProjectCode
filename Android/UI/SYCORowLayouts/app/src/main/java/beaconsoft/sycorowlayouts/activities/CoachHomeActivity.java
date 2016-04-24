@@ -32,6 +32,7 @@ import beaconsoft.sycorowlayouts.dbobjects.Team;
 
 public class CoachHomeActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    private static final String  SPORT_KEY = "beaconsoft.sycorowlayouts.SPORT";
     private static final String  ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
     private static final String  COACH_KEY = "beaconsoft.sycorowlayouts.COACH";
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
@@ -41,8 +42,9 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
     private static final String   USER_KEY = "beaconsoft.sycorowlayouts.USER"  ;
     private static final String PLAYER_KEY = "beaconsoft.sycorowlayouts.PLAYER";
     private static final int INTENT_REQUEST_CODE_QUICK_ADD_PLAYER = 1;
-    private static final int INTENT_REQUEST_CODE_QUICK_EDIT_PLAYER = 1;
+    private static final int INTENT_REQUEST_CODE_QUICK_EDIT_PLAYER = 2;
     private static final int INTENT_REQUEST_CODE_CALENDAR_ACTIVITY = 3;
+    private static boolean hasStarted = false;
 
     private String name;
     private String email;
@@ -59,6 +61,7 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
     private ArrayAdapter adapterSpinnerLeagues;
     private Spinner spinnerLeagues;
     private League currentLeague;
+    private ArrayAdapter adapterSpinnerPlayers;
     private int currentLeagueId;
     private Team currentTeam;
     private TextView textViewTeamName;
@@ -78,6 +81,50 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
         moveTaskToBack(true);
     }
 
+    private void initializeActivityViews(){
+        arrayListSports.clear();
+        arrayListSports.addAll(updateService.getListOfSportsByCoach(coachId));
+        adapterSpinnerSports = new ArrayAdapter(CoachHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListSports);
+        adapterSpinnerSports.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSports.setAdapter(adapterSpinnerSports);
+        spinnerSports.setEnabled(true);
+        currentSport = (Sport) spinnerSports.getSelectedItem();
+        if(currentSport != null) {
+            currentSportId = currentSport.getSportID();
+        }
+        arrayListLeagues.clear();
+        arrayListLeagues.addAll(updateService.getListOfLeaguesByCoachAndSport(coachId, currentSportId));
+        adapterSpinnerLeagues = new ArrayAdapter(CoachHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListLeagues);
+        adapterSpinnerLeagues.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLeagues.setAdapter(adapterSpinnerLeagues);
+        spinnerLeagues.setEnabled(true);
+        currentLeague = (League)spinnerLeagues.getSelectedItem();
+        if(currentLeague != null) {
+            currentLeagueId = currentLeague.getLeagueID();
+            arrayListTeams.addAll(updateService.getListOfTeamsCoachedByUser(coachId, currentLeagueId));
+            if(arrayListTeams.size() == 1){
+                currentTeam = arrayListTeams.get(0);
+                currentTeamId = currentTeam.getTeamID();
+            }else{
+                try {
+                    throw new Exception("Coach leads more than 1 Team Exception");
+                } catch (Exception e) {
+                    Log.e("EXCEPTION ", "......" + e.getMessage());
+                }
+            }
+        }
+
+        arrayListPlayers.clear();
+        arrayListPlayers.addAll(updateService.getListOfPlayersByTeam(currentTeamId));
+        ArrayAdapter adapterSpinnerPlayers = new ArrayAdapter(CoachHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListPlayers);
+        spinnerPlayers.setAdapter(adapterSpinnerPlayers);
+        currentPlayer = (Player) spinnerPlayers.getSelectedItem();
+        if (currentPlayer != null) {
+            currentPlayerId = currentPlayer.getPlayerID();
+        }
+    }
+
+
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -90,47 +137,10 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
             updateService = binder.getService();
 
             mBound = true;
-
-            arrayListSports.clear();
-            arrayListSports.addAll(updateService.getListOfSportsByCoach(coachId));
-            adapterSpinnerSports = new ArrayAdapter(CoachHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListSports);
-            adapterSpinnerSports.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerSports.setAdapter(adapterSpinnerSports);
-            spinnerSports.setEnabled(true);
-            currentSport = (Sport) spinnerSports.getSelectedItem();
-            if(currentSport != null) {
-                currentSportId = currentSport.getSportID();
+            if(!hasStarted) {
+                initializeActivityViews();
             }
-            arrayListLeagues.clear();
-            arrayListLeagues.addAll(updateService.getListOfLeaguesByCoachAndSport(coachId, currentSportId));
-            adapterSpinnerLeagues = new ArrayAdapter(CoachHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListLeagues);
-            adapterSpinnerLeagues.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerLeagues.setAdapter(adapterSpinnerLeagues);
-            spinnerLeagues.setEnabled(true);
-            currentLeague = (League)spinnerLeagues.getSelectedItem();
-            if(currentLeague != null) {
-                currentLeagueId = currentLeague.getLeagueID();
-                arrayListTeams.addAll(updateService.getListOfTeamsCoachedByUser(coachId, currentLeagueId));
-                if(arrayListTeams.size() == 1){
-                    currentTeam = arrayListTeams.get(0);
-                    currentTeamId = currentTeam.getTeamID();
-                }else{
-                    try {
-                        throw new Exception("Coach leads more than 1 Team Exception");
-                    } catch (Exception e) {
-                        Log.e("EXCEPTION ", "......" + e.getMessage());
-                    }
-                }
-            }
-
-            arrayListPlayers.clear();
-            arrayListPlayers.addAll(updateService.getListOfPlayersByTeam(currentTeamId));
-            ArrayAdapter adapterSpinnerPlayers = new ArrayAdapter(CoachHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListPlayers);
-            spinnerPlayers.setAdapter(adapterSpinnerPlayers);
-            currentPlayer = (Player) spinnerPlayers.getSelectedItem();
-            if (currentPlayer != null) {
-                currentPlayerId = currentPlayer.getPlayerID();
-            }
+            hasStarted = true;
         }
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
@@ -262,7 +272,7 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
                 if(playerCount > 0) {
                     arrayListPlayers.clear();
                     arrayListPlayers.addAll(updateService.getListOfPlayersByTeam(currentTeam.getTeamID()));
-                    ArrayAdapter adapterSpinnerPlayers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListPlayers);
+                    adapterSpinnerPlayers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListPlayers);
                     spinnerPlayers.setAdapter(adapterSpinnerPlayers);
                     currentPlayer = (Player) spinnerPlayers.getSelectedItem();
                 }
@@ -301,12 +311,13 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
         intent.putExtra(EMAIL_KEY, email);
         intent.putExtra(TEAM_KEY, currentTeamId);
         intent.putExtra(NAME_KEY, name);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_QUICK_ADD_PLAYER);
     }
 
     public void goToEditPlayer(View view){
         Intent intent = new Intent(this, QuickEditPlayerActivity.class);
         intent.putExtra(COACH_KEY, coachId);
+        intent.putExtra(SPORT_KEY, currentSport.getSportID());
         intent.putExtra(LEAGUE_KEY, currentLeagueId);
         intent.putExtra(EMAIL_KEY, email);
         intent.putExtra(TEAM_KEY, currentTeamId);
@@ -332,17 +343,52 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
         startActivityForResult(intent, INTENT_REQUEST_CODE_CALENDAR_ACTIVITY);
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        Log.e(" ", " ");
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
-        if (requestCode == INTENT_REQUEST_CODE_QUICK_ADD_PLAYER && data != null) {
+        if ((requestCode == INTENT_REQUEST_CODE_QUICK_ADD_PLAYER || requestCode == INTENT_REQUEST_CODE_QUICK_EDIT_PLAYER)
+                && data != null) {
             if (resultCode == Activity.RESULT_OK) {
-                onSpinnerLeaguesChange();
+
                 int resultPlayer = data.getIntExtra("player_id", 0);
+                int resultSport  = data.getIntExtra("sport_id" , 0);
+                int resultLeague = data.getIntExtra("league_id", 0);
+
+                for(int i = 0; i < arrayListSports.size(); i++){
+                    if(arrayListSports.get(i).getSportID() == resultSport){
+                        spinnerSports.setSelection(i);
+                        currentSport = (Sport) spinnerSports.getSelectedItem();
+                        currentSportId = currentSport.getSportID();
+                        break;
+                    }
+                }
+
+                for(int i = 0; i < arrayListLeagues.size(); i++){
+                    if(arrayListLeagues.get(i).getLeagueID() == resultLeague){
+                        spinnerLeagues.setSelection(i);
+                        currentLeague = (League)spinnerLeagues.getSelectedItem();
+                        currentLeagueId = currentLeague.getLeagueID();
+                        break;
+                    }
+                }
+
+                arrayListPlayers.clear();
+                arrayListPlayers.addAll(updateService.getListOfPlayersByTeam(currentTeamId));
+                adapterSpinnerPlayers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListPlayers);
+                spinnerPlayers.setAdapter(adapterSpinnerPlayers);
+
                 for(int i = 0; i < arrayListPlayers.size(); i++){
                     if(arrayListPlayers.get(i).getPlayerID() == resultPlayer){
                         spinnerPlayers.setSelection(i);
+                        currentPlayer = (Player)spinnerPlayers.getSelectedItem();
+                        currentPlayerId = currentPlayer.getPlayerID();
                         break;
                     }
                 }

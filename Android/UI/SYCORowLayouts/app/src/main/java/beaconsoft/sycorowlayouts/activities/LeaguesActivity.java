@@ -72,7 +72,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
     private Button buttonEditPlayer;
     beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
     boolean mBound = false;             //to bind or not to bind...
-
+    boolean hasStarted = false;
 
     /**
      *
@@ -91,8 +91,10 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
             updateService = binder.getService();
 
             mBound = true;
-
-            loadSpinners();
+            if(!hasStarted) {
+                loadSpinners();
+            }
+            hasStarted = true;
         }
 
         @Override

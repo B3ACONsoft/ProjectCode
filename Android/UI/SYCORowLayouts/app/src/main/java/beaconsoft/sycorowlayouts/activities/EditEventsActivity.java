@@ -1,5 +1,6 @@
 package beaconsoft.sycorowlayouts.activities;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
@@ -15,6 +16,7 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -100,6 +102,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
     String[] months = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     UpdateService updateService;        //reference to the update service
     boolean mBound = false;             //to bind or not to bind...
+    private boolean actionFired = false;
 
 
     /**
@@ -140,6 +143,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
             mBound = false;
         }
     };
+
 
     @Override
     protected void onStart() {
@@ -409,7 +413,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
     }
 
     public void addEventToLeagueEventList(View view) {
-
+        actionFired = true;
 //        String[] ids = TimeZone.getAvailableIDs(-5 * 60 * 60 * 1000);
 //        SimpleTimeZone edt = new SimpleTimeZone(-5 * 60 * 60 * 1000, ids[0]);
 //        edt.setStartRule(Calendar.APRIL, 1, Calendar.SUNDAY, 2 * 60 * 60 * 1000);
@@ -485,13 +489,15 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
     }
 
     public void updateEvent(View view){
+        actionFired = true;
+        Event newEvent = new Event();
         if(currentEvent != null) {
 
             Calendar cal = new GregorianCalendar(year, month, day, hour, minute);
             date = new Date();
             date = cal.getTime();
 
-            currentEvent = updateService.updateEvent(currentEvent.getEventID(), eventType, date, currentPlace.getPlaceID(),
+            newEvent = updateService.updateEvent(currentEvent.getEventID(), eventType, date, currentPlace.getPlaceID(),
                     currentHomeTeam.getTeamID(), currentAwayTeam.getTeamID());
             ArrayList<Users> arrayListUsers = new ArrayList<>();
             arrayListUsers.addAll(updateService.getListOfUsersByTeam(currentHomeTeam.getTeamID()));
@@ -501,11 +507,15 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
 
             for(Users u : arrayListUsers){
                 sendMessage(u.getPhone() + "",
-                        "The " + currentEvent.getEventType() + " has been changed to " +
-                        currentEvent.getStartDateTime().toString() + ", I hope this is okay...");
+                        "The " + currentEvent.getEventType() + " on " + currentEvent.getStartDateTime()
+                                + " at " + updateService.getPlaceById(currentEvent.getPlaceID())
+                                + " has been changed to " +
+                        newEvent.getStartDateTime().toString() + " at " + updateService.getPlaceById(newEvent.getPlaceID()));
             }
         }
-        initializeListView(currentEvent.getEventID());
+        if(newEvent != null) {
+            initializeListView(newEvent.getEventID());
+        }
     }
 
     public void sendMessage(String phoneNumber, String message) {
@@ -520,4 +530,29 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
         toast.show();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("OPTS ITEM SELECTED BACK", "................HIT BACK ON TOOLBAR");
+        if (item.getItemId() == android.R.id.home) {
+
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        Log.e("ON BACK PRESSED", "...............EVENTS EDIT ON BACK PRESSED");
+        Intent intent = new Intent();
+        if(actionFired) {
+            intent.putExtra(TEAM_KEY, currentTeamId);
+            setResult(Activity.RESULT_OK, intent);
+        }else{
+            setResult(Activity.RESULT_CANCELED);
+        }
+        super.onBackPressed();
+        finish();
+    }
 }

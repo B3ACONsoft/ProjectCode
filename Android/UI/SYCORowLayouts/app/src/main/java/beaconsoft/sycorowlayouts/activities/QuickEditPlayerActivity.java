@@ -17,14 +17,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashMap;
-
-import beaconsoft.sycorowlayouts.DataSource;
-import beaconsoft.sycorowlayouts.MySQLiteHelper;
 import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Enrollment;
@@ -50,9 +42,11 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL" ;
     private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM"  ;
     private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
+    private static final String  SPORT_KEY = "beaconsoft.sycorowlayouts.SPORT" ;
     private static final String   USER_KEY = "beaconsoft.sycorowlayouts.USER"  ;
     private static final String PLAYER_KEY = "beaconsoft.sycorowlayouts.PLAYER";
 
+    private int currentSport;
     private String currentAdminEmail;
     private String currentAdminName;
     private int currentLeague;
@@ -63,7 +57,7 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
     private Player player;
     private Users user;
     private TextView textViewLeagueName;
-    UpdateService updateService;        //reference to the update service
+    private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
     boolean mBound = false;             //to bind or not to bind...
 
 
@@ -85,6 +79,38 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
 
             mBound = true;
 
+            if(mBound) {
+
+
+                Team team = updateService.getTeamById(currentTeam);
+                textViewTeamName.setText("League: " + team.getTeamName());
+                League league = updateService.getLeagueById(currentLeague);
+                textViewLeagueName.setText("Team: " + league.getLeagueName());
+
+
+
+                user = updateService.getUserById(currentUser);
+                player = updateService.getPlayerById(currentPlayer);
+
+                if(user != null && player != null)
+                {
+                    if(player.getFname().equals(user.getFname()) && player.getLname().equals(user.getLname())){
+                        kidBox.setChecked(false);
+                        et3.setEnabled(false);
+                        et4.setEnabled(false);
+                    }else{
+                        kidBox.setChecked(true);
+                    }
+
+                    et1.setText(user.getFname());
+                    et2.setText(user.getLname());
+                    et3.setText(player.getFname());
+                    et4.setText(player.getLname());
+                    et5.setText(user.getPhone() + "");
+                    et6.setText(user.getEmail());
+                    et7.setText(user.getEmergency() + "");
+                }
+            }
         }
 
         @Override
@@ -93,44 +119,14 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onStart() {
         super.onStart();
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 
-        if(mBound) {
 
-
-            Team team = updateService.getTeamById(currentTeam);
-            textViewTeamName.setText("League: " + team.getTeamName());
-            League league = updateService.getLeagueById(currentLeague);
-            textViewLeagueName.setText("Team: " + league.getLeagueName());
-
-
-
-            user = updateService.getUserById(currentUser);
-            player = updateService.getPlayerById(currentPlayer);
-
-            if(user != null && player != null)
-            {
-                if(player.getFname().equals(user.getFname()) && player.getLname().equals(user.getLname())){
-                    kidBox.setChecked(false);
-                    et3.setEnabled(false);
-                    et4.setEnabled(false);
-                }else{
-                    kidBox.setChecked(true);
-                }
-
-                et1.setText(user.getFname());
-                et2.setText(user.getLname());
-                et3.setText(player.getFname());
-                et4.setText(player.getLname());
-                et5.setText(user.getPhone() + "");
-                et6.setText(user.getEmail());
-                et7.setText(user.getEmergency() + "");
-            }
-        }
 
     }
 
@@ -160,6 +156,8 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
         if(currentPlayer > 0) {
             Intent intent = new Intent();
             intent.putExtra("player_id", currentPlayer);
+            intent.putExtra("league_id", currentLeague);
+            intent.putExtra("sport_id", currentSport);
             setResult(Activity.RESULT_OK, intent);
         }else{
             setResult(Activity.RESULT_CANCELED);
@@ -195,7 +193,7 @@ public class QuickEditPlayerActivity extends AppCompatActivity {
         currentTeam       = intent.getIntExtra(TEAM_KEY, 0);
         currentUser       = intent.getIntExtra(USER_KEY, 0);
         currentPlayer     = intent.getIntExtra(PLAYER_KEY, 0);
-
+        currentSport      = intent.getIntExtra(SPORT_KEY, 0);
         et8.setText(currentAdminName);
         textViewAdminEmail.setText(currentAdminEmail);
 

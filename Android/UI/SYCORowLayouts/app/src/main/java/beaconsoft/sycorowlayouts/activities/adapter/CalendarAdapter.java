@@ -67,6 +67,7 @@ public class CalendarAdapter extends BaseAdapter {
         /**
          * Finds all events and makes a string for comparison (the other string is no better)
          */
+        arrayListEvents.clear();
         arrayListEvents.addAll(dataSource.getListOfEventsByTeam(currentTeam));
         for(Event e: arrayListEvents){
             String[] splitDate = e.getStartDateTime().toString().split(" ");
