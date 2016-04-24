@@ -1,11 +1,12 @@
 package beaconsoft.sycorowlayouts.dbobjects;
 
+import java.util.Comparator;
 import java.util.Date;
 
 /**
  * Created by Patrick on 3/8/2016.
  */
-public class Event {
+public class Event implements Comparable {
 
     private int eventID;
     private String eventType;
@@ -72,6 +73,20 @@ public class Event {
             return true;
         }else{
             return false;
+        }
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        Event otherEvent = (Event)another;
+        long lhsTime = this.getStartDateTime().getTime();
+        long rhsTime = otherEvent.getStartDateTime().getTime();
+        if(lhsTime > rhsTime){
+            return -1;
+        }else if(lhsTime < rhsTime){
+            return 1;
+        }else {
+            return 0;
         }
     }
 }

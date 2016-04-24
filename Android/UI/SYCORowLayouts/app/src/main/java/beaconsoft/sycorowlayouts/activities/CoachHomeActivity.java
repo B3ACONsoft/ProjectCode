@@ -1,7 +1,11 @@
 package beaconsoft.sycorowlayouts.activities;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,11 +16,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
-import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
+import beaconsoft.sycorowlayouts.dbobjects.Event;
 import beaconsoft.sycorowlayouts.dbobjects.League;
 import beaconsoft.sycorowlayouts.dbobjects.Player;
 import beaconsoft.sycorowlayouts.dbobjects.Sport;
@@ -24,6 +32,7 @@ import beaconsoft.sycorowlayouts.dbobjects.Team;
 
 public class CoachHomeActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    private static final String  ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
     private static final String  COACH_KEY = "beaconsoft.sycorowlayouts.COACH";
     private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
     private static final String   NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
@@ -33,12 +42,12 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
     private static final String PLAYER_KEY = "beaconsoft.sycorowlayouts.PLAYER";
     private static final int INTENT_REQUEST_CODE_QUICK_ADD_PLAYER = 1;
     private static final int INTENT_REQUEST_CODE_QUICK_EDIT_PLAYER = 1;
+    private static final int INTENT_REQUEST_CODE_CALENDAR_ACTIVITY = 3;
 
     private String name;
     private String email;
     private int coachId;
 
-    private DataSource dataSource;
     private ArrayList<Sport> arrayListSports;
     private ArrayList<League> arrayListLeagues;
     private ArrayList<Team> arrayListTeams;
@@ -61,45 +70,94 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
     private Player currentPlayer;
     private int currentPlayerId;
     private int currentTeamId;
-
-    @Override
-    protected void onDestroy(){
-        dataSource.close();
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onPause(){
-        dataSource.close();
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume(){
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        super.onResume();
-    }
+    private UpdateService updateService;  //reference to the update service
+    boolean mBound = false;             //to bind or not to bind...
 
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);
     }
 
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+
+            updateService = binder.getService();
+
+            mBound = true;
+
+            arrayListSports.clear();
+            arrayListSports.addAll(updateService.getListOfSportsByCoach(coachId));
+            adapterSpinnerSports = new ArrayAdapter(CoachHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListSports);
+            adapterSpinnerSports.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerSports.setAdapter(adapterSpinnerSports);
+            spinnerSports.setEnabled(true);
+            currentSport = (Sport) spinnerSports.getSelectedItem();
+            if(currentSport != null) {
+                currentSportId = currentSport.getSportID();
+            }
+            arrayListLeagues.clear();
+            arrayListLeagues.addAll(updateService.getListOfLeaguesByCoachAndSport(coachId, currentSportId));
+            adapterSpinnerLeagues = new ArrayAdapter(CoachHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListLeagues);
+            adapterSpinnerLeagues.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerLeagues.setAdapter(adapterSpinnerLeagues);
+            spinnerLeagues.setEnabled(true);
+            currentLeague = (League)spinnerLeagues.getSelectedItem();
+            if(currentLeague != null) {
+                currentLeagueId = currentLeague.getLeagueID();
+                arrayListTeams.addAll(updateService.getListOfTeamsCoachedByUser(coachId, currentLeagueId));
+                if(arrayListTeams.size() == 1){
+                    currentTeam = arrayListTeams.get(0);
+                    currentTeamId = currentTeam.getTeamID();
+                }else{
+                    try {
+                        throw new Exception("Coach leads more than 1 Team Exception");
+                    } catch (Exception e) {
+                        Log.e("EXCEPTION ", "......" + e.getMessage());
+                    }
+                }
+            }
+
+            arrayListPlayers.clear();
+            arrayListPlayers.addAll(updateService.getListOfPlayersByTeam(currentTeamId));
+            ArrayAdapter adapterSpinnerPlayers = new ArrayAdapter(CoachHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListPlayers);
+            spinnerPlayers.setAdapter(adapterSpinnerPlayers);
+            currentPlayer = (Player) spinnerPlayers.getSelectedItem();
+            if (currentPlayer != null) {
+                currentPlayerId = currentPlayer.getPlayerID();
+            }
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coach_home);
-
-        dataSource = new DataSource(this);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         Intent intent = getIntent();
         name    = intent.getStringExtra(NAME_KEY);
@@ -129,46 +187,6 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
         arrayListTeams   = new ArrayList<Team>();
         arrayListPlayers = new ArrayList<Player>();
 
-        arrayListSports.clear();
-        arrayListSports.addAll(dataSource.getListOfSportsByCoach(coachId));
-        adapterSpinnerSports = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListSports);
-        adapterSpinnerSports.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSports.setAdapter(adapterSpinnerSports);
-        spinnerSports.setEnabled(true);
-        currentSport = (Sport) spinnerSports.getSelectedItem();
-        if(currentSport != null) {
-            currentSportId = currentSport.getSportID();
-        }
-        arrayListLeagues.clear();
-        arrayListLeagues.addAll(dataSource.getListOfLeaguesByCoachAndSport(coachId, currentSportId));
-        adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListLeagues);
-        adapterSpinnerLeagues.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLeagues.setAdapter(adapterSpinnerLeagues);
-        spinnerLeagues.setEnabled(true);
-        currentLeague = (League)spinnerLeagues.getSelectedItem();
-        if(currentLeague != null) {
-            currentLeagueId = currentLeague.getLeagueID();
-            arrayListTeams.addAll(dataSource.getListOfTeamsCoachedByUser(coachId, currentLeagueId));
-            if(arrayListTeams.size() == 1){
-                currentTeam = arrayListTeams.get(0);
-                currentTeamId = currentTeam.getTeamID();
-            }else{
-                try {
-                    throw new Exception("Coach leads more than 1 Team Exception");
-                } catch (Exception e) {
-                    Log.e("EXCEPTION ", "......" + e.getMessage());
-                }
-            }
-        }
-
-        arrayListPlayers.clear();
-        arrayListPlayers.addAll(dataSource.getListOfPlayersByTeam(currentTeamId));
-        ArrayAdapter adapterSpinnerPlayers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListPlayers);
-        spinnerPlayers.setAdapter(adapterSpinnerPlayers);
-        currentPlayer = (Player) spinnerPlayers.getSelectedItem();
-        if (currentPlayer != null) {
-            currentPlayerId = currentPlayer.getPlayerID();
-        }
     }
 
     @Override
@@ -192,7 +210,7 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
         public void onSpinnerLeaguesChange()
         {
             arrayListTeams.clear();
-            arrayListTeams.addAll(dataSource.getListOfTeamsCoachedByUser(coachId, currentLeagueId));
+            arrayListTeams.addAll(updateService.getListOfTeamsCoachedByUser(coachId, currentLeagueId));
             if (arrayListTeams.size() == 1) {
                 currentTeam = arrayListTeams.get(0);
                 textViewTeamName.setText(currentTeam.getTeamName());
@@ -200,21 +218,50 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
                 /*Find the number of players on the team and print it to the textViewCoachHomePlayerCount view*/
 
                 arrayListPlayers.clear();
-                arrayListPlayers.addAll(dataSource.getListOfPlayersByTeam(currentTeam.getTeamID()));
+                arrayListPlayers.addAll(updateService.getListOfPlayersByTeam(currentTeam.getTeamID()));
                 int playerCount = arrayListPlayers.size();
                 textViewPlayerCount.setEnabled(true);
                 textViewPlayerCount.setText("" + playerCount);
 
                 /* Calculate the number of games left in the season and display in textViewCoachHomeGamesLeft */
+                ArrayList<Event> arrayListEvents = new ArrayList<>();
+                ArrayList<Event> arrayListEventsLeft = new ArrayList<>();
+                arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
+                int gamesLeftCount = 0;
+                Calendar cal = new GregorianCalendar();
+
+                Date today = cal.getTime();
+                Event present = new Event();
+                present.setStartDateTime(today);
+                for(Event e: arrayListEvents){
+                    if(present.compareTo(e) > 0){
+                        gamesLeftCount++;
+                        arrayListEventsLeft.add(e);
+                    }
+                }
+
 
                 //TODO: Calculate the number of games left in the season and display in textViewCoachHomeGamesLeft
-                textViewGamesLeft.setText("TODO");
+                textViewGamesLeft.setText("" + gamesLeftCount);
 
                 //TODO: Find the next game and display it's date
+                if(arrayListEventsLeft.isEmpty()){
+                    textViewNextGame.setText("n/a");
+                }else {
+                    Collections.sort(arrayListEventsLeft);
+                    Event event = arrayListEventsLeft.get(0);
+                    String[] timeStrings = event.getStartDateTime().toString().split(" ");
+                    String nextGameString = timeStrings[1] + " " + timeStrings[2] + " " + timeStrings[5];
+                    if(event.getAwayTeamID() != 0){
+                        Team awayTeam = updateService.getTeamById(event.getAwayTeamID());
+                        nextGameString += " " + awayTeam.getTeamName();
+                    }
 
+                    textViewNextGame.setText("" + nextGameString);
+                }
                 if(playerCount > 0) {
                     arrayListPlayers.clear();
-                    arrayListPlayers.addAll(dataSource.getListOfPlayersByTeam(currentTeam.getTeamID()));
+                    arrayListPlayers.addAll(updateService.getListOfPlayersByTeam(currentTeam.getTeamID()));
                     ArrayAdapter adapterSpinnerPlayers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListPlayers);
                     spinnerPlayers.setAdapter(adapterSpinnerPlayers);
                     currentPlayer = (Player) spinnerPlayers.getSelectedItem();
@@ -233,7 +280,7 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
     private void onSportSpinnerChange() {
 
         arrayListLeagues.clear();
-        arrayListLeagues.addAll(dataSource.getListOfLeaguesByCoachAndSport(coachId, currentSportId));
+        arrayListLeagues.addAll(updateService.getListOfLeaguesByCoachAndSport(coachId, currentSportId));
         adapterSpinnerLeagues = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, arrayListLeagues);
         spinnerLeagues.setAdapter(adapterSpinnerLeagues);
     }
@@ -275,13 +322,19 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
         startActivity(intent);
     }
 
+    public void goToCalendarActivity(View view){
+        Intent intent = new Intent(this, CalendarActivity.class);
+        intent.putExtra(NAME_KEY, name);
+        intent.putExtra(ADMIN_KEY, coachId);
+        intent.putExtra(EMAIL_KEY, email);
+        intent.putExtra(TEAM_KEY, currentTeamId);
+        intent.putExtra(LEAGUE_KEY, currentLeagueId);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_CALENDAR_ACTIVITY);
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        try {
-            dataSource.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
 
         if (requestCode == INTENT_REQUEST_CODE_QUICK_ADD_PLAYER && data != null) {
             if (resultCode == Activity.RESULT_OK) {

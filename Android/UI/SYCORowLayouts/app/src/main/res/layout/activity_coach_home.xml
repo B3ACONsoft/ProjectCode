@@ -175,7 +175,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:layout_width="15dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Next Game:"
@@ -183,7 +183,14 @@
             android:textAlignment="gravity"
             android:singleLine="true"
             android:gravity="center_vertical"
-            android:textColor="#134250" />
+            android:textColor="#134250"
+            android:layout_weight="2" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <TextView
             android:layout_width="wrap_content"
@@ -235,7 +242,7 @@
             android:text="TEAM CALENDAR"
             android:id="@+id/buttonGoToCalendar"
             android:layout_weight="1"
-            android:onClick="goToCalendar" />
+            android:onClick="goToCalendarActivity" />
 
         <Button
             android:layout_width="0dp"

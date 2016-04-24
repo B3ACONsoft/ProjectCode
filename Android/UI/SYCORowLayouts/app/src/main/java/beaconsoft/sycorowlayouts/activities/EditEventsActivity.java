@@ -213,6 +213,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
             spinnerPlaces  .setOnItemSelectedListener(EditEventsActivity.this);
             listview = (ListView)findViewById(R.id.listViewLeagueEvents);
             listview.setLongClickable(true);
+
             listview.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

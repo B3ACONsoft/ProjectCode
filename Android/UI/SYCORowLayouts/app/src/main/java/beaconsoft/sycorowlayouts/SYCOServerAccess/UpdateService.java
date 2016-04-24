@@ -2,6 +2,7 @@ package beaconsoft.sycorowlayouts.SYCOServerAccess;
 
 import android.app.Service;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -219,13 +220,14 @@ public class UpdateService extends Service {
     }
 
 
+
     @Override
     public void onCreate() {
         //init serverConnectionInterface memory
         serverConnectionInterface = new ServerConnectionInterface();
 
         //init the SQL list database helper
-        dbHelper = new MySQLiteHelper(this.getBaseContext());
+        dbHelper = MySQLiteHelper.sInstance;
 
         //start the serverConnectionThread
         startServerConnectionProcess();
@@ -285,6 +287,7 @@ public class UpdateService extends Service {
 
     private void open_db() throws SQLException {
         db = dbHelper.getWritableDatabase();
+
     }
 
     private void close_db(){

@@ -102,7 +102,7 @@ public class DataSource {
     };
 
     public DataSource(Context context){
-        dbHelper = new MySQLiteHelper(context);
+
     }
 
     public void open() throws SQLException {

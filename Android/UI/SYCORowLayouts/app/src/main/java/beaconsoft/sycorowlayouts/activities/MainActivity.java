@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        MySQLiteHelper.getInstance(this.getApplicationContext());
         /*
 
         Intent intent = new Intent();
