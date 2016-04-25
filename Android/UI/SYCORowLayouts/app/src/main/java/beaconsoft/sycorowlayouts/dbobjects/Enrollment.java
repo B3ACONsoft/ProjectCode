@@ -8,6 +8,7 @@ import java.util.Date;
  */
 public class Enrollment {
 
+    private int tempEnrollmentId;
     private int enrollmentID;
     private int userID;
     private int playerID;
@@ -15,6 +16,10 @@ public class Enrollment {
     private int teamID;
     private Date enrollmentDate;
     private Double fee;
+
+    public int getTempEnrollmentId() { return tempEnrollmentId; }
+
+    public void setTempEnrollmentId(int id){ tempEnrollmentId = id; }
 
     public int getEnrollmentID() {
         return enrollmentID;

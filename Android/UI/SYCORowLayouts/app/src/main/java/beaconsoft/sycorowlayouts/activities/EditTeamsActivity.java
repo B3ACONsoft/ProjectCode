@@ -60,7 +60,7 @@ public class EditTeamsActivity extends AppCompatActivity implements AdapterView.
     private Team currentTeam;
     private Users coach;
     private Toast toastTeam;
-    UpdateService updateService;        //reference to the update service
+    private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
     boolean mBound = false;             //to bind or not to bind...
     private boolean hasStarted = false;
 

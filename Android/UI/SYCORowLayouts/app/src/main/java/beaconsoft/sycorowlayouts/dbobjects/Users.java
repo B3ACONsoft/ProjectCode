@@ -7,6 +7,7 @@ import java.util.EnumSet;
  */
 public class Users {
 
+    private int tempUserId;
     private int userID;
     private String fname;
     private String lname;
@@ -15,6 +16,10 @@ public class Users {
     private long emergency;
     private String user_type;
     private String password;
+
+    public int getTempUserId() { return tempUserId; }
+
+    public void setTempUserID(int id){ tempUserId = id; }
 
     public int getUserID() {
         return userID;

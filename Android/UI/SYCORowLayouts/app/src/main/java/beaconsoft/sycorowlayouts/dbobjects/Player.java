@@ -5,11 +5,15 @@ package beaconsoft.sycorowlayouts.dbobjects;
  */
 public class Player {
 
+    private int tempSportId;
     private int playerID;
     private String fname;
     private String lname;
     private int userID;
 
+    public int getTempSportId() { return tempSportId; }
+
+    public void setTempSportId(int id){ tempSportId = id; }
 
     public int getPlayerID() {
         return playerID;

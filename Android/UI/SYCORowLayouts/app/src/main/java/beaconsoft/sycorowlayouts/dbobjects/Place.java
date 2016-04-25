@@ -5,12 +5,17 @@ package beaconsoft.sycorowlayouts.dbobjects;
  */
 public class Place {
 
+    private int tempPlaceId;
     private int placeID;
     private String placeName;
     private String streetAddress;
     private String city;
     private String state;
     private int zip;
+
+    public int getTempPlaceId(){ return tempPlaceId; }
+
+    public void setTempPlaceId(int id) { tempPlaceId = id; }
 
     public int getPlaceID() {
         return placeID;

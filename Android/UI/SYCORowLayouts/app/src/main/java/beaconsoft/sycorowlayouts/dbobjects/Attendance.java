@@ -5,11 +5,16 @@ package beaconsoft.sycorowlayouts.dbobjects;
  */
 public class Attendance {
 
+    private int tempAttendanceId;
     private int attendanceID;
     private int eventID;
     private int userID;
     private String status;
     private String message;
+
+    public int getTempAttendanceId(){ return tempAttendanceId; }
+
+    public void setTempAttendanceId(int id){ tempAttendanceId = id; }
 
     public int getAttendanceID() {
         return attendanceID;

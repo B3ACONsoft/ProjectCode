@@ -7,6 +7,7 @@ import java.util.Date;
  */
 public class League {
 
+    private int tempLeagueId;
     private int leagueID;
     private int userID;
     private int sportID;
@@ -16,6 +17,9 @@ public class League {
     private Date startDate;
     private Date endDate;
 
+    public int getTempLeagueId() { return tempLeagueId; }
+
+    public void setTempLeagueId(int id){ tempLeagueId = id; }
 
     public int getLeagueID() {
         return leagueID;

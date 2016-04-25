@@ -8,12 +8,17 @@ import java.util.Date;
  */
 public class Event implements Comparable {
 
+    private int tempEventId;
     private int eventID;
     private String eventType;
     private Date startDateTime;
     private int placeID;
     private int homeTeamID;
     private int awayTeamID;
+
+    public int getTempEventId(){ return tempEventId; }
+
+    public void setTempEventId(int id){ tempEventId = id; }
 
     public int getEventID() {
         return eventID;
