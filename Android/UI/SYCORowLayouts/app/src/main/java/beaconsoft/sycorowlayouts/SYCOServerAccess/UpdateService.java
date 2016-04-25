@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -111,6 +112,7 @@ public class UpdateService extends Service {
 
     private class ServerConnectionInterface {
         public boolean running;
+        public boolean syncing;
         public Queue<Object> insertQueue;
         public Queue<Object> updateQueue;
         public Queue<Object> deleteQueue;
@@ -153,9 +155,41 @@ public class UpdateService extends Service {
             this.deleteOperations = new RemoteDeleteOperations(remoteConnection);
             this.selectOperations = new RemoteSelectOperations(remoteConnection);
             this.serverConnectionInterface = serverConnectionInterface;
-
+            serverConnectionInterface.syncing = true;
         }
-        
+
+        /*
+      PATRICK
+   */
+        private void sync() {
+            try {
+                /*
+                    Get all tables from the server as json strings.
+                 */
+                String users = selectOperations.getListOfUsers();
+                String players = selectOperations.getListOfPlayers();
+                String sports = selectOperations.getListOfSports();
+                String leagues = selectOperations.getListOfLeagues();
+                String teams = selectOperations.getListOfTeams();
+                String enrollments = selectOperations.getListOfEnrollments();
+                String places = selectOperations.getListOfPlaces();
+                String events = selectOperations.getAllEvents();
+                String attendance = selectOperations.getListOfAttendances();
+
+                //open local database for read/write
+                open_db();
+
+                /*
+                    Proccess
+                 */
+
+
+            } catch(SQLException e) {
+                e.printStackTrace();
+            } finally {
+                close_db();
+            }
+        }
         /**
          * Starts executing the active part of the class' code. This method is
          * called when a thread is started that has been created with a class which
@@ -166,6 +200,7 @@ public class UpdateService extends Service {
             while(serverConnectionInterface.running) {
                 //get all data from server
                 //TODO implement get all
+
 
                 //check to see if any data to upload to server
                 if(serverConnectionInterface.hasData()) {
@@ -185,6 +220,10 @@ public class UpdateService extends Service {
                     }
                 }
 
+                if(serverConnectionInterface.syncing){
+                    sync();
+                    serverConnectionInterface.syncing = false;
+                }
 
                 //sleep for SYNC_RATE_MILLISECONDS
                 //is sleep the right thing to do?
@@ -283,30 +322,12 @@ public class UpdateService extends Service {
     }
 
     /*
-        PATRICK
+        Sync local data with remote data
      */
-    private void sync() {
-        try {
-            /*
-                Get all table from the server.
-             */
-
-            open_db();
-
-            //for each get all
-                //parse json string.
-                    //for each entity in json string
-                    //check the local sqlite
-                        //if exists
-                            //do an update
-                        //else
-                            //insert
-        } catch(SQLException e) {
-            e.printStackTrace();
-        } finally {
-            close_db();
-        }
+    public void sync(){
+        this.serverConnectionInterface.syncing = true;
     }
+
     private void open_db() throws SQLException {
         db = dbHelper.getWritableDatabase();
 

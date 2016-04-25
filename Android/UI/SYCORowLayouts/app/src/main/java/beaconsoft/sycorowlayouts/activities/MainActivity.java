@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
             mBound = true;
 
+            updateService.sync();
             Intent intentLogin = getIntent();
             email = intentLogin.getStringExtra(EMAIL_KEY);
             permission = intentLogin.getStringExtra(LEVEL_KEY);
