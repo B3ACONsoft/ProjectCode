@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import beaconsoft.sycorowlayouts.DataSource;
-import beaconsoft.sycorowlayouts.UpdateService;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.League;
 import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.dbobjects.Player;
@@ -198,6 +198,11 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 Log.e("REQUEST CODE", "................................................REQUEST CODE " + requestCode);
 
                 loadSpinners();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 int resultSport = data.getIntExtra("sport_id", 0);
                 int resultLeague = data.getIntExtra("league_id", 0);
@@ -288,7 +293,7 @@ public class LeaguesActivity extends AppCompatActivity implements AdapterView.On
                 playersArrayList.addAll(updateService.getListOfPlayersByTeam(currentTeam));
                 adapterSpinnerPlayers = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, playersArrayList);
                 spinnerPlayers.setAdapter(adapterSpinnerPlayers);
-
+                activateView(buttonEditPlayer);
                 for(int i = 0; i < playersArrayList.size(); i++){
                     if(playersArrayList.get(i).getPlayerID() == resultPlayer){
                         spinnerPlayers.setSelection(i);

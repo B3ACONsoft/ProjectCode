@@ -47,7 +47,7 @@
 
         <Spinner
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:id="@+id/spinnerEditLeaguesChooseLeague"
             android:layout_weight="1" />
     </TableRow>

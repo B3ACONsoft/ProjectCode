@@ -68,7 +68,7 @@ public class CalendarActivity extends AppCompatActivity {
     private  ListView listView;
     private Event currentEvent;
     private List<Address> addresses = new ArrayList<>();
-    UpdateService updateService;        //reference to the update service
+    private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
     boolean mBound = false;             //to bind or not to bind...
     boolean hasStarted = false;
 

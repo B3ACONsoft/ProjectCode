@@ -1,12 +1,5 @@
 package beaconsoft.sycorowlayouts.activities;
 
-import beaconsoft.sycorowlayouts.DataSource;
-import beaconsoft.sycorowlayouts.MySQLiteHelper;
-import beaconsoft.sycorowlayouts.UpdateService;
-import beaconsoft.sycorowlayouts.dbobjects.Users;
-import string.utils.ProperCase;
-
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,9 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.io.StringReader;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonReader;
+
+import beaconsoft.sycorowlayouts.MySQLiteHelper;
+import beaconsoft.sycorowlayouts.dbobjects.Users;
+import string.utils.ProperCase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,6 +66,29 @@ public class MainActivity extends AppCompatActivity {
                     sendToUserHomeActivity(email);
                     break;
             }
+//
+//            String siteResponse = ""; //AdminTests.testAdminGetAllSports();
+//            StringBuilder responseJsonBuilder = new StringBuilder();
+
+//            int i = 0;
+//            while(siteResponse.charAt(i) != '<' && siteResponse.charAt(i+1) != '!') {
+//                responseJsonBuilder.append(siteResponse).charAt(i);
+//                i++;
+//            }
+//            String responseJson = responseJsonBuilder.toString();
+//            StringReader stringReader = new StringReader(responseJson);
+//
+//
+//            JsonReader jsonReader = null;
+//            JsonArray jsonArray = null;
+//
+//
+//            jsonReader = Json.createReader(stringReader);
+//            jsonArray = (JsonArray) jsonReader.readArray();
+
+//            for(i = 0; i < jsonArray.size(); i++) {
+//                System.out.println(jsonArray.get(i));
+//            }
 
         }
 

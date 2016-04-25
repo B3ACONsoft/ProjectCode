@@ -68,6 +68,23 @@ public class UserHomeActivity extends AppCompatActivity implements CalendarView.
 
             mBound = true;
 
+            List<Team> teamArray = new ArrayList<>();
+            teamArray.addAll(updateService.getListOfTeamsByUser(email));
+            for (Team t : teamArray) {
+                if (!arrayListTeams.contains(t)) {
+                    arrayListTeams.add(t);
+                }
+            }
+            Team all = new Team();
+            all.setTeamName("ALL");
+            all.setTeamID(0);
+            arrayListTeams.add(all);
+
+            spinnerTeams = (Spinner) findViewById(R.id.spinnerUserHomeTeams);
+            spinnerTeams.setOnItemSelectedListener(UserHomeActivity.this);
+            setSpinnerAdapter();
+
+            setListAdapter();
         }
 
         @Override
@@ -82,26 +99,10 @@ public class UserHomeActivity extends AppCompatActivity implements CalendarView.
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 
-        if(mBound) {
 
-            List<Team> teamArray = new ArrayList<>();
-            teamArray.addAll(updateService.getListOfTeamsByUser(email));
-            for (Team t : teamArray) {
-                if (!arrayListTeams.contains(t)) {
-                    arrayListTeams.add(t);
-                }
-            }
-            Team all = new Team();
-            all.setTeamName("ALL");
-            all.setTeamID(0);
-            arrayListTeams.add(all);
 
-            spinnerTeams = (Spinner) findViewById(R.id.spinnerUserHomeTeams);
-            spinnerTeams.setOnItemSelectedListener(this);
-            setSpinnerAdapter();
 
-            setListAdapter();
-        }
+
 
     }
 

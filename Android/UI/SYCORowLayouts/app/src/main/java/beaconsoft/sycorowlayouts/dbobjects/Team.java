@@ -7,11 +7,15 @@ import java.util.Comparator;
  */
 public class Team {
 
+    private int tempTeamId;
     private int teamID;
     private String teamName;
     private int leagueID;
     private int userID;
 
+    public int getTempUserId(){ return tempTeamId; }
+
+    public void setTempTeamId(int id){ tempTeamId = id; }
 
     public int getTeamID() {
         return teamID;

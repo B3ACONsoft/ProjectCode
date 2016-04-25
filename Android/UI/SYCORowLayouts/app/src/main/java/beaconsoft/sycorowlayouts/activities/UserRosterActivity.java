@@ -2,36 +2,27 @@ package beaconsoft.sycorowlayouts.activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-import com.google.android.gms.wearable.MessageApi;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.Player;
@@ -51,7 +42,8 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
     List<HashMap<String, String>> fillMaps;
     UpdateService updateService;        //reference to the update service
     boolean mBound = false;             //to bind or not to bind...
-
+    private String[] from;
+    private int[] to;
 
     /**
      *
@@ -71,27 +63,7 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
 
             mBound = true;
 
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        bindService(new Intent(this,
-                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
-
-        if(mBound) {
-            Intent intent = getIntent();
-            currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
-            email = intent.getStringExtra(EMAIL_KEY);
-            String[] from = new String[]{"player_fname", "player_lname", "user_fname", "user_lname", "user_phone"};
-            int[] to = new int[]{R.id.player_fname, R.id.player_lname, R.id.user_fname, R.id.user_lname, R.id.user_phone};
-            rosterList.clear();
             rosterList.addAll(updateService.getListOfPlayersByTeam(currentTeamId));
             fillMaps = new ArrayList<>();
             for (Player p : rosterList) {
@@ -110,7 +82,8 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
                 fillMaps.add(mapper);
             }
             listViewPlayerContacts = (ListView) findViewById(R.id.listViewUserActivityTest);
-            SimpleAdapter simpleAdapter = new SimpleAdapter(this, fillMaps, R.layout.list_view_users_row_layout, from, to);
+
+            SimpleAdapter simpleAdapter = new SimpleAdapter(UserRosterActivity.this, fillMaps, R.layout.list_view_users_row_layout, from, to);
             listViewPlayerContacts.setAdapter(simpleAdapter);
             listViewPlayerContacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -131,9 +104,21 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
                     startActivity(dialIntent);
                 }
             });
-            listViewPlayerContacts.setOnItemLongClickListener(this);
+            listViewPlayerContacts.setOnItemLongClickListener(UserRosterActivity.this);
 
         }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this,
+                UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 
     }
 
@@ -174,7 +159,14 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_roster);
 
+        Intent intent = getIntent();
+        currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
+        email = intent.getStringExtra(EMAIL_KEY);
 
+        from = new String[]{"player_fname", "player_lname", "user_fname", "user_lname", "user_phone"};
+
+        to = new int[]{R.id.player_fname, R.id.player_lname, R.id.user_fname, R.id.user_lname, R.id.user_phone};
+        rosterList.clear();
 
     }
 

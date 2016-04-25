@@ -65,6 +65,11 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
             updateService = binder.getService();
 
             mBound = true;
+            places.addAll(updateService.getListOfPlaces());
+            if (places.size() > 0){
+                spinnerPlacesAdapter = new PlaceListAdapter(AddPlaceActivity.this, R.layout.custom_list_view_places, places, updateService);
+                placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
+            }
 
         }
 
@@ -80,7 +85,7 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 
-        if(mBound) {
+
             for(String s: arrayStates){
                 states.add(s);
             }
@@ -90,13 +95,8 @@ public class AddPlaceActivity extends AppCompatActivity implements OnItemSelecte
             spinnerStates.setOnItemSelectedListener(this);
             spinnerStates.setAdapter(spinnerStatesAdapter);
             placesAddPlacesListView = (ListView)findViewById(R.id.listViewAddPlaces);
-            places.addAll(updateService.getListOfPlaces());
-            if (places.size() > 0){
-                spinnerPlacesAdapter = new PlaceListAdapter(this, R.layout.custom_list_view_places, places, updateService);
-                placesAddPlacesListView.setAdapter(spinnerPlacesAdapter);
-            }
 
-        }
+
 
     }
 

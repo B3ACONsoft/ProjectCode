@@ -218,7 +218,6 @@ public class UpdateService extends Service {
     }
 
 
-
     @Override
     public void onCreate() {
         //init serverConnectionInterface memory

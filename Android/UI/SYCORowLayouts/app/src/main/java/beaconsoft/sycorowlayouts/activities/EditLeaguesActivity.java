@@ -81,6 +81,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
 
             mBound = true;
 
+            loadSportSpinner();
         }
 
         @Override
@@ -168,7 +169,7 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
         textViewEditLeaguesTopPrompt.setText(currentAdminEmail + " AID:" + currentAdminId + " LID:" + currentLeague);
         arrayListSports = new ArrayList<>();
         arrayListLeagues = new ArrayList<>();
-        loadSportSpinner();
+
 
     }
 
@@ -312,6 +313,14 @@ public class EditLeaguesActivity extends AppCompatActivity implements AdapterVie
 
             currentSport = sport.getSportID();
             loadSportSpinner();
+
+//            for(int i = 0; i < arrayListSports.size(); i++){
+//                if(arrayListSports.get(i).getSportID() == currentSport){
+//                    spinnerEditLeaguesChooseSport.setSelection(i);
+//                    break;
+//                }
+//            }
+
             editTextEditLeaguesSportName.setText("");
         }catch(Exception e){
             textViewEditLeaguesTopPrompt.setText(e.getMessage().toString());
