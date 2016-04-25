@@ -24,7 +24,8 @@
             android:headerDividersEnabled="true"
             android:choiceMode="singleChoice"
             android:layout_weight="1"
-            android:focusable="true" />
+            android:focusable="true"
+            android:textFilterEnabled="true" />
     </TableRow>
 
     <TableRow

@@ -66,25 +66,25 @@ public class MainActivity extends AppCompatActivity {
                     sendToUserHomeActivity(email);
                     break;
             }
-
-            String siteResponse = ""; //AdminTests.testAdminGetAllSports();
-            StringBuilder responseJsonBuilder = new StringBuilder();
+//
+//            String siteResponse = ""; //AdminTests.testAdminGetAllSports();
+//            StringBuilder responseJsonBuilder = new StringBuilder();
 
 //            int i = 0;
 //            while(siteResponse.charAt(i) != '<' && siteResponse.charAt(i+1) != '!') {
 //                responseJsonBuilder.append(siteResponse).charAt(i);
 //                i++;
 //            }
-            String responseJson = responseJsonBuilder.toString();
-            StringReader stringReader = new StringReader(responseJson);
-
-
-            JsonReader jsonReader = null;
-            JsonArray jsonArray = null;
-
-
-            jsonReader = Json.createReader(stringReader);
-            jsonArray = (JsonArray) jsonReader.readArray();
+//            String responseJson = responseJsonBuilder.toString();
+//            StringReader stringReader = new StringReader(responseJson);
+//
+//
+//            JsonReader jsonReader = null;
+//            JsonArray jsonArray = null;
+//
+//
+//            jsonReader = Json.createReader(stringReader);
+//            jsonArray = (JsonArray) jsonReader.readArray();
 
 //            for(i = 0; i < jsonArray.size(); i++) {
 //                System.out.println(jsonArray.get(i));

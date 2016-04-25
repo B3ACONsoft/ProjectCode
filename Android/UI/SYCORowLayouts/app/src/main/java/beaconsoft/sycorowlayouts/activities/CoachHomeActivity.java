@@ -274,6 +274,7 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
 
                     textViewNextGame.setText("" + nextGameString);
                 }
+
                 if(playerCount > 0) {
                     arrayListPlayers.clear();
                     arrayListPlayers.addAll(updateService.getListOfPlayersByTeam(currentTeam.getTeamID()));

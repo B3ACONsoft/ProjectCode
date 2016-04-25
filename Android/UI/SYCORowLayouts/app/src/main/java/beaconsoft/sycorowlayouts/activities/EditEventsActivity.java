@@ -501,8 +501,12 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
                     currentHomeTeam.getTeamID(), currentAwayTeam.getTeamID());
             ArrayList<Users> arrayListUsers = new ArrayList<>();
             arrayListUsers.addAll(updateService.getListOfUsersByTeam(currentHomeTeam.getTeamID()));
+            Users homeCoach = updateService.getUserById(currentHomeTeam.getUserID());
+            arrayListUsers.add(homeCoach);
             if(isGame.isChecked()){
                 arrayListUsers.addAll(updateService.getListOfUsersByTeam(currentAwayTeam.getTeamID()));
+                Users awayCoach = updateService.getUserById(currentAwayTeam.getUserID());
+                arrayListUsers.add(awayCoach);
             }
 
             for(Users u : arrayListUsers){
@@ -521,7 +525,7 @@ public class EditEventsActivity extends FragmentActivity implements OnItemSelect
     public void sendMessage(String phoneNumber, String message) {
         Toast toast = Toast.makeText(this, " ", Toast.LENGTH_SHORT);
         try {
-            SmsManager.getDefault().sendTextMessage("9198127701", null, message, null, null);
+            SmsManager.getDefault().sendTextMessage(phoneNumber, null, message, null, null);
         }catch(Exception e){
             toast.setText(e.getMessage().toString());
             toast.show();

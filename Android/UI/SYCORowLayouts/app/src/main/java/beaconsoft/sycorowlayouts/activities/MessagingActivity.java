@@ -63,10 +63,6 @@ public class MessagingActivity extends AppCompatActivity {
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 
-        if(mBound) {
-
-
-        }
 
     }
 

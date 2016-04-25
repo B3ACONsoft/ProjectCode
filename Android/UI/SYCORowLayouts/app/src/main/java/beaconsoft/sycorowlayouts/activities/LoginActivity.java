@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mPasswordView = (EditText) findViewById(R.id.password);
 
-        mEmailView.setText("a.a@yahoo.com");  /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+        mEmailView.setText("johnsondh86@gmail.com");  /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
         mPasswordView.setText("password");   /* a.a@yahoo.com = ADMIN, JURASSIC@PARK.AAH = COACH anything else is user   */
 
             mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -220,7 +220,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             String permissionLevel = "";
             if(email.equalsIgnoreCase("a.a@yahoo.com")){
                 permissionLevel = "ADMIN";
-            }else if(email.equalsIgnoreCase("JURASSIC@PARK.AAH")){
+            }else if(email.equalsIgnoreCase("johnsondh86@gmail.com")){
                 permissionLevel = "COACH";
             }else
                 permissionLevel = "USER";
