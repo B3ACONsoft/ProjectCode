@@ -30,6 +30,8 @@ import beaconsoft.sycorowlayouts.dbobjects.Player;
 import beaconsoft.sycorowlayouts.dbobjects.Sport;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
 
+
+
 public class CoachHomeActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private static final String  SPORT_KEY = "beaconsoft.sycorowlayouts.SPORT";
@@ -75,6 +77,9 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
     private int currentTeamId;
     private UpdateService updateService;  //reference to the update service
     boolean mBound = false;             //to bind or not to bind...
+
+    //TODO Write a broadcast intent which we will call "RELOAD", on broadcast store current information and hit the reload button
+
 
     @Override
     public void onBackPressed() {

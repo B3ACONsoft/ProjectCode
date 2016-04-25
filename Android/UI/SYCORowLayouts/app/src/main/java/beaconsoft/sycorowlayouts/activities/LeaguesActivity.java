@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import beaconsoft.sycorowlayouts.DataSource;
-import beaconsoft.sycorowlayouts.UpdateService;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
 import beaconsoft.sycorowlayouts.dbobjects.League;
 import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.dbobjects.Player;
