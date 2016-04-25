@@ -32,9 +32,38 @@ public abstract class RemoteOperations {
 		this.remoteConnection = remoteConnection;
 		this.command = new HashMap<String, String>();
 	}
-	
+
+    /*
+    This strips out unwanted characters from the server response upon
+    doing a post request.
+     */
+    private String parseNetaiCrap(String netai_crap) {
+        String retVal = netai_crap;
+
+		/*
+		 * We assume that server should return a vaild JSON string.
+		 * So it should begin with a "["
+		 * If not, then it really has returned crap.
+		 */
+        if(netai_crap.startsWith("[")) {
+			/*
+			 * We start at the end of the server response because
+			 * in most cases there will be less data to get through.
+			 */
+            for(int i = netai_crap.length()-1; i >= 0; i--) {
+                if(netai_crap.charAt(i) == ']') {
+                    retVal = netai_crap.substring(0, i+1);
+                    break;
+                }
+
+            }
+        }
+
+        return retVal;
+    }
+
 	protected String doOperation() {
-		return remoteConnection.doPostRequest(command);
+		return parseNetaiCrap(remoteConnection.doPostRequest(command));
 	}
 
     protected POJO_TYPE getPOJOtype(Object pojo) {

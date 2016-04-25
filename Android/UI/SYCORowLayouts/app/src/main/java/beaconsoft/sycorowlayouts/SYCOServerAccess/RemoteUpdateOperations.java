@@ -3,9 +3,9 @@ package beaconsoft.sycorowlayouts.SYCOServerAccess;
 
 import beaconsoft.sycorowlayouts.dbobjects.*;
 
-public class UpdateOperations extends RemoteOperations {
+public class RemoteUpdateOperations extends RemoteOperations {
 
-    public UpdateOperations(RemoteConnection remoteConnection) {
+    public RemoteUpdateOperations(RemoteConnection remoteConnection) {
         super(remoteConnection);
     }
 

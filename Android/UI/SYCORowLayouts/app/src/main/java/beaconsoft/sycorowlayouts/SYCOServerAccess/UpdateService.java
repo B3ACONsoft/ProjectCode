@@ -2,14 +2,11 @@ package beaconsoft.sycorowlayouts.SYCOServerAccess;
 
 import android.app.Service;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.sql.SQLException;
@@ -144,7 +141,7 @@ public class UpdateService extends Service {
         private ServerConnectionInterface serverConnectionInterface;                    //a reference to the serverConnectionInterface
         private RemoteConnection remoteConnection;
         private RemoteInsertOperations insertOperations;
-        private UpdateOperations updateOperations;
+        private RemoteUpdateOperations updateOperations;
         private RemoteDeleteOperations deleteOperations;
         private RemoteSelectOperations selectOperations;
         private final int SYNC_RATE_MILLISECONDS = 10000;                               //the rate at which the sync operation cycles in milliseconds
@@ -152,7 +149,7 @@ public class UpdateService extends Service {
         public ServerConnectionProcess(ServerConnectionInterface serverConnectionInterface) {
             this.remoteConnection = new RemoteConnection();
             this.insertOperations = new RemoteInsertOperations(remoteConnection);
-            this.updateOperations = new UpdateOperations(remoteConnection);
+            this.updateOperations = new RemoteUpdateOperations(remoteConnection);
             this.deleteOperations = new RemoteDeleteOperations(remoteConnection);
             this.selectOperations = new RemoteSelectOperations(remoteConnection);
             this.serverConnectionInterface = serverConnectionInterface;
@@ -187,6 +184,7 @@ public class UpdateService extends Service {
                         updateOperations.updatePOJO(serverConnectionInterface.updateQueue.poll());
                     }
                 }
+
 
                 //sleep for SYNC_RATE_MILLISECONDS
                 //is sleep the right thing to do?
@@ -285,6 +283,31 @@ public class UpdateService extends Service {
         this.serverConnectionInterface.deleteQueue.add(delete);
     }
 
+    /*
+        PATRICK
+     */
+    private void sync() {
+        try {
+            /*
+                Get all table from the server.
+             */
+
+            open_db();
+
+            //for each get all
+                //parse json string.
+                    //for each entity in json string
+                    //check the local sqlite
+                        //if exists
+                            //do an update
+                        //else
+                            //insert
+        } catch(SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close_db();
+        }
+    }
     private void open_db() throws SQLException {
         db = dbHelper.getWritableDatabase();
 

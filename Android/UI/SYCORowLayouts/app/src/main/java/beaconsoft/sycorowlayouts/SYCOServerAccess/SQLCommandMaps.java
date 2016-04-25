@@ -15,87 +15,115 @@ import java.util.HashMap;
 public final class SQLCommandMaps {
 
 	public static final class SelectAllCommandMaps {
-		
-		public static final HashMap<String, String> adminGetsAllSports;
-		static {
-			adminGetsAllSports = new HashMap<String, String>(); 
-			{
-				adminGetsAllSports.put("user_id", "1");
-				adminGetsAllSports.put("password", "PASSWORD");
-				adminGetsAllSports.put("command", "SELECT");
-				adminGetsAllSports.put("table", "SPORTS");
-			}
-		};
-		
-		public static final HashMap<String, String> adminGetsAllLeagues;
-		static {
-			adminGetsAllLeagues = new HashMap<String, String>(); 
-			{
-				adminGetsAllLeagues.put("user_id", "1");
-				adminGetsAllLeagues.put("password", "PASSWORD");
-				adminGetsAllLeagues.put("command", "SELECT");
-				adminGetsAllLeagues.put("table", "LEAGUE");
-			}
-		};
-		
-		public static final HashMap<String, String> adminGetsAllUsers;
-		static {
-			adminGetsAllUsers = new HashMap<String, String>(); 
-			{
-				adminGetsAllUsers.put("user_id", "1");
-				adminGetsAllUsers.put("password", "PASSWORD");
-				adminGetsAllUsers.put("command", "SELECT");
-				adminGetsAllUsers.put("table", "USERS");
-			}
-		};
-		
-		
-		public static final HashMap<String, String> adminGetsAllTeams;
-		static {
-			adminGetsAllTeams = new HashMap<String, String>(); 
-			{
-				adminGetsAllTeams.put("user_id", "1");
-				adminGetsAllTeams.put("password", "PASSWORD");
-				adminGetsAllTeams.put("command", "SELECT");
-				adminGetsAllTeams.put("table", "TEAM");
-			}
-		};
-		
-		public static final HashMap<String, String> adminGetsAllEnrollment;
-		static {
-			adminGetsAllEnrollment = new HashMap<String, String>(); 
-			{
-				adminGetsAllEnrollment.put("user_id", "1");
-				adminGetsAllEnrollment.put("password", "PASSWORD");
-				adminGetsAllEnrollment.put("command", "SELECT");
-				adminGetsAllEnrollment.put("table", "ENROLLMENT");
-			}
-		};
-		
-		public static final HashMap<String, String> adminGetsAllPlaces;
-		static {
-			adminGetsAllPlaces = new HashMap<String, String>(); 
-			{
-				adminGetsAllPlaces.put("user_id", "1");
-				adminGetsAllPlaces.put("password", "PASSWORD");
-				adminGetsAllPlaces.put("command", "SELECT");
-				adminGetsAllPlaces.put("table", "PLACE");
-			}
-		};
-		
-		public static final HashMap<String, String> adminGetsAllEvents;
-		static {
-			adminGetsAllEvents = new HashMap<String, String>(); 
-			{
-				adminGetsAllEvents.put("user_id", "1");
-				adminGetsAllEvents.put("password", "PASSWORD");
-				adminGetsAllEvents.put("command", "SELECT");
-				adminGetsAllEvents.put("table", "EVENTS");
-			}
-		};
-		
-		
-		
+
+        public static final HashMap<String, String> adminGetsAllSports;
+        static {
+            adminGetsAllSports = new HashMap<String, String>();
+            {
+                adminGetsAllSports.put("user_id", "1");
+                adminGetsAllSports.put("password", "PASSWORD");
+                adminGetsAllSports.put("command", "SELECT");
+                adminGetsAllSports.put("table", "SPORTS");
+                adminGetsAllSports.put("option", "get_all");
+            }
+        };
+
+        public static final HashMap<String, String> adminGetsAllLeagues;
+        static {
+            adminGetsAllLeagues = new HashMap<String, String>();
+            {
+                adminGetsAllLeagues.put("user_id", "1");
+                adminGetsAllLeagues.put("password", "PASSWORD");
+                adminGetsAllLeagues.put("command", "SELECT");
+                adminGetsAllLeagues.put("table", "LEAGUE");
+                adminGetsAllLeagues.put("option", "get_all");
+            }
+        };
+
+        public static final HashMap<String, String> adminGetsAllUsers;
+        static {
+            adminGetsAllUsers = new HashMap<String, String>();
+            {
+                adminGetsAllUsers.put("user_id", "1");
+                adminGetsAllUsers.put("password", "PASSWORD");
+                adminGetsAllUsers.put("command", "SELECT");
+                adminGetsAllUsers.put("table", "USERS");
+                adminGetsAllUsers.put("option", "get_all");
+            }
+        };
+
+
+        public static final HashMap<String, String> adminGetsAllTeams;
+        static {
+            adminGetsAllTeams = new HashMap<String, String>();
+            {
+                adminGetsAllTeams.put("user_id", "1");
+                adminGetsAllTeams.put("password", "PASSWORD");
+                adminGetsAllTeams.put("command", "SELECT");
+                adminGetsAllTeams.put("table", "TEAM");
+                adminGetsAllTeams.put("option", "get_all");
+            }
+        };
+
+        public static final HashMap<String, String> adminGetsAllEnrollment;
+        static {
+            adminGetsAllEnrollment = new HashMap<String, String>();
+            {
+                adminGetsAllEnrollment.put("user_id", "1");
+                adminGetsAllEnrollment.put("password", "PASSWORD");
+                adminGetsAllEnrollment.put("command", "SELECT");
+                adminGetsAllEnrollment.put("table", "ENROLLMENT");
+                adminGetsAllEnrollment.put("option", "get_all");
+            }
+        };
+
+        public static final HashMap<String, String> adminGetsAllPlaces;
+        static {
+            adminGetsAllPlaces = new HashMap<String, String>();
+            {
+                adminGetsAllPlaces.put("user_id", "1");
+                adminGetsAllPlaces.put("password", "PASSWORD");
+                adminGetsAllPlaces.put("command", "SELECT");
+                adminGetsAllPlaces.put("table", "PLACE");
+                adminGetsAllPlaces.put("option", "get_all");
+            }
+        };
+
+        public static final HashMap<String, String> adminGetsAllEvents;
+        static {
+            adminGetsAllEvents = new HashMap<String, String>();
+            {
+                adminGetsAllEvents.put("user_id", "1");
+                adminGetsAllEvents.put("password", "PASSWORD");
+                adminGetsAllEvents.put("command", "SELECT");
+                adminGetsAllEvents.put("table", "EVENTS");
+                adminGetsAllEvents.put("option", "get_all");
+            }
+        };
+
+        public static final HashMap<String, String> adminGetsAllPlayers;
+        static {
+            adminGetsAllPlayers = new HashMap<String, String>();
+            {
+                adminGetsAllPlayers.put("user_id", "1");
+                adminGetsAllPlayers.put("password", "PASSWORD");
+                adminGetsAllPlayers.put("command", "SELECT");
+                adminGetsAllPlayers.put("table", "PLAYER");
+                adminGetsAllPlayers.put("option", "get_all");
+            }
+        };
+
+        public static final HashMap<String, String> adminGetsAllAttendance;
+        static {
+            adminGetsAllAttendance = new HashMap<String, String>();
+            {
+                adminGetsAllAttendance.put("user_id", "1");
+                adminGetsAllAttendance.put("password", "PASSWORD");
+                adminGetsAllAttendance.put("command", "SELECT");
+                adminGetsAllAttendance.put("table", "ATTENDANCE");
+                adminGetsAllAttendance.put("option", "get_all");
+            }
+        };
 
 	}
 

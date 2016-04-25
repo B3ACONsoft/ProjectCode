@@ -157,7 +157,7 @@ public class RemoteInsertOperations extends RemoteOperations {
             command.put("enrollment_date", "enrollment_date");
             command.put("fee", "fee");
 
-            doOperation();
+            result = doOperation();
         } catch(Exception e) {
             return e.getMessage();
         }
