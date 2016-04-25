@@ -182,22 +182,31 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <Button
+            <Spinner
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="DISPLAY ALL EVENTS"
-                android:id="@+id/button2"
-                android:onClick="displayAllEvents"
-                android:layout_weight="1" />
+                android:layout_height="match_parent"
+                android:id="@+id/spinnerUserHomeTeams"
+                android:layout_weight="4"
+                android:spinnerMode="dropdown"
+                android:soundEffectsEnabled="true" />
 
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="TEAM CALL LIST"
+                android:text="CALL LIST"
                 android:id="@+id/button"
-                android:onClick="goToRosterActivity"
+                android:onClick="goToUserRosterActivity"
                 android:layout_weight="1"
                 android:nestedScrollingEnabled="true" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="GET ALL"
+                android:id="@+id/button2"
+                android:onClick="displayAllEvents"
+                android:layout_weight="1" />
+
         </LinearLayout>
 
         <ListView

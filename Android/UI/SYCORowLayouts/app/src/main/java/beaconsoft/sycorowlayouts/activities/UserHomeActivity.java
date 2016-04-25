@@ -44,7 +44,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-public class UserHomeActivity extends AppCompatActivity {
+public class UserHomeActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private static final int INTENT_REQUEST_CODE_ROSTER_ACTIVITY = 1;
     public GregorianCalendar cal_month, cal_month_copy;
@@ -69,8 +69,10 @@ public class UserHomeActivity extends AppCompatActivity {
     private Event currentEvent;
     private List<Address> addresses = new ArrayList<>();
     private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
-    boolean mBound = false;             //to bind or not to bind...
-    boolean hasStarted = false;
+    private boolean mBound = false;             //to bind or not to bind...
+    private boolean hasStarted = false;
+    private Spinner spinnerTeams;
+    private ArrayAdapter spinnerAdapter;
 
     private ArrayList<Team> arrayListTeams;
     /**
@@ -78,37 +80,67 @@ public class UserHomeActivity extends AppCompatActivity {
      * Defines callbacks for service binding, passed to bindService()
      *
      */
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private ServiceConnection mConnection;
 
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
+    {
+        mConnection = new ServiceConnection() {
 
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+            @Override
+            public void onServiceConnected(ComponentName className,
+                                           IBinder service) {
 
-            updateService = binder.getService();
+                // We've bound to LocalService, cast the IBinder and get LocalService instance
+                UpdateService.UpdateServiceBinder binder = (UpdateService.UpdateServiceBinder) service;
 
-            mBound = true;
+                updateService = binder.getService();
 
-            arrayListTeams = new ArrayList<>();
-            arrayListTeams.addAll(updateService.getListOfTeamsByUser(email));
-            currentTeamId = arrayListTeams.get(0).getTeamID();
+                mBound = true;
 
-            if(!hasStarted) {
-                initializeViews();
+                arrayListTeams = new ArrayList<>();
+                arrayListTeams.addAll(updateService.getListOfTeamsByUser(email));
+
+                spinnerAdapter = new ArrayAdapter(UserHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListTeams);
+                spinnerTeams.setAdapter(spinnerAdapter);
+                spinnerTeams.setOnItemSelectedListener(UserHomeActivity.this);
+
+                currentTeam = (Team) spinnerTeams.getSelectedItem();
+                currentTeamId = currentTeam.getTeamID();
+
+                if (!hasStarted) {
+                    initializeViews();
+                }
+                hasStarted = true;
+
             }
-            hasStarted = true;
 
+
+            @Override
+            public void onServiceDisconnected(ComponentName arg0) {
+                mBound = false;
+            }
+        };
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+        if(parent == spinnerTeams) {
+            onSpinnerTeamsChange();
         }
+    }
 
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
 
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
+    private void onSpinnerTeamsChange() {
+        currentTeam = (Team)spinnerTeams.getSelectedItem();
+        currentTeamId = currentTeam.getTeamID();
+        initializeViews();
+        populateListView();
+        refreshCalendar();
+    }
 
     private void initializeViews() {
         cal_month = (GregorianCalendar) GregorianCalendar.getInstance();
@@ -149,6 +181,7 @@ public class UserHomeActivity extends AppCompatActivity {
 
         arrayListEvents = new ArrayList<>();
         listView = (ListView)findViewById(R.id.lv_android);
+        spinnerTeams = (Spinner)findViewById(R.id.spinnerUserHomeTeams);
         Intent intent = getIntent();
         email = intent.getStringExtra(EMAIL_KEY);
 
