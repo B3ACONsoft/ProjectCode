@@ -139,7 +139,6 @@ public class UpdateService extends Service {
     }
 
     private class ServerConnectionProcess implements Runnable {
-
         private ServerConnectionInterface serverConnectionInterface;                    //a reference to the serverConnectionInterface
         private RemoteConnection remoteConnection;
         private RemoteInsertOperations insertOperations;
@@ -157,7 +156,7 @@ public class UpdateService extends Service {
             this.selectOperations = new RemoteSelectOperations(remoteConnection);
             this.serverConnectionInterface = serverConnectionInterface;
             serverConnectionInterface.syncing = true;
-            this.syncHelper = new SyncHelper(dbHelper, service);
+            this.syncHelper = new SyncHelper(dbHelper);
         }
 
         /*

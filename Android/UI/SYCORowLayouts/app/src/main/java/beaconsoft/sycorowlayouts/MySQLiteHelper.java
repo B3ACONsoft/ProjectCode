@@ -205,16 +205,20 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         if(json != null){
             Log.e(MySQLiteHelper.class.getName(), json);
         }
-        */
+*/
         db.beginTransaction();
         for(String q : CREATE_DATABASE){
             db.execSQL(q);
         }
+
+        /*
         for(String q : DatabaseDummyLoader.boom){
             db.execSQL(q);
         }
+        */
         db.setTransactionSuccessful();
         db.endTransaction();
+
     }
 
     public void onOpen(SQLiteDatabase db){

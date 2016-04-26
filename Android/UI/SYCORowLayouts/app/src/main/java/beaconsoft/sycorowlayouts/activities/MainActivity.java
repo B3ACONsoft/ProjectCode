@@ -53,6 +53,13 @@ public class MainActivity extends AppCompatActivity {
             mBound = true;
 
             updateService.sync();
+            try
+            {
+                Thread.sleep(10000,0);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
 
             Intent intentLogin = getIntent();
