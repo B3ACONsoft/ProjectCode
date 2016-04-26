@@ -210,9 +210,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         for(String q : CREATE_DATABASE){
             db.execSQL(q);
         }
-        for(String q : DatabaseDummyLoader.boom){
-            db.execSQL(q);
-        }
+//        for(String q : DatabaseDummyLoader.boom){
+//            db.execSQL(q);
+//        }
         db.setTransactionSuccessful();
         db.endTransaction();
     }
