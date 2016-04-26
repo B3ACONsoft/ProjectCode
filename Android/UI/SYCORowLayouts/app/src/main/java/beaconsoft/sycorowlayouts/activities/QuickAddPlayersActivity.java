@@ -318,7 +318,7 @@ public class QuickAddPlayersActivity extends AppCompatActivity {
             /**
              * if the user does not exist, then we must make a user and a player
               */
-            user = updateService.createUsers(first, last, phone, email, emergency, "USER", "PASS");
+            user = updateService.createUsers(first, last, phone, email, emergency, "USER", "PASSWORD");
             player = updateService.createPlayer(childFirst, childLast, user.getUserID());
         }
 
