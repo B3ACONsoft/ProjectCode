@@ -138,7 +138,7 @@ public class RemoteConnection {
         {
             byte[] bytes = params.getBytes();   //convert the data to bytes
 
-            url = new URL(SERVER_URL);                                                      //
+            url = new URL(LOGIN_URL);                                                      //
             conn = (HttpURLConnection) url.openConnection();                               //init the connection objects
             conn.setDoInput(true);
             conn.setDoOutput(true);

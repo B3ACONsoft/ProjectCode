@@ -174,6 +174,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    private long end;
+    private final long TIMEOUT_VAL = 30000; //30 second timeout
+
+    private boolean stillTime(long end){
+        if(System.currentTimeMillis() < end){
+            return true;
+        }
+        return false;
+    }
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -225,21 +234,38 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            mAuthTask.execute((Void) null);
             loginCommandMap.put("email", email);
             loginCommandMap.put("password", password);
+            long end;
+            final long TIMEOUT_VAL = 30000; //30 second timeout
 
-            String loginResult = remoteConnection.login(loginCommandMap);
-            switch(loginResult){
-                case "ADMIN":
-                case "COACH":
-                case "USER":
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.putExtra(EMAIL_KEY, email.toUpperCase());
-                    intent.putExtra(LEVEL_KEY, loginResult);
-                    startActivity(intent);
-                    this.finish();
+            semaphore.loginResult = null;
+            Thread loginThread = new Thread(new LogInProcess(semaphore, loginCommandMap));
+            loginThread.start();
+
+            end = System.currentTimeMillis() + TIMEOUT_VAL;
+            while(semaphore.loginResult == null) {
+                if(!stillTime(end)){
+                    Toast.makeText(getApplicationContext(), "TIMEOUT", Toast.LENGTH_LONG);
                     break;
-                default:
-                    Toast.makeText(getApplicationContext(), "INVALID CREDITIALS !!!!!!", Toast.LENGTH_LONG);
+                }
             }
+
+            if(semaphore.loginResult != null) {
+                switch(semaphore.loginResult){
+                    case "ADMIN":
+                    case "COACH":
+                    case "USER":
+                        Intent intent = new Intent(this, MainActivity.class);
+                        intent.putExtra(EMAIL_KEY, email.toUpperCase());
+                        intent.putExtra(LEVEL_KEY, semaphore.loginResult);
+                        startActivity(intent);
+                        this.finish();
+                        break;
+                    default:
+                        Toast.makeText(getApplicationContext(), "INVALID CREDITIALS !!!!!!", Toast.LENGTH_LONG).show();
+                }
+            }
+
+
 
             /*HEY OVER HERE GUYS!!!!!!
             *
