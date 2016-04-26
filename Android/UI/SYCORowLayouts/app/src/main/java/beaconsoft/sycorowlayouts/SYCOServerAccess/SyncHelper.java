@@ -1,5 +1,6 @@
 package beaconsoft.sycorowlayouts.SYCOServerAccess;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,6 +18,8 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.stream.JsonParsingException;
 
+import beaconsoft.sycorowlayouts.DataSource;
+import beaconsoft.sycorowlayouts.DataSource2;
 import beaconsoft.sycorowlayouts.MySQLiteHelper;
 
 /**
@@ -28,15 +31,19 @@ public class SyncHelper  {
     private MySQLiteHelper dbHelper;
     private RemoteSelectOperations selectOperations;
     private UpdateService updateServiceRef;
+    private DataSource2 dataSource;
 
-    public SyncHelper(MySQLiteHelper dbHelper, UpdateService updateServiceRef){
+    public SyncHelper(MySQLiteHelper dbHelper){
         this.dbHelper = dbHelper;
         this.remoteConnection = new RemoteConnection();
         this.selectOperations = new RemoteSelectOperations(remoteConnection);
-        this.updateServiceRef = updateServiceRef;
+        dataSource = new DataSource2(dbHelper);
     }
 
     public void sync() {
+        db = dbHelper.getWritableDatabase();
+        dbHelper.killAndRemake(this.db);
+        db.close();
 
         syncUsers(selectOperations.getListOfUsers());
         syncPlayers(selectOperations.getListOfPlayers());
@@ -94,7 +101,7 @@ public class SyncHelper  {
                 new_user_type = ((JsonObject) jsonArray.get(i)).getString("user_type");
                 new_password  = ((JsonObject) jsonArray.get(i)).getString("password");
 
-                updateServiceRef.createUsers(new_fname, new_lname, new_phone, new_email, new_emergency, new_user_type, new_password);
+                dataSource.createUsers(new_fname, new_lname, new_phone, new_email, new_emergency, new_user_type, new_password);
             }
         }
 
@@ -120,7 +127,7 @@ public class SyncHelper  {
                 new_player_last = ((JsonObject) jsonArray.get(i)).getString("lname");
                 new_user_id = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("user_id"));
 
-                updateServiceRef.createPlayer(new_player_first, new_player_first, new_user_id);
+                dataSource.createPlayer(new_player_first, new_player_first, new_user_id);
             }
         }
     }
@@ -140,7 +147,7 @@ public class SyncHelper  {
             for (int i = 0; i < jsonArray.size(); i++) {
                 new_sport_name = ((JsonObject) jsonArray.get(i)).getString("sport_name");
 
-                updateServiceRef.createSport(new_sport_name);
+                dataSource.createSport(new_sport_name);
             }
         }
     }
@@ -188,7 +195,7 @@ public class SyncHelper  {
                 startDate = new Date(dateToLong(((JsonObject) jsonArray.get(i)).getString("start_date")));
                 endDate = new Date(dateToLong(((JsonObject) jsonArray.get(i)).getString("end_date")));
 
-                updateServiceRef.createLeague(new_user_id, new_sport_id, leagueName, minAge, maxAge, startDate, endDate);
+                dataSource.createLeague(new_user_id, new_sport_id, leagueName, minAge, maxAge, startDate, endDate);
             }
         }
     }
@@ -213,7 +220,7 @@ public class SyncHelper  {
                 leagueID = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("league_id"));
                 teamName = ((JsonObject) jsonArray.get(i)).getString("team_name");
 
-                updateServiceRef.createTeam(teamName, leagueID, userID);
+                dataSource.createTeam(teamName, leagueID, userID);
             }
         }
 
@@ -244,7 +251,7 @@ public class SyncHelper  {
                 enrollmentDate = new Date(dateToLong(((JsonObject) jsonArray.get(i)).getString("enrollment_date")));
                 fee = Double.parseDouble(((JsonObject) jsonArray.get(i)).getString("fee"));
 
-                updateServiceRef.createEnrollment(userID, playerID, leagueID, teamID, enrollmentDate, fee);
+                dataSource.createEnrollment(userID, playerID, leagueID, teamID, enrollmentDate, fee);
             }
         }
     }
@@ -271,7 +278,7 @@ public class SyncHelper  {
                 city = ((JsonObject) jsonArray.get(i)).getString("city");
                 state = ((JsonObject) jsonArray.get(i)).getString("state");
                 zip = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("zip"));
-                updateServiceRef.createPlace(placeName, streetAddress, city, state, zip);
+                dataSource.createPlace(placeName, streetAddress, city, state, zip);
             }
         }
 

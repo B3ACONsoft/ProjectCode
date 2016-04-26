@@ -1,12 +1,8 @@
-package beaconsoft.sycorowlayouts.SYCOServerAccess;
+package beaconsoft.sycorowlayouts;
 
-import android.app.Service;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Binder;
-import android.os.IBinder;
 import android.util.Log;
 
 import java.sql.SQLException;
@@ -15,12 +11,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
-import beaconsoft.sycorowlayouts.MySQLiteHelper;
 import beaconsoft.sycorowlayouts.dbobjects.Attendance;
 import beaconsoft.sycorowlayouts.dbobjects.Enrollment;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
@@ -32,12 +24,9 @@ import beaconsoft.sycorowlayouts.dbobjects.Team;
 import beaconsoft.sycorowlayouts.dbobjects.Users;
 
 /**
- * Created by Dave on 3/18/2016.
- *
- * We just clone data source.
- *
+ * Created by AnalEmbargo on 4/26/2016.
  */
-public class UpdateService extends Service {
+public class DataSource2 {
 
     private SQLiteDatabase db;
     private MySQLiteHelper dbHelper;
@@ -110,209 +99,19 @@ public class UpdateService extends Service {
             MySQLiteHelper.COLUMN_PASSWORD
     };
 
-    private class ServerConnectionInterface {
-        public boolean running;
-        public boolean syncing;
-        public Queue<Object> insertQueue;
-        public Queue<Object> updateQueue;
-        public Queue<Object> deleteQueue;
-
-        public ServerConnectionInterface() {
-            insertQueue = new LinkedList<Object>();
-            updateQueue = new LinkedList<Object>();
-            deleteQueue = new LinkedList<Object>();
-        }
-
-        /**
-         * Check if any of the queue have data
-         * @return
-         */
-        public boolean hasData() {
-            if(this.insertQueue.size() > 0
-                    || this.updateQueue.size() > 0
-                    || this.deleteQueue.size() > 0) {
-                return true;
-            }
-            return false;
-        }
-
-    }
-
-    private class ServerConnectionProcess implements Runnable {
-        private ServerConnectionInterface serverConnectionInterface;                    //a reference to the serverConnectionInterface
-        private RemoteConnection remoteConnection;
-        private RemoteInsertOperations insertOperations;
-        private RemoteUpdateOperations updateOperations;
-        private RemoteDeleteOperations deleteOperations;
-        private RemoteSelectOperations selectOperations;
-        private SyncHelper syncHelper;
-        private final int SYNC_RATE_MILLISECONDS = 10000;                               //the rate at which the sync operation cycles in milliseconds
-
-        public ServerConnectionProcess(ServerConnectionInterface serverConnectionInterface, UpdateService service) {
-            this.remoteConnection = new RemoteConnection();
-            this.insertOperations = new RemoteInsertOperations(remoteConnection);
-            this.updateOperations = new RemoteUpdateOperations(remoteConnection);
-            this.deleteOperations = new RemoteDeleteOperations(remoteConnection);
-            this.selectOperations = new RemoteSelectOperations(remoteConnection);
-            this.serverConnectionInterface = serverConnectionInterface;
-            serverConnectionInterface.syncing = true;
-            this.syncHelper = new SyncHelper(dbHelper);
-        }
-
-        /*
-      PATRICK
-   */
-
-        /**
-         * Starts executing the active part of the class' code. This method is
-         * called when a thread is started that has been created with a class which
-         * implements {@code Runnable}.
-         */
-        @Override
-        public void run() {
-            while(serverConnectionInterface.running) {
-                //get all data from server
-                //TODO implement get all
-
-
-                //check to see if any data to upload to server
-                if(serverConnectionInterface.hasData()) {
-                    //do delete operations
-                    while(serverConnectionInterface.deleteQueue.peek() != null) {
-                        deleteOperations.deletePOJO(serverConnectionInterface.deleteQueue.poll());
-                    }
-                    //do insert operations
-                    while(serverConnectionInterface.insertQueue.peek() != null) {
-                        //poll the queue and do the the operation
-                        insertOperations.insertPOJO(serverConnectionInterface.insertQueue.poll());
-                    }
-                    //do update operations
-                    while(serverConnectionInterface.updateQueue.peek() != null) {
-                        //poll the queue and do the the operation
-                        updateOperations.updatePOJO(serverConnectionInterface.updateQueue.poll());
-                    }
-                }
-
-                if(serverConnectionInterface.syncing){
-                    syncHelper.sync();
-                    serverConnectionInterface.syncing = false;
-                }
-
-                //sleep for SYNC_RATE_MILLISECONDS
-                //is sleep the right thing to do?
-                //is it too expensive
-                try {
-                    Thread.sleep(SYNC_RATE_MILLISECONDS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-    
-    private ServerConnectionInterface serverConnectionInterface;              //this the memory space that serverConnectionProcess can access
-    private ServerConnectionProcess serverConnectionProcess;            //this the class which is run in the background connection thread
-    private Thread serverConnectionThread;
-
-
-    private final IBinder mBinder = new UpdateServiceBinder();
-
-    /*
-    This is class used for the client binder.
-    It allows the public methods of the class the service
-    to be called from the called activity.
-     */
-    public class UpdateServiceBinder extends Binder {
-        public UpdateService getService() {
-            // Return this instance of UpdateService so clients can call public methods
-            return UpdateService.this;
-        }
-    }
-
-
-    @Override
-    public void onCreate() {
-        //init serverConnectionInterface memory
-        serverConnectionInterface = new ServerConnectionInterface();
-
-        //init the SQL list database helper
-        dbHelper = MySQLiteHelper.sInstance;
-
-        //start the serverConnectionThread
-        startServerConnectionProcess();
-    }
-
-    /*
-    Return an interface that activities can bind to.
-     */
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    //make the sure the thread is dead
-    @Override
-    public void onDestroy() {
-        stopServerConnectionProcess();
-    }
-
-    /*
-        Start the worker thread
-     */
-    public void startServerConnectionProcess() {
-        serverConnectionInterface.running = true;
-        serverConnectionProcess = new ServerConnectionProcess(serverConnectionInterface, this);
-        serverConnectionThread = new Thread(serverConnectionProcess);
-        serverConnectionThread.start();
-    }
-    /*
-        Kill the worker thread.
-     */
-    public void stopServerConnectionProcess() {
-        this.serverConnectionInterface.running = false;
-    }
-
-
-    /*
-        Add an object to object to be inserted remotely
-     */
-    private void queueInsert(Object insert) {
-        this.serverConnectionInterface.insertQueue.add(insert);
-    }
-
-    /*
-        Add an object to be updated remotely
-     */
-    private void queueUpdate(Object update) {
-        this.serverConnectionInterface.updateQueue.add(update);
-    }
-
-    /*
-        Add and object to be deleted remotely
-     */
-    private void queueDelete(Object delete) {
-        this.serverConnectionInterface.deleteQueue.add(delete);
-    }
-
-    /*
-        Sync local data with remote data
-     */
-    public void sync(){
-        this.serverConnectionInterface.syncing = true;
+    public DataSource2(MySQLiteHelper dbHelper){
+        this.dbHelper = dbHelper;
     }
 
     private void open_db() throws SQLException {
         db = dbHelper.getWritableDatabase();
-
     }
 
     private void close_db(){
         dbHelper.close();
     }
 
-
-
-     /*                                'SPORT' OBJECT SECTION                                */
+        /*                                'SPORT' OBJECT SECTION                                */
     /*ALL METHODS HEREIN DEAL WITH THE SELECTION, CREATING, UPDATE OR DELETION OF A 'SPORT'*/
     /*
     *                               MMM  MMMM   MMM  MMMM  MMMMM
@@ -334,7 +133,7 @@ public class UpdateService extends Service {
                     MySQLiteHelper.COLUMN_SPORT_ID + " = " + insertID, null, null, null, null);
             cursor.moveToFirst();
             Sport newSport = cursorToSport(cursor);
-            queueInsert(newSport);
+
             return newSport;
         } catch (SQLException e){
             e.printStackTrace();
@@ -479,7 +278,7 @@ public class UpdateService extends Service {
                     MySQLiteHelper.COLUMN_USER_ID + " = " + insertID, null, null, null, null);
             cursor.moveToFirst();
             Users newUser = cursorToUser(cursor);
-            queueInsert(newUser);
+
             return newUser;
         } catch (SQLException e){
             e.printStackTrace();
@@ -542,7 +341,7 @@ public class UpdateService extends Service {
                 db.setTransactionSuccessful();
                 db.endTransaction();
                 Users returVal = getUserById(currentUser);
-                queueUpdate(returVal);
+
                 return returVal;
             }else{
                 db.execSQL("ROLLBACK");
@@ -752,7 +551,7 @@ public class UpdateService extends Service {
                     MySQLiteHelper.COLUMN_LEAGUE_ID + " = " + insertID, null, null, null, null);
             cursor.moveToFirst();
             League newLeague = cursorToLeague(cursor);
-            queueInsert(newLeague);
+
             return newLeague;
         } catch (SQLException e){
             e.printStackTrace();
@@ -934,7 +733,7 @@ public class UpdateService extends Service {
                     MySQLiteHelper.COLUMN_TEAM_ID + " = " + insertID, null, null, null, null);
             cursor.moveToFirst();
             Team newTeam = cursorToTeam(cursor);
-            queueInsert(newTeam);
+
             return newTeam;
         } catch (SQLException e){
             e.printStackTrace();
@@ -1165,7 +964,7 @@ public class UpdateService extends Service {
             Player newPlayer = cursorToPlayer(cursor);
 
             //TODO: Make sure new players are added to attendance rolls
-            queueInsert(newPlayer);
+
             return newPlayer;
         } catch (SQLException e){
             e.printStackTrace();
@@ -1189,7 +988,7 @@ public class UpdateService extends Service {
                     MySQLiteHelper.COLUMN_PLAYER_ID + " = " + currentPlayerId, null);
             if(rowsAltered == 1) {
                 Player returnVal = getPlayerById(currentPlayerId);
-                queueUpdate(returnVal);
+
                 return returnVal;
             }else
             {
@@ -1375,7 +1174,7 @@ public class UpdateService extends Service {
                     MySQLiteHelper.COLUMN_ENROLLMENT_ID + " = " + insertID, null, null, null, null);
             cursor.moveToFirst();
             Enrollment newEnrollment = cursorToEnrollment(cursor);
-            queueInsert(newEnrollment);
+
             return newEnrollment;
         } catch (SQLException e){
             e.printStackTrace();
@@ -1411,7 +1210,7 @@ public class UpdateService extends Service {
                     });
             if(rowsAltered == 1) {
                 Enrollment returnVal = getEnrollmentByUserLeagueAndTeam(currentCoachUserId, currentTeamId, currentLeagueId);
-                queueUpdate(returnVal);
+
                 return returnVal;
             }else
             {
@@ -1558,7 +1357,7 @@ public class UpdateService extends Service {
                     MySQLiteHelper.COLUMN_PLACE_ID + " = " + insertID, null, null, null, null);
             cursor.moveToFirst();
             Place newPlace = cursorToPlace(cursor);
-            queueInsert(newPlace);
+
             return newPlace;
         } catch (SQLException e){
             e.printStackTrace();
@@ -1669,7 +1468,7 @@ public class UpdateService extends Service {
                     createAttendance(newEvent.getEventID(), u.getUserID(), "GOING", "");
                 }
             }
-            queueInsert(newEvent);
+
             return newEvent;
         } catch (SQLException e){
             e.printStackTrace();
@@ -1839,7 +1638,7 @@ public class UpdateService extends Service {
                     MySQLiteHelper.COLUMN_ATTENDANCE_ID + " = " + insertID, null, null, null, null);
             cursor.moveToFirst();
             Attendance newAttendance = cursorToAttendance(cursor);
-            queueInsert(newAttendance);
+
             return newAttendance;
         } catch (SQLException e){
             e.printStackTrace();

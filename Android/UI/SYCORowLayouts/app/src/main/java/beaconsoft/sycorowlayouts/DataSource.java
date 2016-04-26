@@ -101,8 +101,8 @@ public class DataSource {
             MySQLiteHelper.COLUMN_PASSWORD
     };
 
-    public DataSource(Context context){
-
+    public DataSource(MySQLiteHelper dbHelper){
+        this.dbHelper = dbHelper;
     }
 
     public void open() throws SQLException {

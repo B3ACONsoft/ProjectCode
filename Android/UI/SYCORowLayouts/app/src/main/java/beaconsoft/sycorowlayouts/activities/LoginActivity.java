@@ -30,11 +30,14 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import beaconsoft.sycorowlayouts.R;
+import beaconsoft.sycorowlayouts.SYCOServerAccess.RemoteConnection;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -42,6 +45,17 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+
+    private LoginSemaphore semaphore = new LoginSemaphore();
+    private static HashMap<String, String> loginCommandMap;
+    static {
+        loginCommandMap = new HashMap<String, String>();
+        {
+            loginCommandMap.put("email", "");
+            loginCommandMap.put("password", "");
+        }
+    };
+
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -80,8 +94,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mPasswordView = (EditText) findViewById(R.id.password);
 
-        mEmailView.setText("PATARQ@GODADDY.COM");  /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
-        mPasswordView.setText("password");   /* a.a@yahoo.com = ADMIN, JURASSIC@PARK.AAH = COACH anything else is user   */
+        mEmailView.setText("CURRIN.PATRICK@YAHOO.COM");  /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+        mPasswordView.setText("PASSWORD");   /* a.a@yahoo.com = ADMIN, JURASSIC@PARK.AAH = COACH anything else is user   */
 
             mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -160,6 +174,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    private long end;
+    private final long TIMEOUT_VAL = 30000; //30 second timeout
+
+    private boolean stillTime(long end){
+        if(System.currentTimeMillis() < end){
+            return true;
+        }
+        return false;
+    }
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -209,6 +232,39 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            showProgress(true);
 //            mAuthTask = new UserLoginTask(email, password);
 //            mAuthTask.execute((Void) null);
+            loginCommandMap.put("email", email);
+            loginCommandMap.put("password", password);
+            long end;
+            final long TIMEOUT_VAL = 30000; //30 second timeout
+
+            semaphore.loginResult = null;
+            Thread loginThread = new Thread(new LogInProcess(semaphore, loginCommandMap));
+            loginThread.start();
+
+            end = System.currentTimeMillis() + TIMEOUT_VAL;
+            while(semaphore.loginResult == null) {
+                if(!stillTime(end)){
+                    Toast.makeText(getApplicationContext(), "TIMEOUT", Toast.LENGTH_LONG);
+                    break;
+                }
+            }
+
+            if(semaphore.loginResult != null) {
+                switch(semaphore.loginResult){
+                    case "ADMIN":
+                    case "COACH":
+                    case "USER":
+                        Intent intent = new Intent(this, MainActivity.class);
+                        intent.putExtra(EMAIL_KEY, email.toUpperCase());
+                        intent.putExtra(LEVEL_KEY, semaphore.loginResult);
+                        startActivity(intent);
+                        this.finish();
+                        break;
+                    default:
+                        Toast.makeText(getApplicationContext(), "INVALID CREDITIALS !!!!!!", Toast.LENGTH_LONG).show();
+                }
+            }
+
 
 
             /*HEY OVER HERE GUYS!!!!!!
@@ -217,6 +273,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             * WE NEED AUTHENTICATION!!!!! I put my name in here to be returned around the program!
             *
             * */
+            /*
             String permissionLevel = "";
             if(email.equalsIgnoreCase("a.a@yahoo.com")){
                 permissionLevel = "ADMIN";
@@ -230,6 +287,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             intent.putExtra(LEVEL_KEY, permissionLevel);
             startActivity(intent);
             this.finish();
+            */
         }
     }
 

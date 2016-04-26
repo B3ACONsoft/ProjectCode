@@ -205,20 +205,49 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         if(json != null){
             Log.e(MySQLiteHelper.class.getName(), json);
         }
-        */
+*/
         db.beginTransaction();
         for(String q : CREATE_DATABASE){
             db.execSQL(q);
         }
+
 //        for(String q : DatabaseDummyLoader.boom){
 //            db.execSQL(q);
 //        }
+
+
+        /*
+        for(String q : DatabaseDummyLoader.boom){
+            db.execSQL(q);
+        }
+        */
+
         db.setTransactionSuccessful();
         db.endTransaction();
+
     }
 
     public void onOpen(SQLiteDatabase db){
         Log.w(MySQLiteHelper.class.getName(), "The Database appears to be open...version: " + db.getVersion());
+    }
+
+    public void killAndRemake(SQLiteDatabase db) {
+        db.beginTransaction();
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ENROLLMENT   + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE   + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENT        + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLACE        + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYER       + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEAM         + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS        + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LEAGUE       + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SPORT        + ";");
+
+        for(String q : CREATE_DATABASE){
+            db.execSQL(q);
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     @Override
