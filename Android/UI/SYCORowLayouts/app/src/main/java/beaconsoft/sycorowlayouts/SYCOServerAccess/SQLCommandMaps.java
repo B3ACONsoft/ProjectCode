@@ -178,6 +178,22 @@ public final class SQLCommandMaps {
             }
         };
 
+        public static final HashMap<String, String> adminCreatePlayer;
+        static {
+            adminCreatePlayer = new HashMap<String, String>();
+            {
+                adminCreatePlayer.put("user_id", "1");
+                adminCreatePlayer.put("password", "PASSWORD");
+                adminCreatePlayer.put("command", "INSERT");
+                adminCreatePlayer.put("table_name", "PLAYER");
+                adminCreatePlayer.put("fname", "");
+                adminCreatePlayer.put("lname", "");
+                adminCreatePlayer.put("user_id", "");
+                //adminCreateUser.put("last_edited", "");
+            }
+        };
+
+
         public static final HashMap<String, String> adminCreateTeam;
         static {
             adminCreateTeam = new HashMap<String, String>();

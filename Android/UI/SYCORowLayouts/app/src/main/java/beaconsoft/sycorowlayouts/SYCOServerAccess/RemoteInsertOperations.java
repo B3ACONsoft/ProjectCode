@@ -129,6 +129,21 @@ public class RemoteInsertOperations extends RemoteOperations {
         return result;
     }
 
+    public String createPlayer(String f_name, String l_name, int user_id) {
+        command = SQLCommandMaps.InsertCommandMaps.adminCreatePlayer;
+        String result = "";
+        try
+        {
+            command.put("user_id", user_id + "");
+            command.put("fname", f_name);
+            command.put("lname", l_name);
+
+            result = doOperation();
+        } catch(Exception e) {
+            return e.getMessage();
+        }
+        return result;
+    }
     /**
      * Create an entry in the enrollment table.
      *
@@ -270,6 +285,10 @@ public class RemoteInsertOperations extends RemoteOperations {
             case PLAYER:
                 Player playerRecord = (Player)pojo;
                 //TODO implement create player
+                createPlayer(playerRecord.getFname(),
+                             playerRecord.getLname(),
+                             playerRecord.getUserID());
+
                 break;
             case SPORT:
                 Sport sportRecord = (Sport)pojo;
