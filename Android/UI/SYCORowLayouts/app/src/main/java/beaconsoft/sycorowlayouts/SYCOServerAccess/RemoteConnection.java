@@ -17,7 +17,8 @@ import java.util.HashMap;
  *
  */
 public class RemoteConnection {
-	
+
+    private final static String         LOGIN_URL   = "http://capstone1.netai.net/devDave/login.php";
 	//private final static String 		SERVER_URL = "http://localhost/SYCOsync/sync.php";	
 	private final static String 		SERVER_URL = "http://capstone1.netai.net/devDave/sync.php";
 	//private final static String			SERVER_URL = "http://172.20.23.103/SYCOsync/sync.php";
@@ -123,13 +124,66 @@ public class RemoteConnection {
         }
         return responseBuffer.toString();                                                       //pass the response to onPostExecute()
     }
-    
+
+    /**
+     * post requst to login url...
+     *
+     * @param params The post parameters in string form.
+     * @return The server response in string form.
+     * @throws Exception
+     */
+    private static String loginRequest(String params) throws Exception {
+        StringBuilder responseBuffer = new StringBuilder();
+        try
+        {
+            byte[] bytes = params.getBytes();   //convert the data to bytes
+
+            url = new URL(SERVER_URL);                                                      //
+            conn = (HttpURLConnection) url.openConnection();                               //init the connection objects
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.setInstanceFollowRedirects(false);
+            conn.setRequestMethod("POST");                                                      //set request method
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");       //set the attributes of the HTTP header
+            conn.setRequestProperty("charset", "utf-8");                                        //more attributes...
+            conn.setRequestProperty("Content-Length", Integer.toString(bytes.length));          //more attributes...
+            conn.setConnectTimeout(10000);                                                      //set the timeout if things break
+
+            DataOutputStream dataOutputStream = new DataOutputStream(conn.getOutputStream());   //write data across the socket
+            dataOutputStream.write(bytes);
+            dataOutputStream.flush();
+            dataOutputStream.close();
+
+
+            InputStreamReader reader = new InputStreamReader(conn.getInputStream());            //get the response
+            int input;
+            while((input = reader.read()) != -1)
+            {
+                responseBuffer.append((char)input);
+            }
+            reader.close();
+
+        } catch (IOException e) {
+            throw new Exception("Error making post Request, message: " + e.getMessage());
+        } finally {
+            conn.disconnect();
+        }
+        return responseBuffer.toString();                                                       //pass the response to onPostExecute()
+    }
     public static String doPostRequest(HashMap<String, String> paramsMap) {
     	try {
 			return postRequest(parsePostParams(paramsMap));
 		} catch (Exception e) {
 			return e.getMessage();
 		}
+    }
+
+    public static String login(HashMap<String, String> paramsMap){
+        try {
+            return loginRequest(parsePostParams(paramsMap));
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
 }
