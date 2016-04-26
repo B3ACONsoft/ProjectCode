@@ -23,9 +23,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile files('src/main/java/beaconsoft/sycorowlayouts/javax.json-1.0.4.jar')
-    compile files('libs/javax.json-api-1.0.jar')
+    releaseCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.0.0-alpha1'
     compile 'com.android.support:design:24.0.0-alpha1'
     compile 'com.android.support:support-v4:24.0.0-alpha1'

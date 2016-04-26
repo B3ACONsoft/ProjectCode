@@ -211,11 +211,17 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             db.execSQL(q);
         }
 
+//        for(String q : DatabaseDummyLoader.boom){
+//            db.execSQL(q);
+//        }
+
+
         /*
         for(String q : DatabaseDummyLoader.boom){
             db.execSQL(q);
         }
         */
+
         db.setTransactionSuccessful();
         db.endTransaction();
 
