@@ -38,14 +38,14 @@ public class SyncHelper  {
 
     public void sync() {
 
-        //syncUsers(selectOperations.getListOfUsers());
-        //syncPlayers(selectOperations.getListOfPlayers());
-        //syncSports(selectOperations.getListOfSports());
-        //syncLeagues(selectOperations.getListOfLeagues());
-        //syncTeams(selectOperations.getListOfTeams());
+        syncUsers(selectOperations.getListOfUsers());
+        syncPlayers(selectOperations.getListOfPlayers());
+        syncSports(selectOperations.getListOfSports());
+        syncLeagues(selectOperations.getListOfLeagues());
+        syncTeams(selectOperations.getListOfTeams());
         syncEnrollment(selectOperations.getListOfEnrollments());
         syncPlaces(selectOperations.getListOfPlaces());
-        syncAttendance(selectOperations.getListOfAttendances());
+        //syncAttendance(selectOperations.getListOfAttendances());
 
     }
 
@@ -68,6 +68,7 @@ public class SyncHelper  {
     }
 
     private void syncUsers(String json){
+        JsonArray jsonArray = null;
 
         String new_fname;
         String new_lname;
@@ -77,44 +78,70 @@ public class SyncHelper  {
         String new_user_type;
         String new_password;
 
-        JsonArray jsonArray = getValidJSON(json);
-        for(int i = 0; i < jsonArray.size(); i++) {
-            new_fname = ((JsonObject) jsonArray.get(i)).getString("fname");
-            new_lname = ((JsonObject) jsonArray.get(i)).getString("lname");
-            new_phone = Long.parseLong(stripPhoneNumber(((JsonObject) jsonArray.get(i)).getString("phone")));
-            new_emergency = Long.parseLong(stripPhoneNumber(((JsonObject) jsonArray.get(i)).getString("emergency")));
-            new_email = ((JsonObject) jsonArray.get(i)).getString("email");
-            new_user_type = ((JsonObject) jsonArray.get(i)).getString("user_type");
-            new_password  = ((JsonObject) jsonArray.get(i)).getString("password");
-
-            updateServiceRef.createUsers(new_fname, new_lname, new_phone , new_email, new_emergency, new_user_type, new_password);
+        try
+        {
+            jsonArray = getValidJSON(json);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
+        if(jsonArray != null) {
+            for(int i = 0; i < jsonArray.size(); i++) {
+                new_fname = ((JsonObject) jsonArray.get(i)).getString("fname");
+                new_lname = ((JsonObject) jsonArray.get(i)).getString("lname");
+                new_phone = Long.parseLong(stripPhoneNumber(((JsonObject) jsonArray.get(i)).getString("phone")));
+                new_emergency = Long.parseLong(stripPhoneNumber(((JsonObject) jsonArray.get(i)).getString("emergency")));
+                new_email = ((JsonObject) jsonArray.get(i)).getString("email");
+                new_user_type = ((JsonObject) jsonArray.get(i)).getString("user_type");
+                new_password  = ((JsonObject) jsonArray.get(i)).getString("password");
+
+                updateServiceRef.createUsers(new_fname, new_lname, new_phone, new_email, new_emergency, new_user_type, new_password);
+            }
+        }
+
     }
 
     private void syncPlayers(String json) {
+        JsonArray jsonArray = null;
+
         String new_player_first;
         String new_player_last;
         int new_user_id;
 
-        JsonArray jsonArray = getValidJSON(json);
-        for(int i = 0; i < jsonArray.size(); i++) {
+        try
+        {
+            jsonArray = getValidJSON(json);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if(jsonArray != null) {
+            for (int i = 0; i < jsonArray.size(); i++) {
 
-            new_player_first = ((JsonObject) jsonArray.get(i)).getString("fname");
-            new_player_last  = ((JsonObject) jsonArray.get(i)).getString("lname");
-            new_user_id      = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("user_id"));
+                new_player_first = ((JsonObject) jsonArray.get(i)).getString("fname");
+                new_player_last = ((JsonObject) jsonArray.get(i)).getString("lname");
+                new_user_id = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("user_id"));
 
-            updateServiceRef.createPlayer(new_player_first, new_player_first, new_user_id);
+                updateServiceRef.createPlayer(new_player_first, new_player_first, new_user_id);
+            }
         }
     }
 
     private void syncSports(String json) {
+        JsonArray jsonArray = null;
+
         String new_sport_name;
 
-        JsonArray jsonArray = getValidJSON(json);
-        for(int i = 0; i < jsonArray.size(); i++) {
-            new_sport_name = ((JsonObject) jsonArray.get(i)).getString("sport_name");
+        try
+        {
+            jsonArray = getValidJSON(json);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if(jsonArray != null) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                new_sport_name = ((JsonObject) jsonArray.get(i)).getString("sport_name");
 
-            updateServiceRef.createSport(new_sport_name);
+                updateServiceRef.createSport(new_sport_name);
+            }
         }
     }
 
@@ -133,6 +160,8 @@ public class SyncHelper  {
     }
 
     private void syncLeagues(String json) {
+        JsonArray jsonArray = null;
+
         int new_user_id = 13;
         int new_sport_id;
         String leagueName;
@@ -142,39 +171,57 @@ public class SyncHelper  {
         Date endDate;
 
 
-        JsonArray jsonArray = getValidJSON(json);
-        for(int i = 0; i < jsonArray.size(); i++) {
-            //new_user_id      = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("user_id"));
-            new_sport_id     = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("sport_id"));
-            leagueName       =  ((JsonObject) jsonArray.get(i)).getString("league_name");
-            minAge           = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("min_age"));
-            maxAge           = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("max_age"));
-            startDate        = new Date(dateToLong(((JsonObject) jsonArray.get(i)).getString("start_date")));
-            endDate          = new Date(dateToLong(((JsonObject) jsonArray.get(i)).getString("end_date")));
-
-            updateServiceRef.createLeague(new_user_id, new_sport_id, leagueName, minAge, maxAge, startDate, endDate);
+        try
+        {
+            jsonArray = getValidJSON(json);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
+        if(jsonArray != null) {
 
+            for (int i = 0; i < jsonArray.size(); i++) {
+                //new_user_id      = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("user_id"));
+                new_sport_id = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("sport_id"));
+                leagueName = ((JsonObject) jsonArray.get(i)).getString("league_name");
+                minAge = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("min_age"));
+                maxAge = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("max_age"));
+                startDate = new Date(dateToLong(((JsonObject) jsonArray.get(i)).getString("start_date")));
+                endDate = new Date(dateToLong(((JsonObject) jsonArray.get(i)).getString("end_date")));
+
+                updateServiceRef.createLeague(new_user_id, new_sport_id, leagueName, minAge, maxAge, startDate, endDate);
+            }
+        }
     }
 
     private void syncTeams(String json) {
+        JsonArray jsonArray = null;
+
         String teamName;
         int leagueID;
         int userID;
 
-        //{"team_id":"1","0":"1","league_id":"1","1":"1","team_name":"YETIS","2":"YETIS","user_id":"15","3":"15"}
-        JsonArray jsonArray = getValidJSON(json);
-        for(int i = 0; i < jsonArray.size(); i++) {
-            userID          = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("user_id"));
-            leagueID        = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("league_id"));
-            teamName        =  ((JsonObject) jsonArray.get(i)).getString("team_name");
+        try
+        {
+            jsonArray = getValidJSON(json);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if(jsonArray != null) {
+            //{"team_id":"1","0":"1","league_id":"1","1":"1","team_name":"YETIS","2":"YETIS","user_id":"15","3":"15"}
+            for (int i = 0; i < jsonArray.size(); i++) {
+                userID = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("user_id"));
+                leagueID = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("league_id"));
+                teamName = ((JsonObject) jsonArray.get(i)).getString("team_name");
 
-            updateServiceRef.createTeam(teamName, leagueID, userID);
+                updateServiceRef.createTeam(teamName, leagueID, userID);
+            }
         }
 
     }
 
     private void syncEnrollment(String json) {
+        JsonArray jsonArray = null;
+
         int userID;
         int playerID;
         int leagueID;
@@ -182,41 +229,57 @@ public class SyncHelper  {
         Date enrollmentDate;
         Double fee;
 
-        JsonArray jsonArray = getValidJSON(json);
-        for(int i = 0; i < jsonArray.size(); i++) {
-            userID              = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("user_id"));
-            playerID            = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("player_id"));
-            leagueID            = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("league_id"));
-            teamID              =  Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("team_id"));
-            enrollmentDate      = new Date(dateToLong(((JsonObject) jsonArray.get(i)).getString("enrollment_date")));
-            fee                 = Double.parseDouble(((JsonObject) jsonArray.get(i)).getString("fee"));
+        try
+        {
+            jsonArray = getValidJSON(json);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if(jsonArray != null) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                userID = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("user_id"));
+                playerID = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("player_id"));
+                leagueID = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("league_id"));
+                teamID = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("team_id"));
+                enrollmentDate = new Date(dateToLong(((JsonObject) jsonArray.get(i)).getString("enrollment_date")));
+                fee = Double.parseDouble(((JsonObject) jsonArray.get(i)).getString("fee"));
 
-            updateServiceRef.createEnrollment(userID, playerID, leagueID, teamID, enrollmentDate, fee);
+                updateServiceRef.createEnrollment(userID, playerID, leagueID, teamID, enrollmentDate, fee);
+            }
         }
     }
 
     private void syncPlaces(String json) {
+        JsonArray jsonArray = null;
+
         String placeName;
         String streetAddress;
         String city;
         String state;
         int zip;
 
-        JsonArray jsonArray = getValidJSON(json);
-        for(int i = 0; i < jsonArray.size(); i++) {
-            placeName        =  ((JsonObject) jsonArray.get(i)).getString("place_name");
-            streetAddress    =  ((JsonObject) jsonArray.get(i)).getString("street_address");
-            city             =  ((JsonObject) jsonArray.get(i)).getString("city");
-            state            =  ((JsonObject) jsonArray.get(i)).getString("state");
-            zip              = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("zip"));
-            updateServiceRef.createPlace(placeName, streetAddress, city, state, zip);
+        try
+        {
+            jsonArray = getValidJSON(json);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if(jsonArray != null) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                placeName = ((JsonObject) jsonArray.get(i)).getString("place_name");
+                streetAddress = ((JsonObject) jsonArray.get(i)).getString("street_address");
+                city = ((JsonObject) jsonArray.get(i)).getString("city");
+                state = ((JsonObject) jsonArray.get(i)).getString("state");
+                zip = Integer.parseInt(((JsonObject) jsonArray.get(i)).getString("zip"));
+                updateServiceRef.createPlace(placeName, streetAddress, city, state, zip);
+            }
         }
 
     }
-
+/*
     private void syncAttendance(String json) {
 
         JsonArray jsonArray = getValidJSON(json);
     }
-
+*/
 }

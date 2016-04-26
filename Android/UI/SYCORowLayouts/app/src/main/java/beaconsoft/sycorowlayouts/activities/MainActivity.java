@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             updateService.sync();
 
 
-            /*
             Intent intentLogin = getIntent();
             email = intentLogin.getStringExtra(EMAIL_KEY);
             permission = intentLogin.getStringExtra(LEVEL_KEY);
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 //            for(i = 0; i < jsonArray.size(); i++) {
 //                System.out.println(jsonArray.get(i));
 //            }
-*/
+
         }
 
         @Override
