@@ -80,12 +80,6 @@ public class UserHomeActivity extends AppCompatActivity implements AdapterView.O
      * Defines callbacks for service binding, passed to bindService()
      *
      */
-
-    @Override
-    public void onBackPressed() {
-        moveTaskToBack(true);
-    }
-
     private ServiceConnection mConnection;
 
     {
