@@ -5,105 +5,165 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
+import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import beaconsoft.sycorowlayouts.DataSource;
 import beaconsoft.sycorowlayouts.EventListAdapter;
+import beaconsoft.sycorowlayouts.PlaceListAdapter;
 import beaconsoft.sycorowlayouts.R;
 import beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService;
-import beaconsoft.sycorowlayouts.activities.UserRosterActivity;
+import beaconsoft.sycorowlayouts.activities.adapter.CalendarAdapter;
+import beaconsoft.sycorowlayouts.activities.util.CalendarCollection;
 import beaconsoft.sycorowlayouts.dbobjects.Event;
+import beaconsoft.sycorowlayouts.dbobjects.Place;
 import beaconsoft.sycorowlayouts.dbobjects.Team;
+import string.utils.MonthFormat;
 
-public class UserHomeActivity extends AppCompatActivity implements CalendarView.OnDateChangeListener,
-    Spinner.OnItemSelectedListener {
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
 
-    private static final String EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
-    private static final String TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
-    private static final int INTENT_REQUEST_CODE_USER_ROSTER = 1;
+public class UserHomeActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private ArrayList<Event> arrayListEvents = new ArrayList<>();
-    private Event currentEvent;
-    private String email = "";
-    private ArrayList<Team> arrayListTeams = new ArrayList<>();
-    private ListView listview;
-    private Spinner spinnerTeams;
-    private Team currentTeam;
+    private static final int INTENT_REQUEST_CODE_ROSTER_ACTIVITY = 1;
+    public GregorianCalendar cal_month, cal_month_copy;
+    private CalendarAdapter cal_adapter;
+    private TextView tv_month;
+
+    private static final String   NAME_KEY = "beaconsoft.sycorowlayouts.NAME";
+    private static final String  ADMIN_KEY = "beaconsoft.sycorowlayouts.ADMIN";
+    private static final String  EMAIL_KEY = "beaconsoft.sycorowlayouts.EMAIL";
+    private static final String LEAGUE_KEY = "beaconsoft.sycorowlayouts.LEAGUE";
+    private static final String   TEAM_KEY = "beaconsoft.sycorowlayouts.TEAM";
+    private GridView gridview;
+    private Team currentTeam = new Team();
     private int currentTeamId;
-    UpdateService updateService;        //reference to the update service
-    boolean mBound = false;             //to bind or not to bind...
+    private int currentAdminId;
+    private int currentLeagueId;
+    private String name;
+    private String email;
+    private ArrayList<Event> arrayListEvents;
+    private ListAdapter eventListAdapter;
+    private  ListView listView;
+    private Event currentEvent;
+    private List<Address> addresses = new ArrayList<>();
+    private beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService updateService;        //reference to the update service
+    private boolean mBound = false;             //to bind or not to bind...
+    private boolean hasStarted = false;
+    private Spinner spinnerTeams;
+    private ArrayAdapter spinnerAdapter;
 
-
+    private ArrayList<Team> arrayListTeams;
     /**
      *
      * Defines callbacks for service binding, passed to bindService()
      *
      */
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private ServiceConnection mConnection;
 
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
+    {
+        mConnection = new ServiceConnection() {
 
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder binder = (beaconsoft.sycorowlayouts.SYCOServerAccess.UpdateService.UpdateServiceBinder) service;
+            @Override
+            public void onServiceConnected(ComponentName className,
+                                           IBinder service) {
 
-            updateService = binder.getService();
+                // We've bound to LocalService, cast the IBinder and get LocalService instance
+                UpdateService.UpdateServiceBinder binder = (UpdateService.UpdateServiceBinder) service;
 
-            mBound = true;
+                updateService = binder.getService();
 
-            List<Team> teamArray = new ArrayList<>();
-            teamArray.addAll(updateService.getListOfTeamsByUser(email));
-            for (Team t : teamArray) {
-                if (!arrayListTeams.contains(t)) {
-                    arrayListTeams.add(t);
+                mBound = true;
+
+                arrayListTeams = new ArrayList<>();
+                arrayListTeams.addAll(updateService.getListOfTeamsByUser(email));
+
+                spinnerAdapter = new ArrayAdapter(UserHomeActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayListTeams);
+                spinnerTeams.setAdapter(spinnerAdapter);
+                spinnerTeams.setOnItemSelectedListener(UserHomeActivity.this);
+
+                currentTeam = (Team) spinnerTeams.getSelectedItem();
+                currentTeamId = currentTeam.getTeamID();
+
+                if (!hasStarted) {
+                    initializeViews();
                 }
+                hasStarted = true;
+
             }
-            Team all = new Team();
-            all.setTeamName("ALL");
-            all.setTeamID(0);
-            arrayListTeams.add(all);
 
-            spinnerTeams = (Spinner) findViewById(R.id.spinnerUserHomeTeams);
-            spinnerTeams.setOnItemSelectedListener(UserHomeActivity.this);
-            setSpinnerAdapter();
 
-            setListAdapter();
+            @Override
+            public void onServiceDisconnected(ComponentName arg0) {
+                mBound = false;
+            }
+        };
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+        if(parent == spinnerTeams) {
+            onSpinnerTeamsChange();
         }
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    private void onSpinnerTeamsChange() {
+        currentTeam = (Team)spinnerTeams.getSelectedItem();
+        currentTeamId = currentTeam.getTeamID();
+        initializeViews();
+        populateListView();
+        refreshCalendar();
+    }
+
+    private void initializeViews() {
+        cal_month = (GregorianCalendar) GregorianCalendar.getInstance();
+        cal_month_copy = (GregorianCalendar) cal_month.clone();
+
+
+        tv_month = (TextView) findViewById(R.id.tv_month);
+        tv_month.setText(android.text.format.DateFormat.format("MMMM yyyy", cal_month));
+        currentTeam = updateService.getTeamById(currentTeamId);
+        arrayListEvents.clear();
+        arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
+        cal_adapter = new CalendarAdapter(getApplicationContext(), cal_month, CalendarCollection.date_collection_arr,
+                currentTeam, updateService);
+        gridview.clearChoices();
+        gridview.setAdapter(cal_adapter);
+
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
         bindService(new Intent(this,
                 UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
-
-
-
-
-
-
     }
 
     protected void onStop() {
@@ -117,185 +177,217 @@ public class UserHomeActivity extends AppCompatActivity implements CalendarView.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        super.setTheme(R.style.AppTheme_NoActionBar);
         setContentView(R.layout.activity_user_home);
 
+        arrayListEvents = new ArrayList<>();
+        listView = (ListView)findViewById(R.id.lv_android);
+        spinnerTeams = (Spinner)findViewById(R.id.spinnerUserHomeTeams);
         Intent intent = getIntent();
         email = intent.getStringExtra(EMAIL_KEY);
 
-        CalendarView cal = (CalendarView) findViewById(R.id.calendarViewUserHome);
-        cal.setShowWeekNumber(false);
-        cal.setOnDateChangeListener(this);
+        ImageButton previous = (ImageButton) findViewById(R.id.ib_prev);
+
+        previous.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                setPreviousMonth();
+                refreshCalendar();
+            }
+        });
+
+        ImageButton next = (ImageButton) findViewById(R.id.Ib_next);
+        next.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                setNextMonth();
+                refreshCalendar();
+
+            }
+        });
+
+        final ListView listView = (ListView)findViewById(R.id.lv_android);
+        gridview = (GridView) findViewById(R.id.gv_calendar);
 
 
-        arrayListEvents.clear();
-        arrayListTeams.clear();
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (parent == listView) {
+                    int placeID = arrayListEvents.get(position).getPlaceID();
+                    Place p = updateService.getPlaceById(placeID);
+                    Geocoder geocoder = new Geocoder(getApplicationContext());
+                    try {
 
+                        addresses.addAll(geocoder.getFromLocationName(
+                                String.format(Locale.ENGLISH, "%s %s, %s %d",
+                                        p.getStreetAddress(), p.getCity(), p.getState(),
+                                        p.getZip()), 1));
+                    } catch (IOException e) {
+                        Log.e("GEOLOCATION VARIABLES", "***");
+                    }
+                    if (addresses.size() > 0) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "google.navigation:q=" +
+                                        Uri.encode(p.getStreetAddress() + " " +
+                                                p.getCity() + ", " +
+                                                p.getState() + " " +
+                                                p.getZip()) + "&mode=d&avoid=tf"
+                        ));
+//                        intent.putExtra("LATITUDE", addresses.get(0).getLatitude());
+//                        intent.putExtra("LONGITUDE", addresses.get(0).getLongitude());
+//                        intent.putExtra("LOCATION_NAME", p.getPlaceName());
+                        intent.setPackage("com.google.android.apps.maps");
+//                        intent.setClassName(getApplicationContext(), "beaconsoft.sycorowlayouts.activities.MapsActivity");
+                        startActivity(intent);
+                    } else {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Perhaps you've typed the wrong address?", Toast.LENGTH_LONG);
+                        toast.setText(addresses.size() + " results from " + p.getStreetAddress() + " " +
+                                p.getCity() + " , " + p.getState() + " " + p.getZip());
+                        toast.show();
+                    }
+                }
+                return true;
+            }
+        });
 
-    }
+        gridview.setOnItemClickListener(new OnItemClickListener() {
 
-    private void onSpinnerTeamsChange() {
-        arrayListEvents.clear();
-        currentTeam = (Team) spinnerTeams.getSelectedItem();
-        if (currentTeam != null) {
-            currentTeamId = currentTeam.getTeamID();
-            if (currentTeamId == 0 && arrayListTeams.size() > 1) {
-                for (Team team : arrayListTeams) {
-                    if (team.getTeamID() != 0) {
-                        List<Event> eventArray = new ArrayList<>();
-                        eventArray.addAll(updateService.getListOfEventsByTeam(team));
-                        for (Event e : eventArray) {
-                            if (!arrayListEvents.contains(e)) {
-                                arrayListEvents.add(e);
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+
+                ((CalendarAdapter) parent.getAdapter()).setSelected(v,position);
+                String selectedGridDate = CalendarAdapter.day_string
+                        .get(position);
+
+                String[] separatedTime = selectedGridDate.split("-");
+                String gridvalueString = separatedTime[2].replaceFirst("^0*","");
+                int gridvalue = Integer.parseInt(gridvalueString);
+
+                if ((gridvalue > 10) && (position < 8)) {
+                    setPreviousMonth();
+                    refreshCalendar();
+                } else if ((gridvalue < 7) && (position > 28)) {
+                    setNextMonth();
+                    refreshCalendar();
+                }
+                ((CalendarAdapter) parent.getAdapter()).setSelected(v, position);
+                ((CalendarAdapter) parent.getAdapter()).getPositionList(selectedGridDate, UserHomeActivity.this);
+                arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
+                ArrayList<String> compDates = new ArrayList<String>();
+                for(int i = 0; i < arrayListEvents.size(); i++) {
+                    String[] splitDate = arrayListEvents.get(i).getStartDateTime().toString().split(" ");
+                    Log.e("SPLIT STRING", " ............." + arrayListEvents.get(i).getStartDateTime().toString());
+                    int monthInt = -1;
+                    String monthIntString = "";
+                    for (int j = 0; j < MonthFormat.months.length; j++) {
+                        if (splitDate[1].equals(MonthFormat.months[j])) {
+                            monthInt = j + 1;
+                            if (monthInt < 10) {
+                                monthIntString = "0" + monthInt;
+                            } else {
+                                monthIntString = monthInt + "";
                             }
+                            break;
                         }
+                    }
+                    compDates.add("" + splitDate[5] + "-" + monthIntString + "-" + splitDate[2]);
+                }
+                listView.clearChoices();
+                ArrayList<Event> tempArrayListEvents = (ArrayList<Event>) arrayListEvents.clone();
+                arrayListEvents.clear();
+                for(int i = 0; i < compDates.size(); i++) {
 
+                    if (compDates.get(i).equals(selectedGridDate)){
+                        Event event = tempArrayListEvents.get(i);
+                        if(!arrayListEvents.contains(event)) {
+                            arrayListEvents.add(event);
+                        }
                     }
                 }
 
-            } else if (arrayListTeams.size() > 1) {
-                List<Event> eventArray = new ArrayList<>();
-                eventArray.addAll(updateService.getListOfEventsByTeam(currentTeam));
-                for (Event e : eventArray) {
-                    if (!arrayListEvents.contains(e)) {
-                        arrayListEvents.add(e);
-                    }
-                }
-
+                populateListView();
             }
+        });
 
-        }
     }
 
-    private void setSpinnerAdapter() {
-        ArrayAdapter adapterSpinnerTeams = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item,
-                arrayListTeams);
-        spinnerTeams.setAdapter(adapterSpinnerTeams);
+    //TODO: --> This stuff first - Put in updateService, and replace your listview adapter with mine, which is really
+    //just the list_view and adapter you sent me 3 weeks ago debugged, "beaconsoft.sycorowlayouts.EventListAdpater.java
+    //and the xml file list_view_event_items.xml
+
+    //TODO: --> This stuff second, for sure - short click on a date reconstitutes the listview,
+    // Clear the arraylist, repopulate the arraylist, and pass into a new adapter
+
+    //TODO: --> maybe not at all (MAYBE) long-click, make a new intent and pass the date
+    public void displayAllEvents(View view){
+
+        arrayListEvents.clear();
+
+        arrayListEvents.addAll(updateService.getListOfEventsByTeam(currentTeam));
+
+        populateListView();
     }
 
-    private void setListAdapter() {
-        ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, arrayListEvents, updateService);
-        listview = (ListView) findViewById(R.id.listViewUserHome);
-        listview.setAdapter(adapter);
-    }
-
-    @Override
-    public void onBackPressed() {
-        moveTaskToBack(true);
-    }
-
-
-    public void goToRoster(View view) {
-        Team tempTeam = (Team) spinnerTeams.getSelectedItem();
-        if (tempTeam.getTeamName().equals("ALL")) {
-            Toast toast = Toast.makeText(this, "You must choose a team...", Toast.LENGTH_LONG);
-            toast.show();
+    protected void setNextMonth() {
+        if (cal_month.get(GregorianCalendar.MONTH) == cal_month
+                .getActualMaximum(GregorianCalendar.MONTH)) {
+            cal_month.set((cal_month.get(GregorianCalendar.YEAR) + 1),
+                    cal_month.getActualMinimum(GregorianCalendar.MONTH), 1);
         } else {
-
-            Intent intent = new Intent(this, UserRosterActivity.class);
-            intent.putExtra(EMAIL_KEY, email);
-            intent.putExtra(TEAM_KEY, tempTeam.getTeamID());
-            startActivityForResult(intent, INTENT_REQUEST_CODE_USER_ROSTER);
+            cal_month.set(GregorianCalendar.MONTH,
+                    cal_month.get(GregorianCalendar.MONTH) + 1);
         }
     }
 
-    String[] months = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-    @Override
-    public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-        Log.e("CALENDAR", "................................DATE TOUCHED: " + year + "/" + month + "/" + dayOfMonth);
-        List<Event> singleDayArray = new ArrayList<>();
-        for (Event e : arrayListEvents) {
-            String[] dateThings = e.toString().split(" ");
-            String mth = dateThings[2];
-            String day = dateThings[3];
-            String yr = dateThings[6];
-            if (year == Integer.parseInt(yr) && months[month].equals(mth) && Integer.parseInt(day) == dayOfMonth) {
-                singleDayArray.add(e);
-            }
-        }
-        ListAdapter adapter = new EventListAdapter(getApplicationContext(), R.layout.notification_list_item, singleDayArray, updateService);
-        listview.clearChoices();
-        listview.setAdapter(adapter);
-    }
-
-    @Override
-    protected void onPause() {
-
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (parent == spinnerTeams) {
-            onSpinnerTeamsChange();
-            setListAdapter();
+    protected void setPreviousMonth() {
+        if (cal_month.get(GregorianCalendar.MONTH) == cal_month
+                .getActualMinimum(GregorianCalendar.MONTH)) {
+            cal_month.set((cal_month.get(GregorianCalendar.YEAR) - 1),
+                    cal_month.getActualMaximum(GregorianCalendar.MONTH), 1);
+        } else {
+            cal_month.set(GregorianCalendar.MONTH,
+                    cal_month.get(GregorianCalendar.MONTH) - 1);
         }
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
+    public void refreshCalendar() {
+        cal_adapter.refreshDays();
+        cal_adapter.notifyDataSetChanged();
+        tv_month.setText(android.text.format.DateFormat.format("MMMM yyyy", cal_month));
     }
+
+    private void populateListView(){
+
+        eventListAdapter = new EventListAdapter(this, R.layout.list_view_event_items, arrayListEvents, updateService);
+        listView.setAdapter(eventListAdapter);
+        listView.setItemsCanFocus(true);
+        currentEvent = (Event)listView.getSelectedItem();
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
-        if (requestCode == INTENT_REQUEST_CODE_USER_ROSTER && data != null) {
+        if (requestCode == INTENT_REQUEST_CODE_ROSTER_ACTIVITY
+                && data != null) {
             if (resultCode == Activity.RESULT_OK) {
-                Log.e("REQUEST CODE", "................................................REQUEST CODE " + requestCode);
-
-                Team passedTeam = updateService.getTeamById(data.getIntExtra(TEAM_KEY, 0));
-                int passedTeamId = currentTeam.getTeamID();
-
-                email = data.getStringExtra(EMAIL_KEY);
-                CalendarView cal = (CalendarView) findViewById(R.id.calendarViewUserHome);
-                cal.setShowWeekNumber(false);
-                cal.setOnDateChangeListener(this);
-
-                arrayListEvents.clear();
-                arrayListTeams.clear();
-
-                List<Team> teamArray = new ArrayList<>();
-                teamArray.addAll(updateService.getListOfTeamsByUser(email));
-                for (Team t : teamArray) {
-                    if (!arrayListTeams.contains(t)) {
-                        arrayListTeams.add(t);
-                    }
-                }
-                Team all = new Team();
-                all.setTeamName("ALL");
-                all.setTeamID(0);
-                arrayListTeams.add(all);
-
-                spinnerTeams = (Spinner) findViewById(R.id.spinnerUserHomeTeams);
-                spinnerTeams.setOnItemSelectedListener(this);
-                setSpinnerAdapter();
-                int findId = 0;
-                for(int i = 0; i < arrayListTeams.size(); i++){
-                    if(arrayListTeams.get(i).getTeamID() == passedTeamId){
-                        findId = i;
-                        break;
-                    }
-                }
-                spinnerTeams.setSelection(findId);
-                setListAdapter();
+                currentTeamId = data.getIntExtra(TEAM_KEY, 0);
+                initializeViews();
+                refreshCalendar();
+                populateListView();
             }
         }
     }
+
+    public void goToUserRosterActivity(View view){
+        Intent intent = new Intent(this, UserRosterActivity.class);
+        intent.putExtra(TEAM_KEY, currentTeamId);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_ROSTER_ACTIVITY);
+    }
 }
+
+

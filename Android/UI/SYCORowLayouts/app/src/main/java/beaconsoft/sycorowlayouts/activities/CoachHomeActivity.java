@@ -46,6 +46,7 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
     private static final int INTENT_REQUEST_CODE_QUICK_ADD_PLAYER = 1;
     private static final int INTENT_REQUEST_CODE_QUICK_EDIT_PLAYER = 2;
     private static final int INTENT_REQUEST_CODE_CALENDAR_ACTIVITY = 3;
+    private static final int INTENT_REQUEST_CODE_ROSTER_ACTIVITY = 4;
     private static boolean hasStarted = false;
 
     private String name;
@@ -228,6 +229,7 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
             arrayListTeams.addAll(updateService.getListOfTeamsCoachedByUser(coachId, currentLeagueId));
             if (arrayListTeams.size() == 1) {
                 currentTeam = arrayListTeams.get(0);
+                currentTeamId = currentTeam.getTeamID();
                 textViewTeamName.setText(currentTeam.getTeamName());
 
                 /*Find the number of players on the team and print it to the textViewCoachHomePlayerCount view*/
@@ -336,7 +338,7 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
     public void goToUserRosterActivity(View view){
         Intent intent = new Intent(this, UserRosterActivity.class);
         intent.putExtra(TEAM_KEY, currentTeamId);
-        startActivity(intent);
+        startActivityForResult(intent, INTENT_REQUEST_CODE_ROSTER_ACTIVITY);
     }
 
     public void goToCalendarActivity(View view){
@@ -358,6 +360,13 @@ public class CoachHomeActivity extends AppCompatActivity implements AdapterView.
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if ((requestCode == INTENT_REQUEST_CODE_ROSTER_ACTIVITY)
+                && data != null) {
+            if (resultCode == Activity.RESULT_OK) {
+
+            }
+        }
 
         if ((requestCode == INTENT_REQUEST_CODE_QUICK_ADD_PLAYER || requestCode == INTENT_REQUEST_CODE_QUICK_EDIT_PLAYER)
                 && data != null) {

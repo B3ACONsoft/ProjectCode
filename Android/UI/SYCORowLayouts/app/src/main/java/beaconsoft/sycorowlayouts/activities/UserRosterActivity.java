@@ -63,7 +63,11 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
 
             mBound = true;
 
+            Intent intent = getIntent();
+            currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
+            email = intent.getStringExtra(EMAIL_KEY);
 
+            rosterList.clear();
             rosterList.addAll(updateService.getListOfPlayersByTeam(currentTeamId));
             fillMaps = new ArrayList<>();
             for (Player p : rosterList) {
@@ -82,7 +86,7 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
                 fillMaps.add(mapper);
             }
             listViewPlayerContacts = (ListView) findViewById(R.id.listViewUserActivityTest);
-
+            listViewPlayerContacts.clearChoices();
             SimpleAdapter simpleAdapter = new SimpleAdapter(UserRosterActivity.this, fillMaps, R.layout.list_view_users_row_layout, from, to);
             listViewPlayerContacts.setAdapter(simpleAdapter);
             listViewPlayerContacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -144,7 +148,8 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public void onBackPressed(){
-
+        rosterList.clear();
+        listViewPlayerContacts.clearChoices();
         Log.e("ON BACK PRESSED", "...............QUICK ADD TEAMS ON BACK PRESSED");
         Intent intent = new Intent();
         intent.putExtra(TEAM_KEY, currentTeamId);
@@ -152,6 +157,7 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
         setResult(Activity.RESULT_OK, intent);
         super.onBackPressed();
         finish();
+        onStop();
     }
 
     @Override
@@ -159,9 +165,7 @@ public class UserRosterActivity extends AppCompatActivity implements AdapterView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_roster);
 
-        Intent intent = getIntent();
-        currentTeamId = intent.getIntExtra(TEAM_KEY, 0);
-        email = intent.getStringExtra(EMAIL_KEY);
+
 
         from = new String[]{"player_fname", "player_lname", "user_fname", "user_lname", "user_phone"};
 
