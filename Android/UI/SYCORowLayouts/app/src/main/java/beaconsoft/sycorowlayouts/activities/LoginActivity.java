@@ -47,14 +47,14 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     private LoginSemaphore semaphore = new LoginSemaphore();
-    private static HashMap<String, String> loginCommandMap;
-    static {
-        loginCommandMap = new HashMap<String, String>();
-        {
-            loginCommandMap.put("email", "");
-            loginCommandMap.put("password", "");
-        }
-    };
+//    private static HashMap<String, String> loginCommandMap;
+//    static {
+//        loginCommandMap = new HashMap<String, String>();
+//        {
+//            loginCommandMap.put("email", "");
+//            loginCommandMap.put("password", "");
+//        }
+//    };
 
 
     /**
@@ -97,16 +97,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailView.setText("CURRIN.PATRICK@YAHOO.COM");  /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
         mPasswordView.setText("PASSWORD");   /* a.a@yahoo.com = ADMIN, JURASSIC@PARK.AAH = COACH anything else is user   */
 
+        String email = mEmailView.getText().toString();
+
+        String permissionLevel = "";
+        if(email.equalsIgnoreCase("a.a@yahoo.com")){
+            permissionLevel = "ADMIN";
+        }else if(email.equalsIgnoreCase("JURASSIC@PARK.AAH")){
+            permissionLevel = "COACH";
+        }else
+            permissionLevel = "USER";
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(EMAIL_KEY, email.toUpperCase());
+        intent.putExtra(LEVEL_KEY, permissionLevel);
+        startActivity(intent);
+        this.finish();
+
             mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
+                @Override
+                public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                    if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                        attemptLogin();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
+
+
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -232,14 +250,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            showProgress(true);
 //            mAuthTask = new UserLoginTask(email, password);
 //            mAuthTask.execute((Void) null);
-            loginCommandMap.put("email", email);
-            loginCommandMap.put("password", password);
+//            loginCommandMap.put("email", email);
+//            loginCommandMap.put("password", password);
+            /*
             long end;
             final long TIMEOUT_VAL = 30000; //30 second timeout
 
             semaphore.loginResult = null;
             Thread loginThread = new Thread(new LogInProcess(semaphore, loginCommandMap));
             loginThread.start();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(EMAIL_KEY, email.toUpperCase());
+            intent.putExtra(LEVEL_KEY, semaphore.loginResult);
+            startActivity(intent);
+            this.finish();
+
 
             end = System.currentTimeMillis() + TIMEOUT_VAL;
             while(semaphore.loginResult == null) {
@@ -265,7 +291,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             }
 
-
+*/
 
             /*HEY OVER HERE GUYS!!!!!!
             *
@@ -273,21 +299,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             * WE NEED AUTHENTICATION!!!!! I put my name in here to be returned around the program!
             *
             * */
-            /*
-            String permissionLevel = "";
-            if(email.equalsIgnoreCase("a.a@yahoo.com")){
-                permissionLevel = "ADMIN";
-            }else if(email.equalsIgnoreCase("johnsondh86@gmail.com")){
-                permissionLevel = "COACH";
-            }else
-                permissionLevel = "USER";
 
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(EMAIL_KEY, email.toUpperCase());
-            intent.putExtra(LEVEL_KEY, permissionLevel);
-            startActivity(intent);
-            this.finish();
-            */
+
+
         }
     }
 
