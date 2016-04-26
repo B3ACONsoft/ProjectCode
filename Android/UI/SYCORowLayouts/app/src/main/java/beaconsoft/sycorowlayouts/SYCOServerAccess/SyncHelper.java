@@ -19,6 +19,7 @@ import javax.json.JsonReader;
 import javax.json.stream.JsonParsingException;
 
 import beaconsoft.sycorowlayouts.DataSource;
+import beaconsoft.sycorowlayouts.DataSource2;
 import beaconsoft.sycorowlayouts.MySQLiteHelper;
 
 /**
@@ -30,16 +31,19 @@ public class SyncHelper  {
     private MySQLiteHelper dbHelper;
     private RemoteSelectOperations selectOperations;
     private UpdateService updateServiceRef;
-    private DataSource dataSource;
+    private DataSource2 dataSource;
 
     public SyncHelper(MySQLiteHelper dbHelper){
         this.dbHelper = dbHelper;
         this.remoteConnection = new RemoteConnection();
         this.selectOperations = new RemoteSelectOperations(remoteConnection);
-        dataSource = new DataSource(dbHelper);
+        dataSource = new DataSource2(dbHelper);
     }
 
     public void sync() {
+        db = dbHelper.getWritableDatabase();
+        dbHelper.killAndRemake(this.db);
+        db.close();
 
         syncUsers(selectOperations.getListOfUsers());
         syncPlayers(selectOperations.getListOfPlayers());
