@@ -146,9 +146,10 @@ public class UpdateService extends Service {
         private RemoteUpdateOperations updateOperations;
         private RemoteDeleteOperations deleteOperations;
         private RemoteSelectOperations selectOperations;
+        private SyncHelper syncHelper;
         private final int SYNC_RATE_MILLISECONDS = 10000;                               //the rate at which the sync operation cycles in milliseconds
 
-        public ServerConnectionProcess(ServerConnectionInterface serverConnectionInterface) {
+        public ServerConnectionProcess(ServerConnectionInterface serverConnectionInterface, UpdateService service) {
             this.remoteConnection = new RemoteConnection();
             this.insertOperations = new RemoteInsertOperations(remoteConnection);
             this.updateOperations = new RemoteUpdateOperations(remoteConnection);
@@ -156,40 +157,13 @@ public class UpdateService extends Service {
             this.selectOperations = new RemoteSelectOperations(remoteConnection);
             this.serverConnectionInterface = serverConnectionInterface;
             serverConnectionInterface.syncing = true;
+            this.syncHelper = new SyncHelper(dbHelper, service);
         }
 
         /*
       PATRICK
    */
-        private void sync() {
-            try {
-                /*
-                    Get all tables from the server as json strings.
-                 */
-                String users = selectOperations.getListOfUsers();
-                String players = selectOperations.getListOfPlayers();
-                String sports = selectOperations.getListOfSports();
-                String leagues = selectOperations.getListOfLeagues();
-                String teams = selectOperations.getListOfTeams();
-                String enrollments = selectOperations.getListOfEnrollments();
-                String places = selectOperations.getListOfPlaces();
-                String events = selectOperations.getAllEvents();
-                String attendance = selectOperations.getListOfAttendances();
 
-                //open local database for read/write
-                open_db();
-
-                /*
-                    Proccess
-                 */
-
-
-            } catch(SQLException e) {
-                e.printStackTrace();
-            } finally {
-                close_db();
-            }
-        }
         /**
          * Starts executing the active part of the class' code. This method is
          * called when a thread is started that has been created with a class which
@@ -221,7 +195,7 @@ public class UpdateService extends Service {
                 }
 
                 if(serverConnectionInterface.syncing){
-                    sync();
+                    syncHelper.sync();
                     serverConnectionInterface.syncing = false;
                 }
 
@@ -288,7 +262,7 @@ public class UpdateService extends Service {
      */
     public void startServerConnectionProcess() {
         serverConnectionInterface.running = true;
-        serverConnectionProcess = new ServerConnectionProcess(serverConnectionInterface);
+        serverConnectionProcess = new ServerConnectionProcess(serverConnectionInterface, this);
         serverConnectionThread = new Thread(serverConnectionProcess);
         serverConnectionThread.start();
     }
