@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="beaconsoft.sycorowlayouts.CoachHomeActivity"
+    android:stretchColumns="*"
+    android:layout_gravity="center|top">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/row_coach_home_email"
+        android:textAlignment="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Coach Email @ddress"
+            android:id="@+id/textViewCoachHomeEmail"
+            android:textAlignment="center"
+            android:layout_weight="1"
+            android:textColor="#000000" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:textAlignment="center"
+        android:layout_weight="1"
+        android:gravity="center_vertical|center_horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Coach Real Name"
+            android:id="@+id/textViewCoachHomeName"
+            android:textAlignment="center"
+            android:textColor="#000000" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Sport"
+            android:id="@+id/textView14"
+            android:layout_weight="1"
+            android:gravity="center_horizontal" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/spinnerCoachHomeSports"
+            android:layout_weight="1"
+            android:spinnerMode="dropdown" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:id="@+id/textView4"
+            android:text="League"
+            android:layout_weight="1"
+            android:gravity="center_horizontal" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerCoachHomeLeagues"
+            android:spinnerMode="dropdown"
+            android:layout_weight="1" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/textViewCoachHomeTeamName"
+            android:layout_weight="1"
+            android:textAlignment="center" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="3dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Enrolled Players:"
+            android:id="@+id/textViewLabelPlayerCount"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:textColor="#00b2ff" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/numberText"
+            android:id="@+id/textViewCoachHomePlayerCount"
+            android:layout_weight="1"
+            android:singleLine="false"
+            android:gravity="right"
+            android:textAlignment="gravity"
+            android:textColor="#000000" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="0dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Games Left:"
+            android:id="@+id/textViewLabelGamesToPlay"
+            android:layout_weight="1"
+            android:textAlignment="gravity"
+            android:singleLine="true"
+            android:gravity="center_vertical"
+            android:textColor="#476ef9" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="number"
+            android:id="@+id/textViewCoachHomeGamesLeft"
+            android:layout_weight="1"
+            android:textAlignment="gravity"
+            android:singleLine="true"
+            android:gravity="center_vertical|right"
+            android:textColor="#000000" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Next Game:"
+            android:id="@+id/textViewLabelNextGame"
+            android:textAlignment="gravity"
+            android:singleLine="true"
+            android:gravity="center_vertical"
+            android:textColor="#134250"
+            android:layout_weight="2" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="XXXX-XX-XX"
+            android:id="@+id/textViewCoachHomeNextGame"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:textAlignment="gravity"
+            android:singleLine="true"
+            android:gravity="right"
+            android:textColor="#000000" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Player"
+            android:id="@+id/textView15"
+            android:gravity="center_horizontal"
+            android:layout_weight="1" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="100dp"
+        android:layout_height="match_parent">
+
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerCoachHomePlayers"
+            android:spinnerMode="dropdown"
+            android:layout_weight="1" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TEAM CALENDAR"
+            android:id="@+id/buttonGoToCalendar"
+            android:layout_weight="1"
+            android:onClick="goToCalendarActivity" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="ROSTER"
+            android:id="@+id/buttonGoToRoster"
+            android:layout_weight="1"
+            android:onClick="goToUserRosterActivity" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="QUICK ADD PLAYERS"
+            android:id="@+id/buttonCoachHomeQuickAddPlayers"
+            android:layout_weight="1"
+            android:onClick="goToAddPlayers" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="EDIT PLAYER"
+            android:id="@+id/buttonCoachHomeEditPlayers"
+            android:layout_weight="1"
+            android:onClick="goToEditPlayer" />
+    </TableRow>
+
+</TableLayout>

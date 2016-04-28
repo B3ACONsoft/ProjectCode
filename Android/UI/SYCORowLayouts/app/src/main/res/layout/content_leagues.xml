@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:id="@+id/content"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.LeaguesActivity"
+    tools:showIn="@layout/activity_leagues">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:stretchColumns="*"
+        android:layout_gravity="center|top">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="admin email"
+                android:id="@+id/textViewLeagueEmail"
+                android:layout_column="0"
+                android:layout_weight="1"
+                android:textAlignment="center" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Administrator, please, choose a sport..."
+                android:id="@+id/textViewPromptChooseSport"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:layout_column="0" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:id="@+id/spinnerMyLeaguesSports"
+                android:layout_below="@+id/spinnerMyLeaguesTeams"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:spinnerMode="dropdown"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textAlignment="center" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="...and then, please, choose a League..."
+                android:id="@+id/textView6"
+                android:textAlignment="center"
+                android:layout_column="0"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:id="@+id/spinnerMyLeaguesLeagues"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_below="@+id/textViewLeaguesActivityPassedName"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/string_start_a_league"
+                android:id="@+id/buttonMyLeaguesAddLeague"
+                android:layout_weight="1"
+                android:onClick="goToEditLeagues" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="CALENDAR"
+                android:id="@+id/buttonMyLeaguesCalendar"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:onClick="goToCalendar" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="...you can choose a Team to edit or add Teams to your League here, below..."
+                android:id="@+id/textViewPromptChooseTeam"
+                android:textAlignment="center"
+                android:gravity="center" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:id="@+id/spinnerMyLeaguesTeams"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_below="@+id/spinnerMyLeaguesLeagues"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="QUICK ADD TEAM"
+                android:id="@+id/buttonMyLeaguesAddTeam"
+                android:layout_below="@+id/buttonMyLeaguesAddLeague"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_above="@+id/buttonMyLeaguesAddPlayer"
+                android:layout_toLeftOf="@+id/buttonMyLeaguesEditTeam"
+                android:layout_toStartOf="@+id/buttonMyLeaguesEditTeam"
+                android:onClick="goToQuickAddTeams"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="UPDATE TEAM"
+                android:id="@+id/buttonMyLeaguesEditTeam"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/buttonMyLeaguesCalendar"
+                android:layout_alignBottom="@+id/buttonMyLeaguesRemoveTeam"
+                android:layout_weight="1"
+                android:onClick="goToEditTeams" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="...and add or alter  Player profiles down here..."
+                android:id="@+id/textViewPromptAddAlterPlayers"
+                android:textAlignment="center"
+                android:gravity="center" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:id="@+id/spinnerMyLeaguesPlayers"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="QUICK ADD PLAYER"
+                android:id="@+id/buttonMyLeaguesAddPlayer"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:onClick="goToAddPlayerFromLeagues"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Edit Player"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignLeft="@+id/buttonMyLeaguesRemoveTeam"
+                android:layout_alignStart="@+id/buttonMyLeaguesRemoveTeam"
+                android:id="@+id/buttonMyLeaguesEditPlayer"
+                android:layout_weight="1"
+                android:onClick="goToEditPlayerFromLeagues"/>
+
+        </TableRow>
+
+    </TableLayout>
+
+
+</RelativeLayout>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="beaconsoft.sycorowlayouts.activities.EditEventsActivity">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="*"
+        android:layout_gravity="center|top">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/practice_game"
+                android:id="@+id/checkBoxIsGame"
+                android:textAlignment="viewStart"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/choose_team"
+                android:id="@+id/textView9"
+                android:textAlignment="gravity"
+                android:gravity="center_vertical|center_horizontal"
+                android:layout_weight="1"
+                android:layout_gravity="center" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/spinnerHomeTeam"
+                android:layout_below="@+id/checkBoxIsGame"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/spinnerAwayTeam"
+                android:layout_below="@+id/spinnerHomeTeam"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Set Date"
+                android:id="@+id/buttonForwardDatePicker"
+                android:layout_weight="1"
+                android:onClick="forwardDatePicker" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/textViewEditEventsDate"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:hint="Date" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/textViewEditEventsTime"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:hint="Time" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Set Time"
+                android:id="@+id/buttonForwardTimePicker"
+                android:layout_weight="1"
+                android:onClick="forwardTimePicker" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Place"
+                android:id="@+id/textViewEditEventsPlace"
+                android:layout_column="0"
+                android:textAlignment="center"
+                android:layout_weight="1" />
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/spinnerPlaces"
+                android:layout_column="0"
+                android:layout_weight="4" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="New Place"
+                android:id="@+id/buttonAddPlace"
+                android:onClick="goToAddPlace"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Edit Place"
+                android:id="@+id/buttonEditPlace"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Make Event"
+                android:id="@+id/buttonAddEvent"
+                android:layout_weight="1"
+                android:onClick="addEventToLeagueEventList" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Edit Event"
+                android:id="@+id/buttonEditEvent"
+                android:layout_weight="1"
+                android:onClick="updateEvent" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Hold an Event for directions..."
+                android:id="@+id/textView8"
+                android:textAlignment="center"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/listViewLeagueEvents"
+                android:layout_weight="1"
+                android:longClickable="true"
+                android:focusable="true"
+                android:listSelector="#88ffaaaa" />
+        </TableRow>
+
+    </TableLayout>
+
+</RelativeLayout>

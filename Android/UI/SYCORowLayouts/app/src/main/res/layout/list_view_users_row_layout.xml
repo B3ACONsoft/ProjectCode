@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:measureWithLargestChild="false"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            android:background="#ffffff">
+        <TextView
+            android:id="@+id/player_fname"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:paddingLeft="6dip"
+            android:paddingTop="6dip"
+            android:text="Patrick"
+            android:layout_margin="2dp"
+            android:layout_gravity="left"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/player_lname"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:paddingLeft="6dip"
+            android:paddingTop="6dip"
+            android:text="Currin"
+            android:layout_margin="2dp"
+            android:layout_gravity="right"
+            android:textColor="#000000" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:background="#8bbbd7">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Patrick"
+                android:id="@+id/user_fname"
+                android:layout_margin="2dp"
+                android:layout_gravity="left"
+                android:textColor="#00426f" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Currin"
+                android:id="@+id/user_lname"
+                android:layout_margin="2dp"
+                android:textAlignment="gravity"
+                android:layout_gravity="right"
+                android:textColor="#00426f" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="(919)812-7701"
+        android:id="@+id/user_phone"
+        android:layout_gravity="right"
+        android:layout_weight="1"
+        android:gravity="center_vertical|center_horizontal"
+        android:focusableInTouchMode="false"
+        android:background="#1b8b08"
+        android:textColor="#ffffff" />
+
+</LinearLayout>
